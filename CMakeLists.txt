@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
+# ---
+# ascii message for fun
+
 message("              _\n  ____  _____(_)___  ____\n / __ \\/ ___/ / __ \\/ __ \\\n/ /_/ / /  / / /_/ / / / /\n\\____/_/  /_/\\____/_/ /_/\n")
 
 # ---
@@ -14,7 +17,7 @@ project(orion)
 
 option(BUILD_SHARED_LIBS "Build shared libraries." ON)
 option(ORION_BUILD_LIB "Build the core Orion library." ON)
-option(ORION_BUILD_TESTS "Build Orion test executable(s)." ON) # ON when testing!
+option(ORION_BUILD_TESTS "Build Orion test executable(s)." OFF)
 option(ORION_BUILD_DOCS "Build Orion documentation." ON)
 
 # ---
@@ -29,5 +32,5 @@ if (ORION_BUILD_TESTS)
 endif()
 
 if (ORION_BUILD_DOCS)
-	#add_subdirectory("docs")
+	add_subdirectory("docs")
 endif()

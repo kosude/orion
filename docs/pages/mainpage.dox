@@ -1,0 +1,9 @@
+/**
+ * @mainpage Welcome to the Orion Graphics Library Documentation Webpage
+ *
+ * @section sect_summary Summary
+ * Orion is primarily intended for any graphical projects where you want to run OpenGL without the annoyances of raw OpenGL code.
+ * 
+ * @note The manually-written pages (like this one) for this documentation are unfinished, but documentation for the library should be up to standard.
+ *
+ */
