@@ -1,7 +1,9 @@
 #include <stdio.h>
 
+#include <oriongl.h>
+
 int main() {
-	printf("Hello Orion!\n");
+	oriInitialise(460, 1);
 
 	return 0;
 }

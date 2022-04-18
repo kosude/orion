@@ -1,0 +1,27 @@
+#ifndef __CMAKE_PLATFORM_H__
+#	define __CMAKE_PLATFORM_H__
+
+#	cmakedefine WIN32
+#	cmakedefine APPLE
+#	cmakedefine UNIX
+
+#	if defined(_MSC_VER) // if using MSVC:
+#		if _DEBUG
+#			define BUILD_DEBUG
+#		else
+#			define BUILD_RELEASE
+#		endif
+#	elif defined(__apple_build_version__) // if using whatever Apple uses:
+#		if DEBUG
+#			define BUILD_DEBUG
+#		else
+#			define BUILD_RELEASE
+#		endif
+#	else
+#		cmakedefine BUILD_DEBUG
+#		cmakedefine BUILD_RELEASE
+#	endif
+
+#	define SOURCE_DIR "@PROJECT_SOURCE_DIR@"
+
+#endif // include guard

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # ---
@@ -21,6 +21,11 @@ option(ORION_BUILD_TESTS "Build Orion test executable(s)." OFF)
 option(ORION_BUILD_DOCS "Build Orion documentation." ON)
 
 # ---
+# configure files
+
+configure_file("${PROJECT_SOURCE_DIR}/CMake/generate/platform.h.in" "${PROJECT_BINARY_DIR}/generated/platform.h" @ONLY)
+
+# ---
 # subdirectories
 
 if (ORION_BUILD_LIB)
@@ -32,5 +37,5 @@ if (ORION_BUILD_TESTS)
 endif()
 
 if (ORION_BUILD_DOCS)
-	add_subdirectory("docs")
+	add_subdirectory("docs") 
 endif()
