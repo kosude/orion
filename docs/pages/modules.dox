@@ -1,0 +1,6 @@
+/**
+ * \defgroup meta Library initialisation and management
+ * @brief meta functions related to using Orion
+ * @details This module details all functions and members functions related to using Orion.
+ * 
+ */
