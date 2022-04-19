@@ -2,10 +2,9 @@
 # add source files to library output
 
 set(SRC
-	"internal/internal.c"
-	"internal/internal.h"
-
-	"lib/init.c"
+	"internal.h"
+	"init.c"
+	"buffer.c"
 )
 
 if (BUILD_SHARED_LIBS)
@@ -16,19 +15,11 @@ endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
 target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include")
-target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include")
+target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}/generated")
 target_include_directories(${PROJECT_NAME} PUBLIC "${DEPENDENCIES_DIR}")
 
 # ---
 # dependencies
-
-# GLFW
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)		# no docs
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)		# no tests
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)	# no examples
-# (build and link):
-add_subdirectory("${DEPENDENCIES_DIR}/glfw" "${DEPENDENCIES_DIR}/glfw/build")
-target_link_libraries(${PROJECT_NAME} glfw)
 
 # zetaml
 # (build and link):

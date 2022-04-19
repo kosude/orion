@@ -13,13 +13,36 @@
 
 #include "oriongl.h"
 
-#include "internal/internal.h"
-#include "platform.h" // cmake-generatd platform info
+#include "internal.h"
+#include "platform.h" // cmake-generated platform info
 #include <stdlib.h>
 #include <string.h>
 
 #include <unistd.h>
 #include <libgen.h>
+#include <stdio.h>
+
+// global state structure
+_orionState _orion = { 0 };
+
+/**
+ * @brief throw an exception to stdout and break the program
+ * 
+ * @param code the code of the exception
+ * @param msg a helpful message for debugging
+ * @param label the label of the error
+ */
+void _orionThrowError(const int code, const char *msg, const char *label) {
+	printf(	"\n(!) -----------------\n"
+			"  A fatal Orion GL exception has been encountered, and the program has been halted.\n"
+			"  Description: \"%s\"\n"
+			"  Code: 0x%03hhX (%s)\n"
+			"(!) -----------------\n",
+		msg, code, label
+	);
+	__debugbreak;
+	exit(-1);
+}
 
 /**
  * @brief initialise the global (internal) Orion state.

@@ -11,38 +11,14 @@
 /* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
 /* *************************************************************************************** */
 
-#include "internal.h"
-
-#include <stdio.h>
-#include <signal.h>
-#include <stdlib.h>
-
-#include <stdio.h>
-
-#ifdef SIGTRAP
-#	define __debugbreak raise(SIGTRAP)
-#else
-#	define __debugbreak raise(SIGABRT)
-#endif
-
-// global state structure
-_orionState _orion = { 0 };
+#include "oriongl.h"
 
 /**
- * @brief throw an exception to stdout and break the program
+ * @brief An OpenGL buffer object opaque structure.
  * 
- * @param code the code of the exception
- * @param msg a helpful message for debugging
- * @param label the label of the error
  */
-void _orionThrowError(const int code, const char *msg, const char *label) {
-	printf(	"\n(!) -----------------\n"
-			"  A fatal Orion GL exception has been encountered, and the program has been halted.\n"
-			"  Description: \"%s\"\n"
-			"  Code: 0x%03hhX (%s)\n"
-			"(!) -----------------\n",
-		msg, code, label
-	);
-	__debugbreak;
-	exit(-1);
-}
+typedef struct oriBuffer {
+/** @cond */
+	struct oriBuffer *next;
+/** @endcond */
+} oriBuffer;

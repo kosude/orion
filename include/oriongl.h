@@ -34,7 +34,7 @@ extern "C" {
  * @brief An OpenGL buffer object opaque structure.
  * 
  */
-typedef oriBuffer oriBuffer;
+typedef struct oriBuffer oriBuffer;
 
 // ======================================================================================
 // ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
