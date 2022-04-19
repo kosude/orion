@@ -42,11 +42,7 @@ extern "C" {
 typedef struct _orionObject {
 	struct _orionObject *next;
 	union {
-		int i;		// integer data store
-		bool b;		// boolean data store
-		char c;		// char data store
-		char *str;	// string data store
-		void *g; 	// generic data store
+		oriBuffer *bufferData;
 	} data;
 } _orionObject;
 
@@ -71,6 +67,14 @@ extern _orionState _orion;
  * @param label the label of the error
  */
 void _orionThrowError(const int code, const char *msg, const char *label);
+
+// ======================================================================================
+// ***** 				   		 ORION OPAQUE DATA TYPES 							*****
+// ======================================================================================
+
+typedef struct oriBuffer {
+	oriBuffer *next;
+} oriBuffer;
 
 #ifdef __cplusplus
 }

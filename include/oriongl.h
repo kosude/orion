@@ -26,7 +26,35 @@
 extern "C" {
 #endif
 
-#include "lib/init.h"
+// ======================================================================================
+// ***** 				   		 ORION PUBLIC STRUCTURES 							*****
+// ======================================================================================
+
+/**
+ * @brief An OpenGL buffer object opaque structure.
+ * 
+ */
+typedef oriBuffer oriBuffer;
+
+// ======================================================================================
+// ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
+// ======================================================================================
+
+/**
+ * @brief Initialise the global (internal) Orion state.
+ * 
+ * @param version the version of OpenGL that is to be used.
+ * @param profile the OpenGL profile to use.
+ * 
+ * @ingroup meta
+ */
+void oriInitialise(const unsigned int version, const unsigned int profile);
+
+/**
+ * @brief Terminate the Orion library. All Orion GL objects that were allocated will be freed.
+ * 
+ */
+void oriTerminate();
 
 #ifdef __cplusplus
 }

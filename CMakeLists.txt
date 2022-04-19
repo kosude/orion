@@ -12,6 +12,8 @@ message("              _\n  ____  _____(_)___  ____\n / __ \\/ ___/ / __ \\/ __ 
 
 project(orion)
 
+set(DEPENDENCIES_DIR "${PROJECT_SOURCE_DIR}/deps")
+
 # ---
 # interface options
 

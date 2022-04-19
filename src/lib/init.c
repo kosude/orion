@@ -11,19 +11,15 @@
 /* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
 /* *************************************************************************************** */
 
-#include "init.h"
+#include "oriongl.h"
 
 #include "internal/internal.h"
 #include "platform.h" // cmake-generatd platform info
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef WIN32
-#	include <Windows.h> // for getting the executable directory on Windows
-#elif defined(UNIX)
-#	include <unistd.h>
-#	include <libgen.h>
-#endif
+#include <unistd.h>
+#include <libgen.h>
 
 /**
  * @brief initialise the global (internal) Orion state.
@@ -73,38 +69,37 @@ void oriInitialise(const unsigned int version, const unsigned int profile) {
 	_orion.glProfile = profile;
 
 	// get path of executable
-	// TODO: doesn't yet support macos
-	#ifdef UNIX
-		// exe symlink MUST be at /proc/self/exe
-		// this is a pretty annoying compatibility issue, and should be fixed later
-		// (only Unix-like systems that use /proc/self/exe, like Linux, are supported)
-		if (access("/proc/self/exe", 0) != 0) {
-			_orionThrowError(ORERR_ACCESS_DENIED);
-		}
+	// TODO: Unix-only
 
-		// read symlink
-		char buf[256];
-		realpath("/proc/self/exe", buf);
+	// exe symlink MUST be at /proc/self/exe
+	// this is a pretty annoying compatibility issue, and should be fixed later
+	// (only Unix-like systems that use /proc/self/exe, like Linux, are supported)
+	if (access("/proc/self/exe", 0) != 0) {
+		_orionThrowError(ORERR_ACCESS_DENIED);
+	}
 
-		// convert to directory name
-		char p[256];
-		strncpy(p, dirname(buf), 256);
+	// read symlink
+	char buf[256];
+	realpath("/proc/self/exe", buf);
 
-		// store in state object
-		_orion.execDir = malloc(256 * sizeof(char));
-		strncpy(_orion.execDir, p, 256);
-	#elif defined(WIN32)
-		// use stupid microsoft function
-		GetModuleFileNameA(NULL, _orion.execDir, 256);
-	#endif
+	// convert to directory name
+	char p[256];
+	strncpy(p, dirname(buf), 256);
+
+	// store in state object
+	_orion.execDir = malloc(256 * sizeof(char));
+	strncpy(_orion.execDir, p, 256);
 
 	// change working directory to wherever the executable is
-	// NOTE! this should check if the cwd is already in the right place to save performance...
-	//		 ...I have tried that, but C strings decided to be annoying and I got tired of the resulting segfaults.
 	if (chdir(_orion.execDir) != 0) {
-		// error, give up
 		_orionThrowError(ORERR_ACCESS_PHANTOM);
-	} else {
-		// no error, don't give up :)
 	}
+}
+
+/**
+ * @brief Terminate the Orion library. All Orion GL objects that were allocated will be freed.
+ * 
+ */
+void oriTerminate() {
+	// free internal state
 }
