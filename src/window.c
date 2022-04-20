@@ -22,7 +22,7 @@
 // ======================================================================================
 
 /**
- * @brief An Orion window opaque structure.
+ * @brief An Orion window structure.
  * @details This structure is simply an abstraction of @c GLFWwindow, part of the GLFW public API.
  * @sa <a href="https://www.glfw.org/docs/latest/window.html">GLFW window guide</a>
  *
@@ -33,6 +33,10 @@ typedef struct oriWindow {
 
 	GLFWwindow *handle;
 } oriWindow;
+
+// ======================================================================================
+// ***** 				   	  ORION WINDOW MANAGEMENT (ORIONWIN)					*****
+// ======================================================================================
 
 /**
  * @brief Allocate and initialise a GLFW window struct.
@@ -55,6 +59,7 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
 	unsigned int major = version / 100;
 	unsigned int minor = (version / 10) % 10;
 
+	// window hints based on given parameters
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
@@ -62,11 +67,14 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
 	// TODO: add monitor + share functionality
 	GLFWwindow *rhandle = glfwCreateWindow(width, height, title, NULL, NULL);
 
+	// reset to default window hints
+	glfwDefaultWindowHints();
+
 	if (!rhandle) {
 		_orionThrowError(ORERR_GLFW_FAIL);
 	}
 
-	oriWindow *r = malloc(sizeof(oriWindow));
+	oriWindow *r;
 	r->handle = rhandle;
 
 	// link to global linked list (add to the start)
@@ -83,15 +91,24 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
  */
 void oriFreeWindow(oriWindow *window) {
 	// unlink from global linked list
-	oriWindow** prev = &_orion.windowListHead;
+	oriWindow **prev = &_orion.windowListHead;
 	while (*prev != window)
-		prev = &((*prev)->next);
+		*prev = (*prev)->next;
 	*prev = window->next;
 
 	glfwDestroyWindow(window->handle);
 	free(window);
 	window = NULL;
+}
 
-	free(prev);
-	prev = NULL;
+/**
+ * @brief Return a pointer to the GLFW handle of the given oriWindow structure so that it can be used in GLFW functions.
+ * @warning This function can be used to directly modify the GLFWwindow pointer; doing so can result in undefined behaviour!
+ * 
+ * @param window the window of which the handle will be returned.
+ * 
+ * @ingroup window
+ */
+GLFWwindow **oriWindowToGLFW(oriWindow *window) {
+	return &(window->handle);
 }

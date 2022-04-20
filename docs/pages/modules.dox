@@ -6,9 +6,17 @@
  */
 
 /**
- * @defgroup window The Orion windowing system
- * @brief Functionality related to the Orion windowing system
- * @details The Orion windowing system is simply an abstraction of GLFW built into Orion.
- * Using this system is @b not @b required, but it is recommended so that oriTerminate() can automatically free your window(s) and terminate GLFW.
+ * @defgroup window GLFW Windowing System Abstractions for Orion
+ * @brief Functionality related to the Orion abstractions of the GLFW library
+ * @details Using this abstracted window system is @b not @b required, but it is recommended so that oriTerminate() can automatically free your window(s) and terminate GLFW.
+ * <br><br>
+ * Any undocumented functions in this section are simply abstractions of GLFW functions. For documentation on those functions, see GLFW's window reference (linked below)
+ * and look for the function of the same name (just replace @c ori with @c glfw in the function name).
  *
+ * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#ga7d9c8c62384b1e2821c4dc48952d2033">GLFW window reference</a>
+ *
+ * @todo The following functions are yet to be abstracted:
+ *  - @c glfwSetWindowIcon()
+ *  - @c glfwGetWindowMonitor()
+ *  - @c glfwSetWindowMonitor()
  */
