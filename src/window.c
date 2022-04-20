@@ -50,10 +50,7 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
 	// automatically initialise GLFW the first time a window is created.
 	// this means GLFW isn't initialised if no window is created (and therefore Orion windows aren't being used)
 	if (!_orion.glfwInitialised) {
-		// initialise GLFW
-		glfwSetErrorCallback(_oriCallbacks.glfwErrorCallback);
-		glfwInit();
-		_orion.glfwInitialised = true;
+		_orionInitGLFW();
 	}
 
 	unsigned int major = version / 100;
@@ -117,9 +114,7 @@ GLFWwindow **oriWindowToGLFW(oriWindow *window) {
 #define _ori_initGLFWIfReq() \
 {\
 	if (!_orion.glfwInitialised) {\
-		glfwSetErrorCallback(_oriCallbacks.glfwErrorCallback);\
-		glfwInit();\
-		_orion.glfwInitialised = true;\
+		_orionInitGLFW();\
 	}\
 }
 
@@ -290,4 +285,8 @@ GLFWwindow **oriWindowToGLFW(oriWindow *window) {
 /** @ingroup window */ void oriSwapBuffers(oriWindow *window) {
 	_ori_initGLFWIfReq();
 	glfwSwapBuffers(window->handle);
+}
+/** @ingroup window */ void oriMakeContextCurrent(oriWindow *window) {
+	_ori_initGLFWIfReq();
+	glfwMakeContextCurrent(window->handle);
 }

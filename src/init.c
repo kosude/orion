@@ -31,6 +31,18 @@ _orionCallbacks _oriCallbacks = {
 };
 
 /**
+ * @brief Initialise GLFW. This function is called implicitly when the user calls the first Orion-abstracted GLFW function.
+ * 
+ */
+void _orionInitGLFW() {
+	// initialise GLFW
+	glfwSetErrorCallback(_oriCallbacks.glfwErrorCallback);
+	glfwInit();
+
+	_orion.glfwInitialised = true;
+}
+
+/**
  * @brief throw an exception to stdout and break the program
  * 
  * @param code the code of the exception
@@ -48,14 +60,14 @@ void _orionThrowError(const int code, const char *msg, const char *label) {
 // ======================================================================================
 
 /**
- * @brief initialise the global (internal) Orion state.
+ * @brief Initialise the global (internal) Orion state and loads OpenGL functions.
+ * @details This function is to be called @b after creating a window (either with Orion windows, raw GLFW, or another windowing library).
  * 
- * @param version the version of OpenGL that is to be used.
- * @param profile the OpenGL profile to use.
+ * @param version the version of OpenGL that is being used.
  * 
  * @ingroup meta
  */
-void oriInitialise(const unsigned int version, const unsigned int profile) {
+void oriInitialiseGL(const unsigned int version) {
 	if (_orion.initialised) {
 		_orionThrowError(ORERR_MULTIPLE_CALLS);
 	}
@@ -65,8 +77,8 @@ void oriInitialise(const unsigned int version, const unsigned int profile) {
 		// version must be a multiple of 10 (unless it is 1.2.1, the only exception)
 		_orionThrowError(ORERR_GL_INVALID_VERS);
 	}
-	if (version == 0 || profile == 0) {
-		// can't accept NULL/0 for either argument
+	if (version == 0) {
+		// can't accept NULL/0 as an argument
 		_orionThrowError(ORERR_NULL_RECIEVED);
 	}
 	if (version > 460) {
@@ -90,9 +102,7 @@ void oriInitialise(const unsigned int version, const unsigned int profile) {
 		_orionThrowError(ORERR_GL_INVALID_VERS);
 	}
 
-	_orion.initialised = true;
 	_orion.glVersion = version;
-	_orion.glProfile = profile;
 
 	// get path of executable
 	// TODO: Unix-only
@@ -120,6 +130,13 @@ void oriInitialise(const unsigned int version, const unsigned int profile) {
 	if (chdir(_orion.execDir) != 0) {
 		_orionThrowError(ORERR_ACCESS_PHANTOM);
 	}
+
+	// load OpenGL with Glad
+	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+		_orionThrowError(ORERR_GL_FAIL);
+	}
+
+	_orion.initialised = true;
 }
 
 /**
@@ -136,4 +153,8 @@ void oriTerminate() {
 	if (_orion.glfwInitialised) {
 		glfwTerminate();
 	}
+
+	// free state
+	free(_orion.execDir);
+	_orion.execDir = NULL;
 }

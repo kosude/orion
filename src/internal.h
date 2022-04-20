@@ -33,19 +33,31 @@ extern "C" {
 // ***** 				   		 ORION INTERNAL DATA TYPES 							*****
 // ======================================================================================
 
-// global mutable data is stored here
+/**
+ * @brief Structure to store global mutable data.
+ * 
+ */
 typedef struct _orionState {
 	bool initialised;
-	bool glfwInitialised;
+	bool glfwInitialised; // this is only set to true if Orion/GLFW functions are used. Other windowing libraries can also be used.
 
 	unsigned int glVersion;
-	unsigned int glProfile;
 
 	char *execDir;
 
 	oriWindow *windowListHead;
 } _orionState;
 extern _orionState _orion;
+
+// ======================================================================================
+// ***** 				   		 	HELPER FUNCTIONS								*****
+// ======================================================================================
+
+/**
+ * @brief Initialise GLFW. This function is called implicitly when the user calls the first Orion-abstracted GLFW function.
+ * 
+ */
+void _orionInitGLFW();
 
 // ======================================================================================
 // ***** 				   		 	  ORION ERRORS 									*****
@@ -67,7 +79,7 @@ extern _orionState _orion;
 #define ORERR_BUFFER_INVALID	0x00E, 	"Invalid type given to buffer", 																				"ORERR_BUFFER_INVALID"
 
 /**
- * @brief throw an exception to stdout and break the program
+ * @brief Throw an exception to stdout and break the program
  * 
  * @param code the code of the exception
  * @param msg a helpful message for debugging
@@ -75,7 +87,10 @@ extern _orionState _orion;
  */
 void _orionThrowError(const int code, const char *msg, const char *label);
 
-// error callbacks used in Orion functions
+/**
+ * @brief Struct of error callbacks used in Orion functions.
+ * 
+ */
 typedef struct _orionCallbacks {
 	void (* glfwErrorCallback)(int, const char *); // GLFW error callback
 } _orionCallbacks;

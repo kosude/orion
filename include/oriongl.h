@@ -49,14 +49,14 @@ typedef struct oriWindow oriWindow;
 // ======================================================================================
 
 /**
- * @brief Initialise the global (internal) Orion state.
+ * @brief Initialise the global (internal) Orion state and loads OpenGL functions.
+ * @details This function is to be called @b after creating a window (either with Orion windows, raw GLFW, or another windowing library).
  * 
- * @param version the version of OpenGL that is to be used.
- * @param profile the OpenGL profile to use.
+ * @param version the version of OpenGL that is being used.
  * 
  * @ingroup meta
  */
-void oriInitialise(const unsigned int version, const unsigned int profile);
+void oriInitialiseGL(const unsigned int version);
 
 /**
  * @brief Terminate the Orion library. All Orion objects that were allocated will be freed.
@@ -149,6 +149,7 @@ GLFWwindow **oriWindowToGLFW(oriWindow *window);
 /** @ingroup window */ void oriWaitEventsTimeout(double timeout);
 /** @ingroup window */ void oriPostEmptyEvent();
 /** @ingroup window */ void oriSwapBuffers(oriWindow *window);
+/** @ingroup window */ void oriMakeContextCurrent(oriWindow *window);
 
 #ifdef __cplusplus
 }
