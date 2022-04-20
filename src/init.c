@@ -127,6 +127,13 @@ void oriInitialise(const unsigned int version, const unsigned int profile) {
  * 
  */
 void oriTerminate() {
-	// free all windows
-	
+	// destroy all window objects
+	while (_orion.windowListHead) {
+		oriFreeWindow(_orion.windowListHead);
+	}
+
+	// terminate GLFW
+	if (_orion.glfwInitialised) {
+		glfwTerminate();
+	}
 }

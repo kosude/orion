@@ -33,14 +33,6 @@ extern "C" {
 // ***** 				   		 ORION INTERNAL DATA TYPES 							*****
 // ======================================================================================
 
-// all orion objects are added to a global linked list (stored in _orion)
-typedef struct _orionObject {
-	struct _orionObject *next;
-	union {
-		oriWindow *windowData;
-	} data;
-} _orionObject;
-
 // global mutable data is stored here
 typedef struct _orionState {
 	bool initialised;
@@ -51,7 +43,6 @@ typedef struct _orionState {
 
 	char *execDir;
 
-	_orionObject *objectListHead;
 	oriWindow *windowListHead;
 } _orionState;
 extern _orionState _orion;

@@ -5,14 +5,11 @@
 int main() {
  	oriWindow *window = oriCreateWindow(640, 480, "Orion GLFW test", 460, GLFW_OPENGL_COMPAT_PROFILE);
 
-	while (!glfwWindowShouldClose(window)) {
-		glfwPollEvents();
-		glfwSwapBuffers(window);
+	while (!oriWindowShouldClose(window)) {
+		oriPollEvents();
+		oriSwapBuffers(window);
 	}
- 
-	oriFreeWindow(&window);
 
-	glfwTerminate();
 	oriTerminate();
 	return 0;
 }

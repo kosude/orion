@@ -70,70 +70,6 @@ void oriTerminate();
 // ======================================================================================
 
 /**
- * @brief The function pointer type for window position callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#gabe287973a21a8f927cde4db06b8dcbe9">GLFWwindowposfun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowPosCallback)(oriWindow *window, int xpos, int ypos);
-/**
- * @brief The function pointer type for window size callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#gaec0282944bb810f6f3163ec02da90350">GLFWwindowsizefun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowSizeCallback)(oriWindow *window, int width, int height);
-/**
- * @brief The function pointer type for window close callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#gabf859b936d80961b7d39013a9694cc3e">GLFWwindowclosefun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowCloseCallback)(oriWindow *window);
-/**
- * @brief The function pointer type for window content refresh callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#ga431663a1427d2eb3a273bc398b6737b5">GLFWwindowrefreshfun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowRefreshCallback)(oriWindow *window);
-/**
- * @brief The function pointer type for window focus callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#gabc58c47e9d93f6eb1862d615c3680f46">GLFWwindowfocusfun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowFocusCallback)(oriWindow *window, int focused);
-/**
- * @brief The function pointer type for window iconify callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#ga35c658cccba236f26e7adee0e25f6a4f">GLFWwindowiconifyfun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowIconifyCallback)(oriWindow *window, int iconified);
-/**
- * @brief The function pointer type for window maximise callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#ga3017196fdaec33ac3e095765176c2a90">GLFWwindowmaximizefun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowMaximiseCallback)(oriWindow *window, int maximised);
-/**
- * @brief The function pointer type for framebuffer size callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#gae18026e294dde685ed2e5f759533144d">GLFWframebuffersizefun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowFramebufferSizeCallback)(oriWindow *window, int width, int height);
-/**
- * @brief The function pointer type for window content scale callbacks.
- * @sa <a href="https://www.glfw.org/docs/latest/group__window.html#ga77f288a2d04bb3c77c7d9615d08cf70e">GLFWwindowcontentscalefun</a>
- * 
- * @ingroup window
- */
-typedef void(* oriWindowContentScaleCallback)(oriWindow *window, float xscale, float yscale);
-
-/**
  * @brief Allocate and initialise a GLFW window struct.
  * @details This structure is simply an abstraction of @c glfwCreateWindow, part of the GLFW public API.
  * The resulting window, however, will be automatically freed in a call to oriTerminate().
@@ -164,11 +100,15 @@ void oriFreeWindow(oriWindow *window);
  */
 GLFWwindow **oriWindowToGLFW(oriWindow *window);
 
+// ======================================================================================
+// ***** 				   	  		ORION GLFW ABSTRACTIONS							*****
+// ======================================================================================
+
 /** @ingroup window */ void oriDefaultWindowHints();
 /** @ingroup window */ void oriWindowHint(int hint, int value);
 /** @ingroup window */ void oriWindowHintString(int hint, const char *value);
 /** @ingroup window */ int 	oriWindowShouldClose(oriWindow *window);
-/** @ingroup window */ void oriSetWindowShouldClose(oriWindow *window);
+/** @ingroup window */ void oriSetWindowShouldClose(oriWindow *window, int value);
 /** @ingroup window */ void oriSetWindowTitle(oriWindow *window, const char *title);
 						// 	oriSetWindowIcon()
 /** @ingroup window */ void oriGetWindowPos(oriWindow *window, int *xpos, int *ypos);
@@ -195,15 +135,15 @@ GLFWwindow **oriWindowToGLFW(oriWindow *window);
 /** @ingroup window */ void oriSetWindowAttrib(oriWindow *window, int attrib, int value);
 /** @ingroup window */ void oriSetWindowUserPointer(oriWindow *window, void *pointer);
 /** @ingroup window */ void *oriGetWindowUserPointer(oriWindow *window);
-/** @ingroup window */ oriWindowPosCallback oriSetWindowPosCallback(oriWindow *window, oriWindowPosCallback callback);
-/** @ingroup window */ oriWindowSizeCallback oriSetWindowSizeCallback(oriWindow *window, oriWindowSizeCallback callback);
-/** @ingroup window */ oriWindowCloseCallback oriSetWindowCloseCallback(oriWindow *window, oriWindowCloseCallback callback);
-/** @ingroup window */ oriWindowRefreshCallback oriSetWindowRefreshCallback(oriWindow *window, oriWindowRefreshCallback callback);
-/** @ingroup window */ oriWindowFocusCallback oriSetWindowFocusCallback(oriWindow *window, oriWindowFocusCallback callback);
-/** @ingroup window */ oriWindowIconifyCallback oriSetWindowIconifyCallback(oriWindow *window, oriWindowIconifyCallback callback);
-/** @ingroup window */ oriWindowMaximiseCallback oriSetWindowMaximiseCallback(oriWindow *window, oriWindowMaximiseCallback callback);
-/** @ingroup window */ oriWindowFramebufferSizeCallback oriSetWindowFramebufferSizeCallback(oriWindow *window, oriWindowFramebufferSizeCallback callback);
-/** @ingroup window */ oriWindowContentScaleCallback oriSetWindowContentScaleCallback(oriWindow *window, oriWindowContentScaleCallback callback);
+/** @ingroup window */ GLFWwindowposfun oriSetWindowPosCallback(oriWindow *window, GLFWwindowposfun callback);
+/** @ingroup window */ GLFWwindowsizefun oriSetWindowSizeCallback(oriWindow *window, GLFWwindowsizefun callback);
+/** @ingroup window */ GLFWwindowclosefun oriSetWindowCloseCallback(oriWindow *window, GLFWwindowclosefun callback);
+/** @ingroup window */ GLFWwindowrefreshfun oriSetWindowRefreshCallback(oriWindow *window, GLFWwindowrefreshfun callback);
+/** @ingroup window */ GLFWwindowfocusfun oriSetWindowFocusCallback(oriWindow *window, GLFWwindowfocusfun callback);
+/** @ingroup window */ GLFWwindowiconifyfun oriSetWindowIconifyCallback(oriWindow *window, GLFWwindowiconifyfun callback);
+/** @ingroup window */ GLFWwindowmaximizefun oriSetWindowMaximiseCallback(oriWindow *window, GLFWwindowmaximizefun callback);
+/** @ingroup window */ GLFWframebuffersizefun oriSetFramebufferSizeCallback(oriWindow *window, GLFWframebuffersizefun callback);
+/** @ingroup window */ GLFWwindowcontentscalefun oriSetWindowContentScaleCallback(oriWindow *window, GLFWwindowcontentscalefun callback);
 /** @ingroup window */ void oriPollEvents();
 /** @ingroup window */ void oriWaitEvents();
 /** @ingroup window */ void oriWaitEventsTimeout(double timeout);
