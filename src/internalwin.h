@@ -11,43 +11,22 @@
 /* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
 /* *************************************************************************************** */
 
-/**
- * @file oriongl.h
- * @brief The main Orion include file.
- * @author Jack Bennett
- * 
- */
-
 #pragma once
-#ifndef __ORIONGL_H
-#define __ORIONGL_H
+#ifndef __ORI_INTERNALWIN_H
+#define __ORI_INTERNALWIN_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <glad/4.6/glad.h>
 
 // ======================================================================================
-// ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
+// ***** 				   		 ORION INTERNAL DATA TYPES 							*****
 // ======================================================================================
-
 /**
- * @brief Initialise the global (internal) Orion state and loads OpenGL functions.
- * @details This function is to be called @b after creating a window (either with Orion windows, raw GLFW, or another windowing library).
+ * @brief Structure to store global mutable data.
  * 
- * @param version the version of OpenGL that is being used.
- * 
- * @ingroup meta
  */
-void oriInitialiseGL(const unsigned int version);
-
-/**
- * @brief Terminate the Orion library. All Orion objects that were allocated will be freed.
- * 
- * @ingroup meta
- */
-void oriTerminate();
 
 #ifdef __cplusplus
 }

@@ -12,7 +12,7 @@
 /* *************************************************************************************** */
 
 #include "internal.h"
-#include "oriongl.h"
+#include "orionwin.h"
 
 #include <stdlib.h>
 #include <math.h>

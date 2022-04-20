@@ -20,6 +20,7 @@ extern "C" {
 #endif
 
 #include "oriongl.h"
+#include "orionwin.h"
 #include <stdbool.h>
 #include <signal.h>
 

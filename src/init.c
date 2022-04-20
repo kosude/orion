@@ -12,6 +12,7 @@
 /* *************************************************************************************** */
 
 #include "oriongl.h"
+#include "orionwin.h"
 
 #include "internal.h"
 #include "platform.h" // cmake-generated platform info
