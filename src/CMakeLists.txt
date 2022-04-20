@@ -5,6 +5,7 @@ set(SRC
 	"callback.c"
 	"init.c"
 	"window.c"
+	"shaders.c"
 )
 
 if (BUILD_SHARED_LIBS)

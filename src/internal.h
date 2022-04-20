@@ -31,6 +31,16 @@ extern "C" {
 #endif
 
 // ======================================================================================
+// ***** 				   		 	HELPER FUNCTIONS								*****
+// ======================================================================================
+
+/**
+ * @brief Initialise GLFW. This function is called implicitly when the user calls the first Orion-abstracted GLFW function.
+ * 
+ */
+void _orionInitGLFW();
+
+// ======================================================================================
 // ***** 				   		 ORION INTERNAL DATA TYPES 							*****
 // ======================================================================================
 
@@ -46,7 +56,9 @@ typedef struct _orionState {
 
 	char *execDir;
 
+	// linked lists for all Orion structures
 	oriWindow *windowListHead;
+	oriShader *shaderListHead;
 } _orionState;
 extern _orionState _orion;
 

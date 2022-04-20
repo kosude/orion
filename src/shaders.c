@@ -11,25 +11,62 @@
 /* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
 /* *************************************************************************************** */
 
-#pragma once
-#ifndef __ORI_INTERNALWIN_H
-#define __ORI_INTERNALWIN_H
+#include "internal.h"
+#include "oriongl.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include <stdlib.h>
 
 // ======================================================================================
-// ***** 				   		 ORION INTERNAL DATA TYPES 							*****
+// ***** 				   		 ORION PUBLIC STRUCTURES 							*****
 // ======================================================================================
+
 /**
- * @brief Structure to store global mutable data.
+ * @brief An OpenGL shader program object.
+ * 
+ * @ingroup shaders
+ */
+typedef struct oriShader {
+	oriShader *next;
+
+	unsigned int handle;
+	const char *src;
+} oriShader;
+
+// ======================================================================================
+// ***** 				   		  ORION SHADER FUNCTIONS 							*****
+// ======================================================================================
+
+/**
+ * @brief Allocate and initialise a new oriShader structure.
  * 
  */
+oriShader *oriCreateShader() {
+	if (!_orion.initialised) {
+		_orionThrowError(ORERR_NOT_INIT);
+	}
 
-#ifdef __cplusplus
+	oriShader *r = malloc(sizeof(oriShader));
+
+	r->handle = glCreateProgram();
+
+	// link to global linked list (add to the start)
+	r->next = _orion.shaderListHead;
+	_orion.shaderListHead = r;
 }
-#endif
 
-#endif // include guard
+/**
+ * @brief Destroy and free memory for the given shader.
+ * 
+ * @ingroup shaders
+ */
+void oriFreeShader(oriShader *shader) {
+	// unlink from global linked list
+	oriShader **prev = &_orion.shaderListHead;
+	while (*prev != shader)
+		*prev = (*prev)->next;
+	*prev = shader->next;
+
+	// free shader
+	free(shader);
+	shader = NULL;
+}

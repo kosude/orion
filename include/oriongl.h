@@ -29,6 +29,17 @@ extern "C" {
 #include <glad/4.6/glad.h>
 
 // ======================================================================================
+// ***** 				   		 ORION PUBLIC STRUCTURES 							*****
+// ======================================================================================
+
+/**
+ * @brief An OpenGL shader program object.
+ * 
+ * @ingroup shaders
+ */
+typedef struct oriShader oriShader;
+
+// ======================================================================================
 // ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
 // ======================================================================================
 
@@ -48,6 +59,24 @@ void oriInitialiseGL(const unsigned int version);
  * @ingroup meta
  */
 void oriTerminate();
+
+// ======================================================================================
+// ***** 				   		  ORION SHADER FUNCTIONS 							*****
+// ======================================================================================
+
+/**
+ * @brief Allocate and initialise a new oriShader structure.
+ * 
+ * @ingroup shaders
+ */
+oriShader *oriCreateShader();
+
+/**
+ * @brief Destroy and free memory for the given shader.
+ * 
+ * @ingroup shaders
+ */
+void oriFreeShader(oriShader *shader);
 
 #ifdef __cplusplus
 }

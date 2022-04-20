@@ -20,4 +20,14 @@
  *  - @c glfwSetWindowIcon()
  *  - @c glfwGetWindowMonitor()
  *  - @c glfwSetWindowMonitor()
+ *
+ * To use the windowing abstractions ('orionwin'), include @c <orionwin.h>. None of this system will be included otherwise, so the main namespace won't be polluted if you
+ * want to manage windows in a different way.
+ */
+
+/**
+ * @defgroup shaders Shader management, creation, and destruction.
+ * @brief Functionality related to the management, creation, and destruction of OpenGL shaders and shader programs.
+ * @details This module documents the use of shader-related functionality - creating, destroying, and using OpenGL shader programs.
+ * 
  */

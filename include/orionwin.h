@@ -33,16 +33,6 @@ extern "C" {
 #include <glfw/include/GLFW/glfw3.h>
 
 // ======================================================================================
-// ***** 				   		 	HELPER FUNCTIONS								*****
-// ======================================================================================
-
-/**
- * @brief Initialise GLFW. This function is called implicitly when the user calls the first Orion-abstracted GLFW function.
- * 
- */
-void _orionInitGLFW();
-
-// ======================================================================================
 // ***** 				   		 ORION PUBLIC STRUCTURES 							*****
 // ======================================================================================
 

@@ -24,7 +24,7 @@
 #include <stdio.h>
 
 // global state structure
-_orionState _orion = { 0 };
+_orionState _orion = { NULL };
 
 // global callbacks
 _orionCallbacks _oriCallbacks = {
@@ -150,6 +150,10 @@ void oriTerminate() {
 		oriFreeWindow(_orion.windowListHead);
 	}
 
+	// destroy all shader objects
+	while (_orion.shaderListHead) {
+		oriFreeShader(_orion.shaderListHead);
+	}
 	// terminate GLFW
 	if (_orion.glfwInitialised) {
 		glfwTerminate();
