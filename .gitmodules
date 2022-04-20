@@ -1,6 +1,9 @@
 [submodule "deps/zetaml"]
 	path = deps/zetaml
 	url = https://github.com/jabenuk/zetaml.git
-[submodule "tests/deps/glfw"]
-	path = tests/deps/glfw
+[submodule "glfw"]
+	path = glfw
+	url = https://github.com/glfw/glfw
+[submodule "deps/glfw"]
+	path = deps/glfw
 	url = https://github.com/glfw/glfw

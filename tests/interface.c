@@ -1,10 +1,13 @@
 #include <stdio.h>
-#include <glfw3.h>
 
 #include "oriongl.h"
 
 int main() {
-	oriInitialise(460, 1);
+ 	oriWindow *window = oriCreateWindow(640, 480, "Orion GLFW test", 460, GLFW_OPENGL_COMPAT_PROFILE);
 
+	oriFreeWindow(window);
+
+	glfwTerminate();
+	oriTerminate();
 	return 0;
 }

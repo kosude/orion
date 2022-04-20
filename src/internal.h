@@ -15,9 +15,6 @@
 #ifndef __ORI_INTERNAL_H
 #define __ORI_INTERNAL_H
 
-// stop doxygen from documenting this file.
-/** @cond */
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,20 +37,22 @@ extern "C" {
 typedef struct _orionObject {
 	struct _orionObject *next;
 	union {
-		oriBuffer *bufferData;
+		oriWindow *windowData;
 	} data;
 } _orionObject;
 
 // global mutable data is stored here
 typedef struct _orionState {
 	bool initialised;
+	bool glfwInitialised;
 
 	unsigned int glVersion;
 	unsigned int glProfile;
 
-	char *execDir; // will be freed
+	char *execDir;
 
 	_orionObject *objectListHead;
+	oriWindow *windowListHead;
 } _orionState;
 extern _orionState _orion;
 
@@ -67,15 +66,14 @@ extern _orionState _orion;
 #define ORERR_GL_BELOW_MIN 		0x004, 	"Attempted to load invalid OpenGL version; versions earlier than 1.1 are not supported by Orion.", 				"ORERR_GL_BELOW_MIN"
 #define ORERR_NOT_INIT 			0x005, 	"A function was called that requires Orion to be initialised, but Orion has not been initialised!", 			"ORERR_NOT_INIT"
 #define ORERR_NULL_RECIEVED 	0x006, 	"A function recieved NULL but it was not able to accept this argument.", 										"ORERR_NULL_RECIEVED"
-#define ORERR_GLFW_FAIL 		0x007, 	"GLFW failed to initialise.", 																					"ORERR_GLFW_FAIL"
+#define ORERR_GLFW_FAIL 		0x007, 	"GLFW sent an error and Orion failed to recover.",																"ORERR_GLFW_FAIL"
 #define ORERR_GL_VERS_TOO_LOW	0x008, 	"A function was called that requires OpenGL to be of a higher version than was specified.", 					"ORERR_GL_VERS_TOO_LOW"
 #define ORERR_GL_FAIL			0x009, 	"Failed to load OpenGL.", 																						"ORERR_GL_FAIL"
 #define ORERR_MULTIPLE_DEBUG	0x00A, 	"Illegal attempt to enable a debug context after a debug context has already been enabled.", 					"ORERR_MULTIPLE_DEBUG"
-#define ORERR_GLFW_WIN_FAIL		0x00B, 	"GLFW failed to create a window.", 																				"ORERR_GLFW_WIN_FAIL"
-#define ORERR_ACCESS_DENIED		0x00C, 	"Couldn't execute a necessary function; access denied.", 														"ORERR_ACCESS_DENIED"
-#define ORERR_ACCESS_PHANTOM	0x00D, 	"Attempted to access resource that didn't exist.", 																"ORERR_ACCESS_PHANTOM"
-#define ORERR_UNSUPPORTED_TYPE	0x00E, 	"Unsupported type given to function", 																			"ORERR_UNSUPPORTED_TYPE"
-#define ORERR_BUFFER_INVALID	0x00F, 	"Invalid type given to buffer", 																				"ORERR_BUFFER_INVALID"
+#define ORERR_ACCESS_DENIED		0x00B, 	"Couldn't execute a necessary function; access denied.", 														"ORERR_ACCESS_DENIED"
+#define ORERR_ACCESS_PHANTOM	0x00C, 	"Attempted to access resource that didn't exist.", 																"ORERR_ACCESS_PHANTOM"
+#define ORERR_UNSUPPORTED_TYPE	0x00D, 	"Unsupported type given to function", 																			"ORERR_UNSUPPORTED_TYPE"
+#define ORERR_BUFFER_INVALID	0x00E, 	"Invalid type given to buffer", 																				"ORERR_BUFFER_INVALID"
 
 /**
  * @brief throw an exception to stdout and break the program
@@ -86,8 +84,17 @@ extern _orionState _orion;
  */
 void _orionThrowError(const int code, const char *msg, const char *label);
 
-// stop doxygen from documenting this file.
-/** @endcond */
+// error callbacks used in Orion functions
+typedef struct _orionCallbacks {
+	void (* glfwErrorCallback)(int, const char *); // GLFW error callback
+} _orionCallbacks;
+extern _orionCallbacks _oriCallbacks;
+
+// ======================================================================================
+// ***** 				   		   ORION DEFAULT CALLBACKS							*****
+// ======================================================================================
+
+void _orionDefaultGLFWErrorCallback(int id, const char *msg);
 
 #ifdef __cplusplus
 }

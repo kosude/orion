@@ -25,6 +25,11 @@
 // global state structure
 _orionState _orion = { 0 };
 
+// global callbacks
+_orionCallbacks _oriCallbacks = {
+	_orionDefaultGLFWErrorCallback
+};
+
 /**
  * @brief throw an exception to stdout and break the program
  * 
@@ -33,16 +38,14 @@ _orionState _orion = { 0 };
  * @param label the label of the error
  */
 void _orionThrowError(const int code, const char *msg, const char *label) {
-	printf(	"\n(!) -----------------\n"
-			"  A fatal Orion GL exception has been encountered, and the program has been halted.\n"
-			"  Description: \"%s\"\n"
-			"  Code: 0x%03hhX (%s)\n"
-			"(!) -----------------\n",
-		msg, code, label
-	);
+	printf("[Orion : FATAL!] >> Error code 0x%03hhX (%s) : %s\n", code, label, msg);
 	__debugbreak;
 	exit(-1);
 }
+
+// ======================================================================================
+// ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
+// ======================================================================================
 
 /**
  * @brief initialise the global (internal) Orion state.
@@ -124,5 +127,6 @@ void oriInitialise(const unsigned int version, const unsigned int profile) {
  * 
  */
 void oriTerminate() {
-	// free internal state
+	// free all windows
+	
 }

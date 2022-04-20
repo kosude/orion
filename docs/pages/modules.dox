@@ -1,6 +1,14 @@
 /**
- * \defgroup meta Library initialisation and management
- * @brief meta functions related to using Orion
+ * @defgroup meta Library initialisation and management
+ * @brief Meta functions related to using Orion
  * @details This module details all functions and members functions related to using Orion.
  * 
+ */
+
+/**
+ * @defgroup window The Orion windowing system
+ * @brief Functionality related to the Orion windowing system
+ * @details The Orion windowing system is simply an abstraction of GLFW built into Orion.
+ * Using this system is @b not @b required, but it is recommended so that oriTerminate() can automatically free your window(s) and terminate GLFW.
+ *
  */

@@ -11,25 +11,11 @@
 /* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
 /* *************************************************************************************** */
 
-/**
- * @file oriongl.h
- * @brief The main Orion include file.
- * @author Jack Bennett
- * 
- */
+#include "internal.h"
+#include "oriongl.h"
 
-#pragma once
-#ifndef __ORIONGL_H
-#define __ORIONGL_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifndef ORION_INCLUDE_NOTHING
-#	include <glad/4.6/glad.h>
-#	include <glfw/include/GLFW/glfw3.h>
-#endif
+#include <stdlib.h>
+#include <math.h>
 
 // ======================================================================================
 // ***** 				   		 ORION PUBLIC STRUCTURES 							*****
@@ -42,32 +28,11 @@ extern "C" {
  *
  * @ingroup window
  */
-typedef struct oriWindow oriWindow;
+typedef struct oriWindow {
+	struct oriWindow *next;
 
-// ======================================================================================
-// ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
-// ======================================================================================
-
-/**
- * @brief Initialise the global (internal) Orion state.
- * 
- * @param version the version of OpenGL that is to be used.
- * @param profile the OpenGL profile to use.
- * 
- * @ingroup meta
- */
-void oriInitialise(const unsigned int version, const unsigned int profile);
-
-/**
- * @brief Terminate the Orion library. All Orion objects that were allocated will be freed.
- * 
- * @ingroup meta
- */
-void oriTerminate();
-
-// ======================================================================================
-// ***** 				   	  ORION WINDOW MANAGEMENT (ORIONWIN)					*****
-// ======================================================================================
+	GLFWwindow *handle;
+} oriWindow;
 
 /**
  * @brief Allocate and initialise a GLFW window struct.
@@ -77,17 +42,56 @@ void oriTerminate();
  *
  * @ingroup window
  */
-oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, const char *title, const unsigned int version, const unsigned int profile);
+oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, const char *title, const unsigned int version, const unsigned int profile) {
+	// automatically initialise GLFW the first time a window is created.
+	// this means GLFW isn't initialised if no window is created (and therefore Orion windows aren't being used)
+	if (!_orion.glfwInitialised) {
+		// initialise GLFW
+		// errors will be handled by the appropriate error callback in _oriCallbacks.
+		glfwInit();
+		_orion.glfwInitialised = true;
+	}
+
+	unsigned int major = version / 100;
+	unsigned int minor = (version / 10) % 10;
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
+	
+	// TODO: add monitor + share functionality
+	GLFWwindow *rhandle = glfwCreateWindow(width, height, title, NULL, NULL);
+
+	if (!rhandle) {
+		_orionThrowError(ORERR_GLFW_FAIL);
+	}
+
+	oriWindow *r = malloc(sizeof(oriWindow));
+	r->handle = rhandle;
+
+	// link to global linked list (add to the start)
+	r->next = _orion.windowListHead;
+	_orion.windowListHead = r;
+
+	return r;
+}
 
 /**
  * @brief Destroy and free memory for a given window.
  * 
  * @param window The window to free.
  */
-void oriFreeWindow(oriWindow *window);
+void oriFreeWindow(oriWindow *window) {
+	// unlink from global linked list
+	oriWindow** prev = &_orion.windowListHead;
+	while (*prev != window)
+		prev = &((*prev)->next);
+	*prev = window->next;
 
-#ifdef __cplusplus
+	glfwDestroyWindow(window->handle);
+	free(window);
+	window = NULL;
+
+	free(prev);
+	prev = NULL;
 }
-#endif
-
-#endif // include guard

@@ -11,14 +11,13 @@
 /* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
 /* *************************************************************************************** */
 
-#include "oriongl.h"
+#include "internal.h"
 
-/**
- * @brief An OpenGL buffer object opaque structure.
- * 
- */
-typedef struct oriBuffer {
-/** @cond */
-	struct oriBuffer *next;
-/** @endcond */
-} oriBuffer;
+// ======================================================================================
+// ***** 				   		   ORION DEFAULT CALLBACKS							*****
+// ======================================================================================
+
+void _orionDefaultGLFWErrorCallback(int id, const char *msg) {
+	printf("[Orion : WHOOPS] >> Error recieved from GLFW (error code %d): \"%s\"\n", id, msg);
+	_orionThrowError(ORERR_GLFW_FAIL);
+}
