@@ -194,7 +194,40 @@ bool oriShaderIsBound(oriShader *shader);
  */
 int oriShaderGetUniformLocation(oriShader *shader, const char *name);
 
-/** @ingroup shaders */ void oriSetShaderUniformi(oriShader *shader, const char *name, const int val);
+// ----------------
+// oriSetShaderUniform :: scalars
+
+/** @ingroup shaders */ void oriSetUniform1i(oriShader *shader, const char *name, const int val);
+/** @ingroup shaders */ void oriSetUniform1f(oriShader *shader, const char *name, const float val);
+/** @ingroup shaders */ void oriSetUniform1ui(oriShader *shader, const char *name, const unsigned int val);
+
+// ----------------
+// oriSetShaderUniform :: vectors
+
+/** @ingroup shaders */ void oriSetUniform2i(oriShader *shader, const char *name, const int x, const int y);
+/** @ingroup shaders */ void oriSetUniform2f(oriShader *shader, const char *name, const float x, const float y);
+/** @ingroup shaders */ void oriSetUniform2ui(oriShader *shader, const char *name, const unsigned int x, const unsigned int y);
+
+/** @ingroup shaders */ void oriSetUniform3i(oriShader *shader, const char *name, const int x, const int y, const int z);
+/** @ingroup shaders */ void oriSetUniform3f(oriShader *shader, const char *name, const float x, const float y, const float z);
+/** @ingroup shaders */ void oriSetUniform3ui(oriShader *shader, const char *name, const unsigned int x, const unsigned int y, const unsigned int z);
+
+/** @ingroup shaders */ void oriSetUniform4i(oriShader *shader, const char *name, const int x, const int y, const int z, const int w);
+/** @ingroup shaders */ void oriSetUniform4f(oriShader *shader, const char *name, const float x, const float y, const float z, const float w);
+/** @ingroup shaders */ void oriSetUniform4ui(oriShader *shader, const char *name, const unsigned int x, const unsigned int y, const unsigned int z, const unsigned int w);
+
+// ----------------
+// oriSetShaderUniform :: matrices
+
+/** @ingroup shaders */ void oriSetUniformMat2x2f(oriShader *shader, const char *name, const bool transpose, const float *mat);
+/** @ingroup shaders */ void oriSetUniformMat2x3f(oriShader *shader, const char *name, const bool transpose, const float *mat);
+/** @ingroup shaders */ void oriSetUniformMat2x4f(oriShader *shader, const char *name, const bool transpose, const float *mat);
+/** @ingroup shaders */ void oriSetUniformMat3x2f(oriShader *shader, const char *name, const bool transpose, const float *mat);
+/** @ingroup shaders */ void oriSetUniformMat3x3f(oriShader *shader, const char *name, const bool transpose, const float *mat);
+/** @ingroup shaders */ void oriSetUniformMat3x4f(oriShader *shader, const char *name, const bool transpose, const float *mat);
+/** @ingroup shaders */ void oriSetUniformMat4x2f(oriShader *shader, const char *name, const bool transpose, const float *mat);
+/** @ingroup shaders */ void oriSetUniformMat4x3f(oriShader *shader, const char *name, const bool transpose, const float *mat);
+/** @ingroup shaders */ void oriSetUniformMat4x4f(oriShader *shader, const char *name, const bool transpose, const float *mat);
 
 #ifdef __cplusplus
 }

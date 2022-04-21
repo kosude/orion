@@ -1,25 +1,13 @@
-#include <oriongl.h>
-#include <orionwin.h>
-#include <stdlib.h>
+#include "oriongl.h"
+#include "orionwin.h"
+
+#include <zetaml.h>
 
 float vertices[] = {
     -0.5f, -0.5f, 0.0f, 1, 0, 0, 1,
-     0.5f, -0.5f, 0.0f, 1, 1, 0, 1,
-     0.0f,  0.5f, 0.0f, 0, 1, 1, 1
+     0.5f, -0.5f, 0.0f, 0, 1, 0, 1,
+     0.0f,  0.5f, 0.0f, 0, 0, 1, 1
 };
-
-const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
 
 int main() {
 	oriWindow *window = oriCreateWindow(640, 480, "Orion GLFW test", 460, GLFW_OPENGL_COMPAT_PROFILE);
@@ -48,6 +36,14 @@ int main() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	oriSetUniform1i(shader, "blend.mode", 3);
+
+	zmlMatrix identity = zmlIdentityMatrix(4, 4);
+	float elements[4][4];
+	zmlCopyMatrixElements(identity, elements);
+
+	oriSetUniformMat4x4f(shader, "transform.mvp", 0, &elements[0][0]);
+
 	while (!oriWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
@@ -58,6 +54,8 @@ int main() {
 		oriPollEvents();
 		oriSwapBuffers(window);
 	}
+
+	zmlFreeMatrix(&identity);
 
 	oriTerminate();
 	return 0;

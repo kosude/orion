@@ -27,5 +27,5 @@ void main() {
 	vertexColour = vertexColourIn;
 
 	// Output position
-	gl_Position = /* transform.mvp * */ vec4(vertexPosIn, 1.0);
+	gl_Position = transform.mvp * vec4(vertexPosIn, 1.0);
 }

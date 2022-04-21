@@ -30,11 +30,6 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)	# no examples
 add_subdirectory("${DEPENDENCIES_DIR}/glfw" "${DEPENDENCIES_DIR}/glfw/build")
 target_link_libraries(${PROJECT_NAME} glfw)
 
-# zetaml
-# (build and link):
-add_subdirectory("${DEPENDENCIES_DIR}/zetaml" "${DEPENDENCIES_DIR}/zetaml/build")
-target_link_libraries(${PROJECT_NAME} zetaml)
-
 # other (non-CMake) dependencies
 target_sources(${PROJECT_NAME} PRIVATE
 	"${DEPENDENCIES_DIR}/glad/4.6/glad.c"

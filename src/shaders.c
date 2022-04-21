@@ -293,6 +293,10 @@ int oriShaderGetUniformLocation(oriShader *shader, const char *name) {
 	}
 }
 
+// -----------------------
+// oriSetUniform() stuff
+// ----------------------
+
 #define __setUniformHelper(glfunc, version) {\
 	_orionAssertVersion(version);\
 	unsigned int _boundCache = oriCurrentShaderProgram();\
@@ -301,6 +305,79 @@ int oriShaderGetUniformLocation(oriShader *shader, const char *name) {
 	glUseProgram(_boundCache);\
 }
 
-/** @ingroup shaders */ void oriSetShaderUniformi(oriShader *shader, const char *name, const int val) {
+// ----------------
+// oriSetUniform :: scalars
+
+/** @ingroup shaders */ void oriSetUniform1i(oriShader *shader, const char *name, const int val) {
 	__setUniformHelper(glUniform1i(oriShaderGetUniformLocation(shader, name), val), 200);
+}
+/** @ingroup shaders */ void oriSetUniform1f(oriShader *shader, const char *name, const float val) {
+	__setUniformHelper(glUniform1f(oriShaderGetUniformLocation(shader, name), val), 200);
+}
+/** @ingroup shaders */ void oriSetUniform1ui(oriShader *shader, const char *name, const unsigned int val) {
+	__setUniformHelper(glUniform1ui(oriShaderGetUniformLocation(shader, name), val), 300);
+}
+
+// ----------------
+// oriSetUniform :: vectors
+
+/** @ingroup shaders */ void oriSetUniform2i(oriShader *shader, const char *name, const int x, const int y) {
+	__setUniformHelper(glUniform2i(oriShaderGetUniformLocation(shader, name), x, y), 200);
+}
+/** @ingroup shaders */ void oriSetUniform2f(oriShader *shader, const char *name, const float x, const float y) {
+	__setUniformHelper(glUniform2f(oriShaderGetUniformLocation(shader, name), x, y), 200);
+}
+/** @ingroup shaders */ void oriSetUniform2ui(oriShader *shader, const char *name, const unsigned int x, const unsigned int y) {
+	__setUniformHelper(glUniform2ui(oriShaderGetUniformLocation(shader, name), x, y), 300);
+}
+
+/** @ingroup shaders */ void oriSetUniform3i(oriShader *shader, const char *name, const int x, const int y, const int z) {
+	__setUniformHelper(glUniform3i(oriShaderGetUniformLocation(shader, name), x, y, z), 200);
+}
+/** @ingroup shaders */ void oriSetUniform3f(oriShader *shader, const char *name, const float x, const float y, const float z) {
+	__setUniformHelper(glUniform3f(oriShaderGetUniformLocation(shader, name), x, y, z), 200);
+}
+/** @ingroup shaders */ void oriSetUniform3ui(oriShader *shader, const char *name, const unsigned int x, const unsigned int y, const unsigned int z) {
+	__setUniformHelper(glUniform3ui(oriShaderGetUniformLocation(shader, name), x, y, z), 300);
+}
+
+/** @ingroup shaders */ void oriSetUniform4i(oriShader *shader, const char *name, const int x, const int y, const int z, const int w) {
+	__setUniformHelper(glUniform4i(oriShaderGetUniformLocation(shader, name), x, y, z, w), 200);
+}
+/** @ingroup shaders */ void oriSetUniform4f(oriShader *shader, const char *name, const float x, const float y, const float z, const float w) {
+	__setUniformHelper(glUniform4f(oriShaderGetUniformLocation(shader, name), x, y, z, w), 200);
+}
+/** @ingroup shaders */ void oriSetUniform4ui(oriShader *shader, const char *name, const unsigned int x, const unsigned int y, const unsigned int z, const unsigned int w) {
+	__setUniformHelper(glUniform4ui(oriShaderGetUniformLocation(shader, name), x, y, z, w), 300);
+}
+
+// ----------------
+// oriSetUniform :: matrices
+
+/** @ingroup shaders */ void oriSetUniformMat2x2f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix2fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 200);
+}
+/** @ingroup shaders */ void oriSetUniformMat2x3f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix2x3fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 210);
+}
+/** @ingroup shaders */ void oriSetUniformMat2x4f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix2x4fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 210);
+}
+/** @ingroup shaders */ void oriSetUniformMat3x2f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix3x2fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 210);
+}
+/** @ingroup shaders */ void oriSetUniformMat3x3f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix3fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 200);
+}
+/** @ingroup shaders */ void oriSetUniformMat3x4f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix3x4fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 210);
+}
+/** @ingroup shaders */ void oriSetUniformMat4x2f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix4x2fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 210);
+}
+/** @ingroup shaders */ void oriSetUniformMat4x3f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix4x3fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 210);
+}
+/** @ingroup shaders */ void oriSetUniformMat4x4f(oriShader *shader, const char *name, const bool transpose, const float *mat) {
+	__setUniformHelper(glUniformMatrix4fv(oriShaderGetUniformLocation(shader, name), 1, transpose, mat), 200);
 }
