@@ -1,5 +1,5 @@
-#ifndef __CMAKE_PLATFORM_H__
-#	define __CMAKE_PLATFORM_H__
+#ifndef __CMAKE_PLATFORM_H
+#	define __CMAKE_PLATFORM_H
 
 #	cmakedefine WIN32
 #	cmakedefine APPLE

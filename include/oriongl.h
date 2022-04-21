@@ -26,7 +26,35 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
 #include <glad/4.6/glad.h>
+#include <glad/4.6/orionglad/orionglad.h>
+
+#include "shaderpresets.h" // preset shaders
+
+// ======================================================================================
+// ***** 				   		    ORION PUBLIC MACROS 							*****
+// ======================================================================================
+
+/**
+ * @brief The location of the @b vertex @b position vertex attribute in preset Orion shaders.
+ * 
+ * @ingroup shaders
+ */
+#define ORION_VERTEX_POS 0
+/**
+ * @brief The location of the @b texture @b coordinate vertex attribute in preset Orion shaders.
+ * 
+ * @ingroup shaders
+ */
+#define ORION_TEXTURE_COORD 1
+/**
+ * @brief The location of the @b vertex @b colour vertex attribute in preset Orion shaders.
+ * 
+ * @ingroup shaders
+ */
+#define ORION_VERTEX_COLOUR 2
 
 // ======================================================================================
 // ***** 				   		 ORION PUBLIC STRUCTURES 							*****
@@ -44,21 +72,44 @@ typedef struct oriShader oriShader;
 // ======================================================================================
 
 /**
- * @brief Initialise the global (internal) Orion state and loads OpenGL functions.
- * @details This function is to be called @b after creating a window (either with Orion windows, raw GLFW, or another windowing library).
+ * @brief Initialise the global (internal) Orion state.
  * 
  * @param version the version of OpenGL that is being used.
  * 
  * @ingroup meta
  */
-void oriInitialiseGL(const unsigned int version);
+void oriInitialise(const unsigned int version);
 
 /**
- * @brief Terminate the Orion library. All Orion objects that were allocated will be freed.
+ * @brief Terminate the Orion library. All Orion objects that were allocated (e.g. shaders) will be freed.
  * 
  * @ingroup meta
  */
 void oriTerminate();
+
+/**
+ * @brief Load OpenGL functionality for the given process. This will @b automatically @b be @b done when you create windows with @c orionwin.h.
+ * 
+ * @param loadproc the process to refer to. If you're using default GLFW abstractions, use @c glfwGetProcAddress.
+ * 
+ * @ingroup meta
+ */
+void oriLoadGL(void *(* loadproc)(const char *));
+
+/**
+ * @brief Enables OpenGL debug context (only available in OpenGL versions 4.3 and above!) - OpenGL errors will be printed to \e stdout.
+ * \warning Attempting to run this function on OpenGL functions below version 4.3 will result in an \b exception.
+ * 
+ * @param source the source to filter the errors to.
+ * @param type the type to filter the errors to.
+ * @param severity the severity to filter the errors to.
+ * @param enabled if true, messages that meet the filter criteria are shown. if false, they are hidden.
+ * @param suppressed an array of error IDs to suppress.
+ * @param count the size of the array suppressed.
+ * 
+ * @ingroup meta
+ */
+void oriEnableDebugContext(const unsigned int source, const unsigned int type, const unsigned int severity, const bool enabled, const unsigned int *suppressed, const unsigned int count);
 
 // ======================================================================================
 // ***** 				   		  ORION SHADER FUNCTIONS 							*****
@@ -73,10 +124,77 @@ oriShader *oriCreateShader();
 
 /**
  * @brief Destroy and free memory for the given shader.
+ * @param shader the shader to free
+ * 
+ * @note This will automatically be done in a call to oriTerminate().
  * 
  * @ingroup shaders
  */
 void oriFreeShader(oriShader *shader);
+
+/**
+ * @brief Compile and error-check the given GLSL source code.
+ * 
+ * @param type the type of shader (e.g. @c GL_FRAGMENT_SHADER)
+ * @param src the source code to compile
+ * @return 0 if the shader did not successfully compile.
+ * 
+ * @ingroup shaders
+ */
+unsigned int oriCompileShader(const unsigned int type, const char *src);
+
+/**
+ * @brief Parse a shader file and return it as a single string.
+ * 
+ * @param path the path to the shader, @b relative @b to @b the @b executable!
+ * 
+ * @ingroup shaders
+ */
+const char *oriParseShader(const char *path);
+
+/**
+ * @brief Add GLSL source to the given shader.
+ * 
+ * @param shader the shader to modify
+ * @param type the type of source code (e.g. @c GL_VERTEX_SHADER)
+ * @param src the source code to add, as a string
+ * 
+ * @ingroup shaders
+ */
+void oriAddShaderSource(oriShader *shader, const unsigned int type, const char *src);
+
+/**
+ * @brief Bind a shader struct.
+ * 
+ * @param shader the shader to bind.
+ * 
+ * @ingroup shaders
+ */
+void oriBindShader(oriShader *shader);
+
+/**
+ * @brief Returns the bound state of the given shader.
+ * 
+ * @param shader the shader to inspect.
+ * @return true if the shader program is being used.
+ * @return false if the shader program is not being used.
+ * 
+ * @ingroup shaders
+ */
+bool oriShaderIsBound(oriShader *shader);
+
+/**
+ * @brief Get the location of a GLSL uniform by its name
+ * @details If the given uniform has not been cached in the oriShader struct, it will be retrieved with glGetUniformLocation() and @e then cached for later use.
+ * 
+ * @param shader the shader to inspect.
+ * @param name the name of the uniform
+ * 
+ * @ingroup shaders
+ */
+int oriShaderGetUniformLocation(oriShader *shader, const char *name);
+
+/** @ingroup shaders */ void oriSetShaderUniformi(oriShader *shader, const char *name, const int val);
 
 #ifdef __cplusplus
 }

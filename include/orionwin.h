@@ -50,9 +50,10 @@ typedef struct oriWindow oriWindow;
 // ======================================================================================
 
 /**
- * @brief Allocate and initialise a GLFW window struct.
+ * @brief Allocate and initialise a GLFW window struct, make its context current, and load OpenGL for its context.
  * @details This structure is simply an abstraction of @c glfwCreateWindow, part of the GLFW public API.
  * The resulting window, however, will be automatically freed in a call to oriTerminate().
+ * 
  * @sa <a href="https://www.glfw.org/docs/latest/window.html">GLFW window guide</a>
  * 
  * @todo GLFW @c monitor and @c share parameters are not yet implemented.
@@ -64,7 +65,9 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
 /**
  * @brief Destroy and free memory for a given window.
  * 
- * @param window The window to free.
+ * @note This will automatically be done in a call to oriTerminate().
+ * 
+ * @param window the window to free.
  * 
  * @ingroup window
  */

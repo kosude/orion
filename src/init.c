@@ -26,11 +26,6 @@
 // global state structure
 _orionState _orion = { NULL };
 
-// global callbacks
-_orionCallbacks _oriCallbacks = {
-	_orionDefaultGLFWErrorCallback
-};
-
 /**
  * @brief Initialise GLFW. This function is called implicitly when the user calls the first Orion-abstracted GLFW function.
  * 
@@ -53,7 +48,24 @@ void _orionInitGLFW() {
 void _orionThrowError(const int code, const char *msg, const char *label) {
 	printf("[Orion : FATAL!] >> Error code 0x%03hhX (%s) : %s\n", code, label, msg);
 	__debugbreak;
+
+	if (_orion.initialised) {
+		oriTerminate();
+	}
 	exit(-1);
+}
+
+/**
+ * @brief If the initialised OpenGL version (that given to oriInitialise()) is below the given minimum, throw an exception.
+ * 
+ */
+void _orionAssertVersion(unsigned int minimum) {
+	if (!_orion.glLoaded) {
+		_orionThrowError(ORERR_GL_NOT_LOADED);
+	}
+	if (_orion.glVersion < minimum) {
+		_orionThrowError(ORERR_GL_OLD_VERS);
+	}
 }
 
 // ======================================================================================
@@ -61,14 +73,13 @@ void _orionThrowError(const int code, const char *msg, const char *label) {
 // ======================================================================================
 
 /**
- * @brief Initialise the global (internal) Orion state and loads OpenGL functions.
- * @details This function is to be called @b after creating a window (either with Orion windows, raw GLFW, or another windowing library).
+ * @brief Initialise the global (internal) Orion state.
  * 
  * @param version the version of OpenGL that is being used.
  * 
  * @ingroup meta
  */
-void oriInitialiseGL(const unsigned int version) {
+void oriInitialise(const unsigned int version) {
 	if (_orion.initialised) {
 		_orionThrowError(ORERR_MULTIPLE_CALLS);
 	}
@@ -132,17 +143,13 @@ void oriInitialiseGL(const unsigned int version) {
 		_orionThrowError(ORERR_ACCESS_PHANTOM);
 	}
 
-	// load OpenGL with Glad
-	if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-		_orionThrowError(ORERR_GL_FAIL);
-	}
-
 	_orion.initialised = true;
 }
 
 /**
  * @brief Terminate the Orion library. All Orion GL objects that were allocated will be freed.
  * 
+ * @ingroup meta
  */
 void oriTerminate() {
 	// destroy all window objects
@@ -159,7 +166,65 @@ void oriTerminate() {
 		glfwTerminate();
 	}
 
-	// free state
+	// free malloc'd state members
 	free(_orion.execDir);
-	_orion.execDir = NULL;
+
+	// clear state (reset to nil)
+	memset(&_orion, 0, sizeof(_orion));
+}
+
+/**
+ * @brief Load OpenGL functionality for the given process. This will @b automatically @b be @b done when you create windows with @c orionwin.h.
+ * 
+ * @param loadproc the process to refer to. If you're using default GLFW abstractions, use @c glfwGetProcAddress.
+ * 
+ * @ingroup meta
+ */
+void oriLoadGL(void *(* loadproc)(const char *)) {
+	if (_orion.glLoaded) {
+		_orionThrowError(ORERR_MULTIPLE_CALLS);
+	}
+
+	// load OpenGL with Glad
+	if (!gladLoadGLLoader(loadproc)) {
+		_orionThrowError(ORERR_GL_FAIL);
+	}
+
+	_orion.glLoaded = true;
+}
+
+/**
+ * @brief Enables OpenGL debug context (only available in OpenGL versions 4.3 and above!) - OpenGL errors will be printed to \e stdout.
+ * \warning Attempting to run this function on OpenGL functions below version 4.3 will result in an \b exception.
+ * 
+ * @param source the source to filter the errors to.
+ * @param type the type to filter the errors to.
+ * @param severity the severity to filter the errors to.
+ * @param enabled if true, messages that meet the filter criteria are shown. if false, they are hidden.
+ * @param suppressed an array of error IDs to suppress.
+ * @param count the size of the array suppressed.
+ * 
+ * @ingroup meta
+ */
+void oriEnableDebugContext(const unsigned int source, const unsigned int type, const unsigned int severity, const bool enabled, const unsigned int *suppressed, const unsigned int count) {
+	_orionAssertVersion(430);
+
+	// can't be called more than once
+	if (_orion.debug) {
+		_orionThrowError(ORERR_MULTIPLE_CALLS);
+	}
+
+	// assert initialisation
+	if (!_orion.initialised) {
+		_orionThrowError(ORERR_NOT_INIT);
+	}
+
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+
+	glDebugMessageCallback(_oriCallbacks.debugMessageCallback, NULL);
+
+	glDebugMessageControl(source, type, severity, count, suppressed, enabled);
+
+	_orion.debug = true;
 }

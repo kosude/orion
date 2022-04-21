@@ -21,6 +21,7 @@ option(BUILD_SHARED_LIBS "Build shared libraries." ON)
 option(ORION_BUILD_LIB "Build the core Orion library." ON)
 option(ORION_BUILD_TESTS "Build Orion test executable(s)." OFF)
 option(ORION_BUILD_DOCS "Build Orion documentation." ON)
+option(ORION_BUILD_PRESETS "Build Orion shader presets." ON)
 
 # ---
 # configure files

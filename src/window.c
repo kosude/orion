@@ -39,10 +39,13 @@ typedef struct oriWindow {
 // ======================================================================================
 
 /**
- * @brief Allocate and initialise a GLFW window struct.
+ * @brief Allocate and initialise a GLFW window struct, make its context current, and load OpenGL for its context.
  * @details This structure is simply an abstraction of @c glfwCreateWindow, part of the GLFW public API.
  * The resulting window, however, will be automatically freed in a call to oriTerminate().
+ * 
  * @sa <a href="https://www.glfw.org/docs/latest/window.html">GLFW window guide</a>
+ * 
+ * @todo GLFW @c monitor and @c share parameters are not yet implemented.
  *
  * @ingroup window
  */
@@ -60,6 +63,10 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
+
+	if (_orion.debug) {
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+	}
 	
 	// TODO: add monitor + share functionality
 	GLFWwindow *rhandle = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -75,6 +82,10 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
 	r->next = _orion.windowListHead;
 	_orion.windowListHead = r;
 
+	// load OpenGL after creation
+	oriMakeContextCurrent(r);
+	oriLoadGL((GLADloadproc) glfwGetProcAddress);
+
 	return r;
 }
 
@@ -85,10 +96,10 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
  */
 void oriFreeWindow(oriWindow *window) {
 	// unlink from global linked list
-	oriWindow **prev = &_orion.windowListHead;
-	while (*prev != window)
-		*prev = (*prev)->next;
-	*prev = window->next;
+	oriWindow *prev = _orion.windowListHead;
+	while (prev != window)
+		prev = prev->next;
+	_orion.windowListHead = window->next;
 
 	glfwDestroyWindow(window->handle);
 	free(window);

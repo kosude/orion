@@ -38,6 +38,7 @@ target_link_libraries(${PROJECT_NAME} zetaml)
 # other (non-CMake) dependencies
 target_sources(${PROJECT_NAME} PRIVATE
 	"${DEPENDENCIES_DIR}/glad/4.6/glad.c"
+	"${DEPENDENCIES_DIR}/glad/4.6/orionglad/orionglad.c"
 )
 
 # ---
@@ -70,3 +71,10 @@ message(STATUS " => Compiler:\t\t${CMAKE_C_COMPILER_ID} (at ${CMAKE_C_COMPILER})
 message(STATUS " => Compiler version:\t${CMAKE_C_COMPILER_VERSION}")
 
 message(STATUS " => Configuration:\t\t${_upperbuildtype}")
+
+message(STATUS " => Shader presets:\t\t${ORION_BUILD_PRESETS}")
+
+# ---
+# add shader presets
+
+add_subdirectory(presets)
