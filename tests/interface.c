@@ -38,14 +38,16 @@ int main() {
 
 	oriSetUniform1i(shader, "blend.mode", 3);
 
-	zmlMatrix identity = zmlIdentityMatrix(4, 4);
-	float elements[4][4];
-	zmlCopyMatrixElements(identity, elements);
-
-	oriSetUniformMat4x4f(shader, "transform.mvp", 0, &elements[0][0]);
+	zmlMatrix model = zmlIdentityMatrix(4, 4);
 
 	while (!oriWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		zmlRotate(&model, zmlToRadians(1.0f), 0, 0, 1);
+
+		float elements[4][4];
+		zmlCopyMatrixElements(model, elements);
+		oriSetUniformMat4x4f(shader, "transform.mvp", 0, &elements[0][0]);
 
 		oriBindShader(shader);
 		glBindVertexArray(vao);
@@ -55,7 +57,7 @@ int main() {
 		oriSwapBuffers(window);
 	}
 
-	zmlFreeMatrix(&identity);
+	zmlFreeMatrix(&model);
 
 	oriTerminate();
 	return 0;
