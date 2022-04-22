@@ -63,6 +63,7 @@ typedef struct _orionState {
 	oriWindow *windowListHead;
 	oriShader *shaderListHead;
 	oriBuffer *bufferListHead;
+	oriVertexArray *vertexArrayListHead;
 } _orionState;
 extern _orionState _orion;
 

@@ -30,6 +30,9 @@
  * @brief Functionality related to the management, creation, and destruction of OpenGL shaders and shader programs.
  * @details This module documents the use of shader-related functionality - creating, destroying, and using OpenGL shader programs.
  * 
+ * @sa <a href="https://www.khronos.org/opengl/wiki/Shader">OpenGL/Shader</a>
+ * @sa <a href="https://www.khronos.org/opengl/wiki/GLSL_Object">OpenGL/GLSL Object</a>
+ *
  */
 
 /**
@@ -37,11 +40,21 @@
  * @brief Functionality related to the management, creation, and destruction of OpenGL buffer objects.
  * @details This module documents the use of buffer-related functionality - creating, destroying, and using OpenGL buffer objects.
  * 
+ * @sa <a href="https://www.khronos.org/opengl/wiki/Buffer_Object">OpenGL/Buffer Object</a>
+ *
  */
 
 /**
  * @defgroup orionglad Orion OpenGL abstractions
  * @brief OpenGL abstractions and added features provided by Orion.
  * @details Functions prefixed with @c orion_gl can be called with the prefix @c ori instead. The rest of the function name stays the same.
+ * 
+ */
+
+/**
+ * @defgroup vertexspec Vertex specification
+ * @brief Functions related to OpenGL vertex specification.
+ * 
+ * @sa <a href="https://www.khronos.org/opengl/wiki/Vertex_Specification">OpenGL/Vertex Specification</a>
  * 
  */

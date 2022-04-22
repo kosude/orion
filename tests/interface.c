@@ -18,28 +18,14 @@ int main() {
 	oriShader *shader = oriCreateShader();
 	oriAddShaderSource(shader, GL_VERTEX_SHADER, ORION_VERTEX_SHADER_BASIC);
 	oriAddShaderSource(shader, GL_FRAGMENT_SHADER, ORION_FRAGMENT_SHADER_BASIC);
-
-	unsigned int vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	// unsigned int vboold;
-	// glCreateBuffers(1, &vboold);
-	// glBindBuffer(GL_ARRAY_BUFFER, vboold);
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	oriSetUniform1i(shader, "blend.mode", 3);
 
 	oriBuffer *vbo = oriCreateBuffer(GL_ARRAY_BUFFER);
 	oriSetBufferData(vbo, vertices, sizeof(vertices), GL_STATIC_DRAW);
-	oriBindBuffer(vbo);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 7 * sizeof(float), (void *) 0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(2, 4, GL_FLOAT, 0, 7 * sizeof(float), (void *) (3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	oriSetUniform1i(shader, "blend.mode", 3);
+	oriVertexArray *vao = oriCreateVertexArray();
+	oriSpecifyVertexData(vao, vbo, 0, 3, GL_FLOAT, false, 7 * sizeof(float), 0);
+	oriSpecifyVertexData(vao, vbo, 2, 4, GL_FLOAT, false, 7 * sizeof(float), 3 * sizeof(float));
 
 	zmlMatrix model = zmlIdentityMatrix(4, 4);
 
@@ -53,8 +39,7 @@ int main() {
 		oriSetUniformMat4x4f(shader, "transform.mvp", 0, &elements[0][0]);
 
 		oriBindShader(shader);
-		// oriBindBuffer(vbo);
-		glBindVertexArray(vao);
+		oriBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		oriPollEvents();

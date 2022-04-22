@@ -38,18 +38,25 @@ extern "C" {
 // ======================================================================================
 
 /**
- * @brief An OpenGL shader program object.
+ * @brief An opaque OpenGL shader program object.
  * 
  * @ingroup shaders
  */
 typedef struct oriShader oriShader;
 
 /**
- * @brief An OpenGL buffer object.
+ * @brief An opaque OpenGL buffer object.
  * 
  * @ingroup buffers
  */
 typedef struct oriBuffer oriBuffer;
+
+/**
+ * @brief An opaque OpenGL vertex array object.
+ * 
+ * @ingroup vertexspec
+ */
+typedef struct oriVertexArray oriVertexArray;
 
 // ======================================================================================
 // ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
@@ -139,6 +146,66 @@ void oriBindBuffer(oriBuffer *buffer);
 void oriSetBufferData(oriBuffer *buffer, const void *data, const unsigned int size, const unsigned int usage);
 
 // ======================================================================================
+// ***** 				    ORION VERTEX SPECIFICATION FUNCTIONS 					*****
+// ======================================================================================
+
+/**
+ * @brief Allocate and initialise a new oriVertexArray structure.
+ * 
+ * @ingroup vertexspec
+ */
+oriVertexArray *oriCreateVertexArray();
+
+/**
+ * @brief Destroy and free memory for the given vertex array.
+ * 
+ * @param va the vertex array to free.
+ * 
+ * @ingroup vertexspec
+ */
+void oriFreeVertexArray(oriVertexArray *va);
+
+/**
+ * @brief Bind a vertex array.
+ * 
+ * @param va the vertex array to bind.
+ * 
+ * @ingroup vertexspec
+ */
+void oriBindVertexArray(oriVertexArray *va);
+
+/**
+ * @brief Specifies vertex data with the given attribute format.
+ * @details @c buffer @b should be a vertex buffer. But it does not necessarily have to be.
+ * According to the OpenGL specification:
+ *  > [Vertex Buffer Objects] are no different from any other buffer object, and a buffer object used for Transform
+ *  > Feedback or asynchronous pixel transfers can be used as source values for vertex arrays.
+ * 
+ * @warning The buffer still needs to be bound to @c GL_ARRAY_BUFFER when not using direct state access. So
+ * if your GL version is below 4.5 and your buffer is not bound to @c GL_ARRAY_BUFFER then you will get a warning in the
+ * console and @b the @b function @b will @b exit @b early.
+ * 
+ * @param va the vertex array object (VAO) to store the vertex data in.
+ * @param buffer the buffer to read from.
+ * @param index the index of the vertex attribute to be defined.
+ * @param size the number of components per vertex attribute.
+ * @param type the type of each component, e.g. \c GL_FLOAT or \c GL_INT.
+ * @param normalised should the data be normalised
+ * @param stride the byte offset between each vertex attribute.
+ * @param offset an offset of the first component of the vertex attribute.
+ * 
+ * @ingroup vertexspec
+ */
+void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer, 
+	const unsigned int index,
+	const unsigned int size,
+	const unsigned int type,
+	const bool normalised,
+	const unsigned int stride,
+	const unsigned int offset
+);
+
+// ======================================================================================
 // ***** 				   		  ORION SHADER FUNCTIONS 							*****
 // ======================================================================================
 
@@ -159,6 +226,15 @@ oriShader *oriCreateShader();
  * @ingroup shaders
  */
 void oriFreeShader(oriShader *shader);
+
+/**
+ * @brief Bind a shader struct.
+ * 
+ * @param shader the shader to bind.
+ * 
+ * @ingroup shaders
+ */
+void oriBindShader(oriShader *shader);
 
 /**
  * @brief Compile and error-check the given GLSL source code.
@@ -190,15 +266,6 @@ const char *oriParseShader(const char *path);
  * @ingroup shaders
  */
 void oriAddShaderSource(oriShader *shader, const unsigned int type, const char *src);
-
-/**
- * @brief Bind a shader struct.
- * 
- * @param shader the shader to bind.
- * 
- * @ingroup shaders
- */
-void oriBindShader(oriShader *shader);
 
 /**
  * @brief Get the location of a GLSL uniform by its name

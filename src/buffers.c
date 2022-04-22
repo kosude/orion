@@ -15,6 +15,7 @@
 #include "oriongl.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 // ======================================================================================
 // ***** 				   		 ORION PUBLIC STRUCTURES 							*****
@@ -33,6 +34,245 @@ typedef struct oriBuffer {
 	bool dataSet;
 	unsigned int dataSize;
 } oriBuffer;
+
+typedef struct oriVertexArray {
+	oriVertexArray *next;
+
+	unsigned int handle;
+} oriVertexArray;
+
+
+// ======================================================================================
+// ***** 				    ORION VERTEX SPECIFICATION FUNCTIONS 					*****
+// ======================================================================================
+
+/**
+ * @brief Allocate and initialise a new oriVertexArray structure.
+ * 
+ * @ingroup vertexspec
+ */
+oriVertexArray *oriCreateVertexArray() {
+	_orionAssertVersion(300);
+
+	if (!_orion.initialised) {
+		_orionThrowError(ORERR_NOT_INIT);
+	}
+
+	oriVertexArray *r = malloc(sizeof(oriVertexArray));
+	r->handle = 0;
+
+	// use DSA if possible
+	if (_orion.glVersion >= 450) {
+		// using glCreateVertexArrays (4.5) means the vao is generated and initialised (glGenVertexArrays only generates it)
+		glCreateVertexArrays(1, &r->handle);
+	} else {
+		glGenVertexArrays(1, &r->handle);
+	}
+
+	// add to global linked list
+	r->next = _orion.vertexArrayListHead;
+	_orion.vertexArrayListHead = r;
+
+	return r;
+}
+
+/**
+ * @brief Destroy and free memory for the given vertex array.
+ * 
+ * @param va the vertex array to free.
+ * 
+ * @ingroup vertexspec
+ */
+void oriFreeVertexArray(oriVertexArray *va) {
+	_orionAssertVersion(300);
+
+	// unlink from global linked list
+	oriVertexArray *current = _orion.vertexArrayListHead;
+	while (current != va)
+		current = current->next;
+	_orion.vertexArrayListHead = va->next;
+
+	glDeleteVertexArrays(1, &va->handle);
+
+	free(va);
+	va = NULL;
+}
+
+/**
+ * @brief Bind a vertex array.
+ * 
+ * @param va the vertex array to bind.
+ * 
+ * @ingroup vertexspec
+ */
+void oriBindVertexArray(oriVertexArray *va) {
+	_orionAssertVersion(300);
+
+	if (oriCurrentVertexArray() == va->handle) {
+		return;
+	}
+	glBindVertexArray(va->handle);
+}
+
+/**
+ * @brief Specifies vertex data with the given attribute format.
+ * @details @c buffer @b should be a vertex buffer. But it does not necessarily have to be.
+ * According to the OpenGL specification:
+ *  > [Vertex Buffer Objects] are no different from any other buffer object, and a buffer object used for Transform
+ *  > Feedback or asynchronous pixel transfers can be used as source values for vertex arrays.
+ * 
+ * @warning The buffer still needs to be bound to @c GL_ARRAY_BUFFER when not using direct state access. So
+ * if your GL version is below 4.5 and your buffer is not bound to @c GL_ARRAY_BUFFER then you will get a warning in the
+ * console and @b the @b function @b will @b exit @b early.
+ * 
+ * @param va the vertex array object (VAO) to store the vertex data in.
+ * @param buffer the buffer to read from.
+ * @param index the index of the vertex attribute to be defined.
+ * @param size the number of components per vertex attribute.
+ * @param type the type of each component, e.g. \c GL_FLOAT or \c GL_INT.
+ * @param normalised should the data be normalised
+ * @param stride the byte offset between each vertex attribute.
+ * @param offset an offset of the first component of the vertex attribute.
+ * 
+ * @ingroup vertexspec
+ */
+void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer, 
+	const unsigned int index,
+	const unsigned int size,
+	const unsigned int type,
+	const bool normalised,
+	const unsigned int stride,
+	const unsigned int offset
+) {
+	if (type == GL_DOUBLE) {
+		printf("[Orion : WARN] >> (in oriSpecifyVertexData()) the OpenGL Specification heavily warns against using GL_DOUBLE.\n");
+	}
+	if (type == GL_UNSIGNED_INT_10F_11F_11F_REV) {
+		_orionAssertVersion(440);
+		if (size != 3) {
+			printf("[Orion : WARN] >> (in oriSpecifyVertexData()) size MUST be 3 when using GL_UNSIGNED_INT_10F_11F_11F_REV.\n");
+			return;
+		}
+	}
+	if ((type == GL_INT_2_10_10_10_REV || type == GL_UNSIGNED_INT_2_10_10_10_REV) && size != 4) {
+		printf("[Orion : WARN] >> (in oriSpecifyVertexData()) size MUST be 4 when using either GL_INT_2_10_10_10_REV or GL_UNSIGNED_INT_2_10_10_10_REV.\n");
+		return;
+	}
+
+	_orionAssertVersion(300);
+
+	// 1 = glVertexAttribPointer / glVertexArrayAttribFormat
+	// 2 = glVertexAttribIPointer / glVertexArrayAttribIFormat
+	// 3 = glVertexAttribLPointer / glVertexArrayAttribLFormat
+	unsigned int vertexAttribPointerFuncType = 0;
+
+	// glVertexAttribPointer and its I variant are available
+	if (_orion.glVersion < 410) {
+		switch (type) {
+			case GL_HALF_FLOAT:
+			case GL_FLOAT:
+			case GL_DOUBLE:
+			case GL_FIXED:
+			case GL_INT_2_10_10_10_REV:
+			case GL_UNSIGNED_INT_2_10_10_10_REV:
+				vertexAttribPointerFuncType = 1;
+				break;
+			default:
+				vertexAttribPointerFuncType = 2;
+				break;
+		}
+	}
+	// all variants of glVertexAttribPointer are available
+	else {
+		switch (type) {
+			case GL_HALF_FLOAT:
+			case GL_FLOAT:
+			case GL_FIXED:
+			case GL_INT_2_10_10_10_REV:
+			case GL_UNSIGNED_INT_2_10_10_10_REV:
+			case GL_UNSIGNED_INT_10F_11F_11F_REV:
+				vertexAttribPointerFuncType = 1;
+				break;
+			case GL_DOUBLE:
+				vertexAttribPointerFuncType = 3;
+				break;
+			default:
+				vertexAttribPointerFuncType = 2;
+				break;
+		}
+	}
+
+	// Use DSA where possible
+	if (_orion.glVersion >= 450) {
+		glEnableVertexArrayAttrib(va->handle, index);
+		glVertexArrayVertexBuffer(va->handle, index, buffer->handle, 0, stride);
+		
+		// use appropriate function as decided above to stop data from being converted to floats
+		switch (vertexAttribPointerFuncType) {
+			case 1:
+			default:
+				glVertexArrayAttribFormat(va->handle, index, size, type, normalised, offset);
+				break;
+			case 2:
+				glVertexArrayAttribIFormat(va->handle, index, size, type, offset);
+				break;
+			case 3:
+				glVertexArrayAttribLFormat(va->handle, index, size, type, offset);
+				break;
+		}
+		glVertexArrayAttribBinding(va->handle, index, index);
+
+		// I don't understand binding indices at all, so I'm doing what some guy
+		// recommended: simply using the attribute index as the binding index.
+		// Hopefully some guy is right.
+
+		return;
+	}
+
+	// ---
+	// if DSA is not possible
+
+	if (buffer->target != GL_ARRAY_BUFFER) {
+		printf("[Orion : WARN] >> (in oriSpecifyVertexData()) when version is below 4.5, the buffer target must be GL_ARRAY_BUFFER.\n");
+		return;
+	}
+
+	unsigned int previousVA = oriCurrentVertexArray();
+	unsigned int previousBuffer = oriCurrentBufferAt(buffer->target);
+
+	oriBindVertexArray(va);
+	oriBindBuffer(buffer);
+
+	glEnableVertexAttribArray(index);
+
+	// The following code causes the -Wint-to-pointer cast in GCC. It probably causes it in other compilers too, but I only use GCC so I don't know.
+	// Unfortunately, the compiler complains about something I can't do anything about: OpenGL's very backwards-compatible specification.
+	// (converting from unsigned int to void *)
+	// So, the warning is just suppressed here.
+
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+
+	// use appropriate function as decided above to stop data from being converted to floats
+	switch (vertexAttribPointerFuncType) {
+		case 1:
+		default:
+			glVertexAttribPointer(index, size, type, normalised, stride, (const void *) offset);
+			break;
+		case 2:
+			glVertexAttribIPointer(index, size, type, stride, (const void *) offset);
+			break;
+		case 3:
+			glVertexAttribLPointer(index, size, type, stride, (const void *) offset);
+			break;
+	}
+
+#	pragma GCC diagnostic pop
+
+	// bind to previous objects
+	glBindVertexArray(previousVA);
+	glBindBuffer(buffer->target, previousBuffer);
+}
 
 // ======================================================================================
 // ***** 				   		  ORION BUFFER FUNCTIONS 							*****
