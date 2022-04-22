@@ -11,7 +11,7 @@
 			"label": "__build",
 			"type": "shell",
 
-			"command": "clear;/usr/bin/cmake",
+			"command": "/usr/bin/cmake",
             "args": [
                 "--build",
                 "${buildFolder}"
@@ -20,7 +20,7 @@
 			"label": "__cfgre",
 			"type": "shell",
 
-			"command": "clear;/usr/bin/cmake",
+			"command": "/usr/bin/cmake",
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
@@ -41,6 +41,11 @@
 				"-rf",
 				"${buildFolder}"
 			]
+		/* __clear */ }, {
+			"label": "__clear",
+			"type": "shell",
+
+			"command": "clear"
 		},
 		
 		/* build project */ {
@@ -48,6 +53,7 @@
 			
 			"dependsOrder": "sequence",
 			"dependsOn": [
+				"__clear",
 				"__build"
 			],
 
@@ -68,6 +74,7 @@
 			"dependsOrder": "sequence",
 			"dependsOn": [
 				"__clean",
+				"__clear",
 				"__cfgre",
 				"__build"
 			]
@@ -77,6 +84,7 @@
 			"dependsOrder": "sequence",
 			"dependsOn": [
 				"__clean",
+				"__clear",
 				"__cfgre"
 			]
 		}

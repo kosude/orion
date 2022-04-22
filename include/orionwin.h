@@ -33,7 +33,7 @@ extern "C" {
 #include <glfw/include/GLFW/glfw3.h>
 
 // ======================================================================================
-// ***** 				   		 ORION PUBLIC STRUCTURES 							*****
+// ***** 				   		 ORIONWIN PUBLIC STRUCTURES							*****
 // ======================================================================================
 
 /**
@@ -41,6 +41,8 @@ extern "C" {
  * @details This structure is simply an abstraction of @c GLFWwindow, part of the GLFW public API.
  * @sa <a href="https://www.glfw.org/docs/latest/window.html">GLFW window guide</a>
  *
+ * @note All instances of oriWindow will be cleared with oriTerminate().
+ * 
  * @ingroup window
  */
 typedef struct oriWindow oriWindow;

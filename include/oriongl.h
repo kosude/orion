@@ -40,6 +40,8 @@ extern "C" {
 /**
  * @brief An opaque OpenGL shader program object.
  * 
+ * @note All instances of oriShader will be freed with oriTerminate().
+ * 
  * @ingroup shaders
  */
 typedef struct oriShader oriShader;
@@ -47,12 +49,16 @@ typedef struct oriShader oriShader;
 /**
  * @brief An opaque OpenGL buffer object.
  * 
+ * @note All instances of oriBuffer will be freed with oriTerminate().
+ * 
  * @ingroup buffers
  */
 typedef struct oriBuffer oriBuffer;
 
 /**
  * @brief An opaque OpenGL vertex array object.
+ * 
+ * @note All instances of oriVertexArray will be freed with oriTerminate().
  * 
  * @ingroup vertexspec
  */
@@ -72,7 +78,11 @@ typedef struct oriVertexArray oriVertexArray;
 void oriInitialise(const unsigned int version);
 
 /**
- * @brief Terminate the Orion library. All Orion objects that were allocated (e.g. shaders, buffers, etc.) will be freed.
+ * @brief Terminate the Orion library. All Orion GL objects that were allocated will be freed.
+ * 
+ * @warning If you are using a third-party library to handle your OpenGL context rather than Orionwin,
+ * make sure that you call this function @b before the OpenGL context gets terminated. For example (if you're using GLFW),
+ * call @c glfwTerminate() after this function. Otherwise, the program will @b segfault.
  * 
  * @ingroup meta
  */

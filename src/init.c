@@ -150,6 +150,10 @@ void oriInitialise(const unsigned int version) {
 /**
  * @brief Terminate the Orion library. All Orion GL objects that were allocated will be freed.
  * 
+ * @warning If you are using a third-party library to handle your OpenGL context rather than Orionwin,
+ * make sure that you call this function @b before the OpenGL context gets terminated. For example (if you're using GLFW),
+ * call @c glfwTerminate() after this function.
+ * 
  * @ingroup meta
  */
 void oriTerminate() {
@@ -190,10 +194,6 @@ void oriTerminate() {
  * @ingroup meta
  */
 void oriLoadGL(void *(* loadproc)(const char *)) {
-	if (_orion.glLoaded) {
-		_orionThrowError(ORERR_MULTIPLE_CALLS);
-	}
-
 	// load OpenGL with Glad
 	if (!gladLoadGLLoader(loadproc)) {
 		_orionThrowError(ORERR_GL_FAIL);

@@ -108,7 +108,7 @@ void oriFreeWindow(oriWindow *window) {
 
 /**
  * @brief Return a pointer to the GLFW handle of the given oriWindow structure so that it can be used in GLFW functions.
- * @warning This function can be used to directly modify the GLFWwindow pointer; doing so can result in undefined behaviour!
+ * @warning This function can be used to directly modify the GLFWwindow pointer; doing so can (or rather @b will) result in undefined behaviour!
  * 
  * @param window the window of which the handle will be returned.
  * 

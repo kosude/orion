@@ -6,7 +6,7 @@
  */
 
 /**
- * @defgroup window GLFW abstractions
+ * @defgroup window Orionwin (GLFW abstractions)
  * @brief Functionality related to the Orion abstractions of the GLFW library
  * @details Using this abstracted window system is @b not @b required, but it is recommended so that oriTerminate() can automatically free your window(s) and terminate GLFW.
  * GLFW will be @b implicitly @b initialised on the first Orion-abstracted function call.

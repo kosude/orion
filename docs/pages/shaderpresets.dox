@@ -1,5 +1,5 @@
 /**
- * @page shaderpresets Orion shader presets
+ * @page shaderpresets Shader presets
  * 
  * When you build with the @c -DORION_BUILD_PRESETS=ON (which is ON by default anyway), Orion provides some preset shaders
  * for smaller projects where you don't want, or need, to write the shaders yourself.
