@@ -96,9 +96,9 @@ void oriFreeShader(oriShader *shader) {
 	}
 
 	// unlink from global linked list
-	oriShader **current = &_orion.shaderListHead;
-	while (*current != shader)
-		*current = (*current)->next;
+	oriShader *current = _orion.shaderListHead;
+	while (current != shader)
+		current = current->next;
 	_orion.shaderListHead = shader->next;
 
 	// opengl delete program
@@ -234,21 +234,10 @@ void oriAddShaderSource(oriShader *shader, const unsigned int type, const char *
 void oriBindShader(oriShader *shader) {
 	_orionAssertVersion(200);
 
-	if (oriShaderIsBound(shader)) {
+	if (oriCurrentShaderProgram() == shader->handle) {
 		return;
 	}
 	glUseProgram(shader->handle);
-}
-
-/**
- * @brief Returns the bound state of the given shader.
- * 
- * @param shader the shader to inspect.
- * @return true if the shader program is being used.
- * @return false if the shader program is not being used.
- */
-bool oriShaderIsBound(oriShader *shader)  {
-	return oriCurrentShaderProgram() == shader->handle;
 }
 
 /**

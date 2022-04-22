@@ -149,7 +149,7 @@ html {
     /* sidebar navigation (treeview) colors */
     --side-nav-background: #fbfbfb;
     --side-nav-foreground: var(--page-foreground-color);
-    --side-nav-arrow-opacity: 0;
+    --side-nav-arrow-opacity: 0.9;
     --side-nav-arrow-hover-opacity: 0.9;
 
     --toc-background: var(--side-nav-background);

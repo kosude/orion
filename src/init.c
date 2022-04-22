@@ -64,6 +64,7 @@ void _orionAssertVersion(unsigned int minimum) {
 		_orionThrowError(ORERR_GL_NOT_LOADED);
 	}
 	if (_orion.glVersion < minimum) {
+		printf("[Orion : VERSERR] >> Loaded version %d is not high enough to meet minimum of %d.\n", _orion.glVersion, minimum);
 		_orionThrowError(ORERR_GL_OLD_VERS);
 	}
 }
@@ -152,14 +153,18 @@ void oriInitialise(const unsigned int version) {
  * @ingroup meta
  */
 void oriTerminate() {
-	// destroy all window objects
-	while (_orion.windowListHead) {
-		oriFreeWindow(_orion.windowListHead);
-	}
-
 	// destroy all shader objects
 	while (_orion.shaderListHead) {
 		oriFreeShader(_orion.shaderListHead);
+	}
+	// destroy all buffer objects
+	while (_orion.bufferListHead) {
+		oriFreeBuffer(_orion.bufferListHead);
+	}
+
+	// destroy all window objects
+	while (_orion.windowListHead) {
+		oriFreeWindow(_orion.windowListHead);
 	}
 	// terminate GLFW
 	if (_orion.glfwInitialised) {

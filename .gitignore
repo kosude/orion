@@ -1,7 +1,12 @@
+# Build output files.
 **build/
 
+# I use VSCode so I like to keep the launch.json and tasks.json files for convenience.
+# Other files are ignored, though.
 **.vscode/*
 !**launch.json
 !**tasks.json
 
-**.supp
+# Suppression files used when checking for memory leaks with Valgrind.
+# (I suppress problems like the dl_open warning which seems to be a bug with either Valgrind or libc. Nothing I can do anything about!)
+valgrind**

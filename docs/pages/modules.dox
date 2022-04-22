@@ -6,7 +6,7 @@
  */
 
 /**
- * @defgroup window GLFW Windowing System Abstractions for Orion
+ * @defgroup window GLFW abstractions
  * @brief Functionality related to the Orion abstractions of the GLFW library
  * @details Using this abstracted window system is @b not @b required, but it is recommended so that oriTerminate() can automatically free your window(s) and terminate GLFW.
  * GLFW will be @b implicitly @b initialised on the first Orion-abstracted function call.
@@ -26,9 +26,16 @@
  */
 
 /**
- * @defgroup shaders Shader management, creation, and destruction.
+ * @defgroup shaders Shaders
  * @brief Functionality related to the management, creation, and destruction of OpenGL shaders and shader programs.
  * @details This module documents the use of shader-related functionality - creating, destroying, and using OpenGL shader programs.
+ * 
+ */
+
+/**
+ * @defgroup buffers Buffers
+ * @brief Functionality related to the management, creation, and destruction of OpenGL buffer objects.
+ * @details This module documents the use of buffer-related functionality - creating, destroying, and using OpenGL buffer objects.
  * 
  */
 

@@ -96,9 +96,9 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
  */
 void oriFreeWindow(oriWindow *window) {
 	// unlink from global linked list
-	oriWindow *prev = _orion.windowListHead;
-	while (prev != window)
-		prev = prev->next;
+	oriWindow *current = _orion.windowListHead;
+	while (current != window)
+		current = current->next;
 	_orion.windowListHead = window->next;
 
 	glfwDestroyWindow(window->handle);

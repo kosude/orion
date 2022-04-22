@@ -62,6 +62,7 @@ typedef struct _orionState {
 	// linked lists for all Orion structures
 	oriWindow *windowListHead;
 	oriShader *shaderListHead;
+	oriBuffer *bufferListHead;
 } _orionState;
 extern _orionState _orion;
 

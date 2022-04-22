@@ -6,6 +6,7 @@ set(SRC
 	"init.c"
 	"window.c"
 	"shaders.c"
+	"buffers.c"
 )
 
 if (BUILD_SHARED_LIBS)

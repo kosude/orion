@@ -226,6 +226,8 @@ void orion_gladoverride_glDeleteProgram(GLuint program);
 // ***** 		  REPLACE GLAD FUNCTIONS WITH ABSTRACTED (ORIONGLAD) ONES 			*****
 // ======================================================================================
 
+/** @cond */
+
 #ifndef ORIONGLAD_IMPLEMENTATION
 #	undef glBindBuffer
 #	define glBindBuffer orion_gladoverride_glBindBuffer
@@ -251,6 +253,8 @@ void orion_gladoverride_glDeleteProgram(GLuint program);
 #	undef glDeleteTextures
 #	define glDeleteTextures orion_gladoverride_glDeleteTextures
 #endif
+
+/** @endcond */
 
 #ifdef __cplusplus
 }

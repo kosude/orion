@@ -34,29 +34,6 @@ extern "C" {
 #include "shaderpresets.h" // preset shaders
 
 // ======================================================================================
-// ***** 				   		    ORION PUBLIC MACROS 							*****
-// ======================================================================================
-
-/**
- * @brief The location of the @b vertex @b position vertex attribute in preset Orion shaders.
- * 
- * @ingroup shaders
- */
-#define ORION_VERTEX_POS 0
-/**
- * @brief The location of the @b texture @b coordinate vertex attribute in preset Orion shaders.
- * 
- * @ingroup shaders
- */
-#define ORION_TEXTURE_COORD 1
-/**
- * @brief The location of the @b vertex @b colour vertex attribute in preset Orion shaders.
- * 
- * @ingroup shaders
- */
-#define ORION_VERTEX_COLOUR 2
-
-// ======================================================================================
 // ***** 				   		 ORION PUBLIC STRUCTURES 							*****
 // ======================================================================================
 
@@ -66,6 +43,13 @@ extern "C" {
  * @ingroup shaders
  */
 typedef struct oriShader oriShader;
+
+/**
+ * @brief An OpenGL buffer object.
+ * 
+ * @ingroup buffers
+ */
+typedef struct oriBuffer oriBuffer;
 
 // ======================================================================================
 // ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
@@ -81,7 +65,7 @@ typedef struct oriShader oriShader;
 void oriInitialise(const unsigned int version);
 
 /**
- * @brief Terminate the Orion library. All Orion objects that were allocated (e.g. shaders) will be freed.
+ * @brief Terminate the Orion library. All Orion objects that were allocated (e.g. shaders, buffers, etc.) will be freed.
  * 
  * @ingroup meta
  */
@@ -112,6 +96,49 @@ void oriLoadGL(void *(* loadproc)(const char *));
 void oriEnableDebugContext(const unsigned int source, const unsigned int type, const unsigned int severity, const bool enabled, const unsigned int *suppressed, const unsigned int count);
 
 // ======================================================================================
+// ***** 				   		  ORION BUFFER FUNCTIONS 							*****
+// ======================================================================================
+
+/**
+ * @brief Allocate and initialise a new oriBuffer structure.
+ * 
+ * @param target the buffer target (e.g. GL_ARRAY_BUFFER).
+ * 
+ * @ingroup buffers
+ */
+oriBuffer *oriCreateBuffer(unsigned int target);
+
+/**
+ * @brief Destroy and free memory for the given buffer.
+ * 
+ * @param buffer the buffer to free
+ * 
+ * @ingroup buffers
+ */
+void oriFreeBuffer(oriBuffer *buffer);
+
+/**
+ * @brief Bind the given buffer.
+ * 
+ * @param buffer the buffer to bind.
+ * 
+ * @ingroup buffers
+ */
+void oriBindBuffer(oriBuffer *buffer);
+
+/**
+ * @brief Set data in a given oriBuffer structure.
+ * 
+ * @param buffer the buffer to copy data into.
+ * @param data the data to copy in @c buffer.
+ * @param size the size of the given data.
+ * @param usage the usage of the buffer.
+ * 
+ * @ingroup buffers
+ */
+void oriSetBufferData(oriBuffer *buffer, const void *data, const unsigned int size, const unsigned int usage);
+
+// ======================================================================================
 // ***** 				   		  ORION SHADER FUNCTIONS 							*****
 // ======================================================================================
 
@@ -124,6 +151,7 @@ oriShader *oriCreateShader();
 
 /**
  * @brief Destroy and free memory for the given shader.
+ * 
  * @param shader the shader to free
  * 
  * @note This will automatically be done in a call to oriTerminate().
@@ -171,17 +199,6 @@ void oriAddShaderSource(oriShader *shader, const unsigned int type, const char *
  * @ingroup shaders
  */
 void oriBindShader(oriShader *shader);
-
-/**
- * @brief Returns the bound state of the given shader.
- * 
- * @param shader the shader to inspect.
- * @return true if the shader program is being used.
- * @return false if the shader program is not being used.
- * 
- * @ingroup shaders
- */
-bool oriShaderIsBound(oriShader *shader);
 
 /**
  * @brief Get the location of a GLSL uniform by its name
