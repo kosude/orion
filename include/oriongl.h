@@ -134,6 +134,15 @@ void oriFreeBuffer(oriBuffer *buffer);
 void oriBindBuffer(oriBuffer *buffer);
 
 /**
+ * @brief Return the OpenGL handle to the given buffer struct.
+ * 
+ * @param buffer the buffer to inspect.
+ * 
+ * @ingroup buffers
+ */
+unsigned int oriGetBufferHandle(oriBuffer *buffer);
+
+/**
  * @brief Set data in a given oriBuffer structure.
  * 
  * @param buffer the buffer to copy data into.
@@ -173,6 +182,15 @@ void oriFreeVertexArray(oriVertexArray *va);
  * @ingroup vertexspec
  */
 void oriBindVertexArray(oriVertexArray *va);
+
+/**
+ * @brief Return the OpenGL handle to the given vertex array.
+ * 
+ * @param va the vertex array to inspect.
+ * 
+ * @ingroup vertexspec
+ */
+unsigned int oriGetVertexArrayHandle(oriVertexArray *va);
 
 /**
  * @brief Specifies vertex data with the given attribute format.
@@ -235,6 +253,15 @@ void oriFreeShader(oriShader *shader);
  * @ingroup shaders
  */
 void oriBindShader(oriShader *shader);
+
+/**
+ * @brief Return the OpenGL handle to the given shader struct.
+ * 
+ * @param shader the shader to inspect.
+ * 
+ * @ingroup shaders
+ */
+unsigned int oriGetShaderHandle(oriShader *shader);
 
 /**
  * @brief Compile and error-check the given GLSL source code.

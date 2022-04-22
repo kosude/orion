@@ -115,6 +115,17 @@ void oriBindVertexArray(oriVertexArray *va) {
 }
 
 /**
+ * @brief Return the OpenGL handle to the given vertex array.
+ * 
+ * @param va the vertex array to inspect.
+ * 
+ * @ingroup vertexspec
+ */
+unsigned int oriGetVertexArrayHandle(oriVertexArray *va) {
+	return va->handle;
+}
+
+/**
  * @brief Specifies vertex data with the given attribute format.
  * @details @c buffer @b should be a vertex buffer. But it does not necessarily have to be.
  * According to the OpenGL specification:
@@ -366,6 +377,17 @@ void oriBindBuffer(oriBuffer *buffer) {
 		return;
 	}
 	glBindBuffer(buffer->target, buffer->handle);
+}
+
+/**
+ * @brief Return the OpenGL handle to the given buffer struct.
+ * 
+ * @param buffer the buffer to inspect.
+ * 
+ * @ingroup buffers
+ */
+unsigned int oriGetBufferHandle(oriBuffer *buffer) {
+	return buffer->handle;
 }
 
 /**

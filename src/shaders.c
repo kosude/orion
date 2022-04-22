@@ -110,6 +110,31 @@ void oriFreeShader(oriShader *shader) {
 }
 
 /**
+ * @brief Bind a shader struct.
+ * 
+ * @param shader the shader to bind.
+ */
+void oriBindShader(oriShader *shader) {
+	_orionAssertVersion(200);
+
+	if (oriCurrentShaderProgram() == shader->handle) {
+		return;
+	}
+	glUseProgram(shader->handle);
+}
+
+/**
+ * @brief Return the OpenGL handle to the given shader struct.
+ * 
+ * @param shader the shader to inspect.
+ * 
+ * @ingroup shaders
+ */
+unsigned int oriGetShaderHandle(oriShader *shader) {
+	return shader->handle;
+}
+
+/**
  * @brief Compile and error-check the given GLSL source code.
  * 
  * @param type the type of shader (e.g. @c GL_FRAGMENT_SHADER)
@@ -224,20 +249,6 @@ void oriAddShaderSource(oriShader *shader, const unsigned int type, const char *
 
 	// free shader
 	glDeleteShader(id);
-}
-
-/**
- * @brief Bind a shader struct.
- * 
- * @param shader the shader to bind.
- */
-void oriBindShader(oriShader *shader) {
-	_orionAssertVersion(200);
-
-	if (oriCurrentShaderProgram() == shader->handle) {
-		return;
-	}
-	glUseProgram(shader->handle);
 }
 
 /**
