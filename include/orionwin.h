@@ -22,10 +22,6 @@
 #ifndef __ORIONWIN_H
 #define __ORIONWIN_H
 
-#ifndef __ORIONGL_H
-#	error "Cannot use Orion window abstractions without first #including <oriongl.h>."
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,6 +31,15 @@ extern "C" {
 // ======================================================================================
 // ***** 				   		 ORIONWIN PUBLIC STRUCTURES							*****
 // ======================================================================================
+
+/**
+ * @brief Generic function pointer used for returning client API function pointers without forcing a cast from a regular pointer.
+ * 
+ * @sa <a href="https://www.glfw.org/docs/latest/group__context.html#ga3d47c2d2fbe0be9c505d0e04e91a133c">GLFW context reference/GLFWglproc</a>
+ * 
+ * @ingroup window
+ */
+typedef GLFWglproc oriGLProcAddress;
 
 /**
  * @brief An Orion window structure.
@@ -55,6 +60,8 @@ typedef struct oriWindow oriWindow;
  * @brief Allocate and initialise a GLFW window struct, make its context current, and load OpenGL for its context.
  * @details This structure is simply an abstraction of @c glfwCreateWindow, part of the GLFW public API.
  * The resulting window, however, will be automatically freed in a call to oriTerminate().
+ * 
+ * GLFW will be initialised automatically in the first window creation.
  * 
  * @sa <a href="https://www.glfw.org/docs/latest/window.html">GLFW window guide</a>
  * 
@@ -83,11 +90,70 @@ void oriFreeWindow(oriWindow *window);
  * 
  * @ingroup window
  */
-GLFWwindow **oriWindowToGLFW(oriWindow *window);
+const GLFWwindow *oriWindowHandle(const oriWindow *window);
 
 // ======================================================================================
 // ***** 				   	  		ORION GLFW ABSTRACTIONS							*****
 // ======================================================================================
+
+// ======================================================================================
+// ***** 				   	 from the GLFW INITIALISATION REFERENCE					*****
+// ======================================================================================
+// (https://www.glfw.org/docs/latest/group__init.html)
+
+/**
+ * @brief Initialise the GLFW library for use in Orion abstractions of GLFW functionality.
+ * @details This function is @b automatically @b called when the first oriWindow is created.
+ * Calling it after creating the first window won't do any harm; the function will just
+ * return early. The only real reason for this abstraction existing is for the ability to re-initialise
+ * GLFW without terminating Orion.
+ * 
+ * @note The result of @c glfwInit() will automatically be checked and the program will halt (with a
+ * debug message) should GLFW fail to initialise.
+ * 
+ * @sa <a href="https://www.glfw.org/docs/latest/group__init.html#ga317aac130a235ab08c6db0834907d85e">GLFW reference/glfwInit()</a>
+ * @sa oriTerminateGLFW()
+ * @sa oriGLFWInitHint()
+ * 
+ * @ingroup window
+ */
+void oriInitGLFW();
+
+/**
+ * @brief Terminate the GLFW library.
+ * @details @b You @b will @b rarely @b need @b to @b do @b this. GLFW is automatically terminated
+ * when you call oriTerminate(). But this function is still here in case you want to re-initialise
+ * GLFW without terminating Orion.
+ * 
+ * @sa <a href="https://www.glfw.org/docs/latest/group__init.html#gaaae48c0a18607ea4a4ba951d939f0901">GLFW reference/glfwTerminate()</a>
+ * @sa oriInitGLFW()
+ * 
+ * @ingroup window 
+ */
+void oriTerminateGLFW();
+
+/**
+ * @brief Sets hints for the next initialization of GLFW.
+ * @details GLFW is initialised either with a call to oriInitGLFW or by creating an oriWindow.
+ * 
+ * @param hint the hint to set
+ * @param value the value of the init hint.
+ * 
+ * @sa <a href="https://www.glfw.org/docs/latest/group__init.html#ga110fd1d3f0412822b4f1908c026f724a">GLFW reference/glfwInitHint()</a>
+ * @sa oriInitGLFW()
+ * 
+ * @ingroup window
+ */
+void oriGLFWInitHint(int hint, int value);
+ 
+/** @ingroup window */ void oriGetGLFWVersion(int *major, int *minor, int *rev);
+/** @ingroup window */ const char *oriGetGLFWVersionString();
+/** @ingroup window */ int oriGetGLFWError(const char **description);
+
+// ======================================================================================
+// ***** 				   	  	from the GLFW WINDOW REFERENCE						*****
+// ======================================================================================
+// (https://www.glfw.org/docs/latest/group__window.html)
 
 /** @ingroup window */ void oriDefaultWindowHints();
 /** @ingroup window */ void oriWindowHint(int hint, int value);
@@ -134,7 +200,17 @@ GLFWwindow **oriWindowToGLFW(oriWindow *window);
 /** @ingroup window */ void oriWaitEventsTimeout(double timeout);
 /** @ingroup window */ void oriPostEmptyEvent();
 /** @ingroup window */ void oriSwapBuffers(oriWindow *window);
+
+// ======================================================================================
+// ***** 				   	  	from the GLFW CONTEXT REFERENCE						*****
+// ======================================================================================
+// (https://www.glfw.org/docs/latest/group__context.html)
+
 /** @ingroup window */ void oriMakeContextCurrent(oriWindow *window);
+/** @ingroup window */ oriWindow *oriGetCurrentContext();
+/** @ingroup window */ void oriSwapInterval(oriWindow *window, int interval);
+/** @ingroup window */ int oriExtensionSupported(oriWindow *window, const char *extension);
+/** @ingroup window */ oriGLProcAddress oriGetGLProcAddress(oriWindow *window, const char *procname);
 
 #ifdef __cplusplus
 }

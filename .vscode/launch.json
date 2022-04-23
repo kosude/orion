@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
 
-            "program": "${workspaceFolder}/build/examples/glfwcompat",
+            "program": "${workspaceFolder}/build/tests/public",
             "cwd": "${workspaceFolder}",
 
             "externalConsole": false,
