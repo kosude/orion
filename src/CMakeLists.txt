@@ -23,6 +23,9 @@ target_include_directories(${PROJECT_NAME} PUBLIC "${DEPENDENCIES_DIR}")
 # ---
 # dependencies
 
+set(build_shared_libs_cache "${BUILD_SHARED_LIBS}")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
 # GLFW
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)		# no docs
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)		# no tests
@@ -31,11 +34,19 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)	# no examples
 add_subdirectory("${DEPENDENCIES_DIR}/glfw" "${DEPENDENCIES_DIR}/glfw/build")
 target_link_libraries(${PROJECT_NAME} glfw)
 
+# zetaml
+set(ZML_USE_FLOATS ON CACHE BOOL "" FORCE)
+# (build and link):
+add_subdirectory("${DEPENDENCIES_DIR}/zetaml" "${DEPENDENCIES_DIR}/zetaml/build")
+target_link_libraries(${PROJECT_NAME} zetaml)
+
 # other (non-CMake) dependencies
 target_sources(${PROJECT_NAME} PRIVATE
 	"${DEPENDENCIES_DIR}/glad/4.6/glad.c"
 	"${DEPENDENCIES_DIR}/glad/4.6/orionglad/orionglad.c"
 )
+
+set(BUILD_SHARED_LIBS ${build_shared_libs_cache} CACHE BOOL "" FORCE)
 
 # ---
 # define macro based on configuration type via platform.h file.
@@ -66,9 +77,7 @@ endif()
 message(STATUS " => Compiler:\t\t${CMAKE_C_COMPILER_ID} (at ${CMAKE_C_COMPILER})")
 message(STATUS " => Compiler version:\t${CMAKE_C_COMPILER_VERSION}")
 
-message(STATUS " => Configuration:\t\t${_upperbuildtype}")
-
-message(STATUS " => Shader presets:\t\t${ORION_BUILD_PRESETS}")
+message(STATUS " => Configuration:\t\t${_upperBuildType}")
 
 # ---
 # add shader presets

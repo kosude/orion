@@ -7,6 +7,6 @@
 [submodule "tests/deps/zetaml"]
 	path = tests/deps/zetaml
 	url = https://github.com/jabenuk/zetaml
-[submodule "deps/tests/zetaml"]
-	path = deps/tests/zetaml
+[submodule "deps/zetaml"]
+	path = deps/zetaml
 	url = https://github.com/jabenuk/zetaml

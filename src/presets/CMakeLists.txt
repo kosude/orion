@@ -65,12 +65,10 @@ function(load_resources)
 	set(ORION_LOADED_RESOURCES "${_define_str}" PARENT_SCOPE)
 endfunction()
 
-if (ORION_BUILD_PRESETS)
-	load_resources(
-		PATHS
-			"${CMAKE_CURRENT_LIST_DIR}/basic.frag.glsl"
-			"${CMAKE_CURRENT_LIST_DIR}/basic.vert.glsl"
-	)
-endif()
+load_resources(
+	PATHS
+		"${CMAKE_CURRENT_LIST_DIR}/basic.frag.glsl"
+		"${CMAKE_CURRENT_LIST_DIR}/basic.vert.glsl"
+)
 
 configure_file("${PROJECT_SOURCE_DIR}/CMake/generate/shaderpresets.h.in" "${PROJECT_BINARY_DIR}/generated/shaderpresets.h" @ONLY)
