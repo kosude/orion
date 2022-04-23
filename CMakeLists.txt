@@ -20,6 +20,7 @@ set(DEPENDENCIES_DIR "${PROJECT_SOURCE_DIR}/deps")
 option(BUILD_SHARED_LIBS "Build shared libraries." ON)
 option(ORION_BUILD_LIB "Build the core Orion library." ON)
 option(ORION_BUILD_TESTS "Build Orion test executable(s)." OFF)
+option(ORION_BUILD_EXAMPLES "Build Orion usage example executable(s)." OFF)
 option(ORION_BUILD_DOCS "Build Orion documentation." ON)
 option(ORION_BUILD_PRESETS "Build Orion shader presets." ON)
 
@@ -27,6 +28,14 @@ option(ORION_BUILD_PRESETS "Build Orion shader presets." ON)
 # configure files
 
 configure_file("${PROJECT_SOURCE_DIR}/CMake/generate/platform.h.in" "${PROJECT_BINARY_DIR}/generated/platform.h" @ONLY)
+
+# ---
+# add dependencies for executables if needed
+
+if (ORION_BUILD_TESTS OR ORION_BUILD_EXAMPLES)
+	set(ZML_USE_FLOATS ON CACHE BOOL "" FORCE)
+	add_subdirectory("${PROJECT_SOURCE_DIR}/deps/tests/zetaml" "${PROJECT_SOURCE_DIR}/deps/tests/zetaml/build")
+endif()
 
 # ---
 # subdirectories
@@ -37,6 +46,10 @@ endif()
 
 if (ORION_BUILD_TESTS)
 	add_subdirectory("tests")
+endif()
+
+if (ORION_BUILD_EXAMPLES)
+	add_subdirectory("examples")
 endif()
 
 if (ORION_BUILD_DOCS)

@@ -30,7 +30,8 @@
 				"-B",
 				"${buildFolder}",
 				"-DCMAKE_BUILD_TYPE=Debug",
-				"-DORION_BUILD_TESTS=ON"
+				"-DORION_BUILD_TESTS=ON",
+				"-DORION_BUILD_EXAMPLES=ON"
 			]
 		/* __clean */  }, {
 			"label": "__clean",
