@@ -30,7 +30,7 @@ typedef struct oriBuffer {
 	oriBuffer *next;
 
 	unsigned int handle;
-	unsigned int target;
+	unsigned int currentTarget;
 	bool dataSet;
 	unsigned int dataSize;
 } oriBuffer;
@@ -243,16 +243,16 @@ void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer,
 	// ---
 	// if DSA is not possible
 
-	if (buffer->target != GL_ARRAY_BUFFER) {
-		printf("[Orion : WARN] >> (in oriSpecifyVertexData()) when version is below 4.5, the buffer target must be GL_ARRAY_BUFFER.\n");
+	if (buffer->currentTarget != GL_ARRAY_BUFFER) {
+		printf("[Orion : WARN] >> (in oriSpecifyVertexData()) when version is below 4.5, the buffer must be bound to GL_ARRAY_BUFFER.\n");
 		return;
 	}
 
 	unsigned int previousVA = oriCurrentVertexArray();
-	unsigned int previousBuffer = oriCurrentBufferAt(buffer->target);
+	unsigned int previousBuffer = oriCurrentBufferAt(GL_ARRAY_BUFFER);
 
 	oriBindVertexArray(va);
-	oriBindBuffer(buffer);
+	oriBindBuffer(buffer, GL_ARRAY_BUFFER);
 
 	glEnableVertexAttribArray(index);
 
@@ -282,7 +282,7 @@ void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer,
 
 	// bind to previous objects
 	glBindVertexArray(previousVA);
-	glBindBuffer(buffer->target, previousBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, previousBuffer);
 }
 
 // ======================================================================================
@@ -291,31 +291,10 @@ void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer,
 
 /**
  * @brief Allocate and initialise a new oriBuffer structure.
- * 
- * @param target the buffer target (e.g. GL_ARRAY_BUFFER).
- * 
+ *  
  * @ingroup buffers
  */
-oriBuffer *oriCreateBuffer(unsigned int target) {
-	// assert the correct version
-	// see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml
-	switch (target) {
-		case GL_COPY_READ_BUFFER:
-		case GL_UNIFORM_BUFFER:
-		case GL_TEXTURE_BUFFER:
-			_orionAssertVersion(310);
-			break;
-		case GL_ATOMIC_COUNTER_BUFFER:
-			_orionAssertVersion(420);
-		case GL_DISPATCH_INDIRECT_BUFFER:
-		case GL_SHADER_STORAGE_BUFFER:
-			_orionAssertVersion(430);
-		case GL_QUERY_BUFFER:
-			_orionAssertVersion(440);
-		default:
-			_orionAssertVersion(200);
-	}
-
+oriBuffer *oriCreateBuffer() {
 	if (!_orion.initialised) {
 		_orionThrowError(ORERR_NOT_INIT);
 	}
@@ -324,7 +303,7 @@ oriBuffer *oriCreateBuffer(unsigned int target) {
 	r->handle = 0;
 	r->dataSet = false;
 	r->dataSize = 0;
-	r->target = target;
+	r->currentTarget = 0;
 
 	// use DSA if possible
 	if (_orion.glVersion >= 450) {
@@ -367,16 +346,35 @@ void oriFreeBuffer(oriBuffer *buffer) {
  * @brief Bind the given buffer.
  * 
  * @param buffer the buffer to bind.
+ * @param target the OpenGL buffer target to bind the buffer to.
  * 
  * @ingroup buffers
  */
-void oriBindBuffer(oriBuffer *buffer) {
-	_orionAssertVersion(200);
+void oriBindBuffer(oriBuffer *buffer, unsigned int target) {
+	// assert the correct version
+	// see https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml
+	switch (target) {
+		case GL_COPY_READ_BUFFER:
+		case GL_UNIFORM_BUFFER:
+		case GL_TEXTURE_BUFFER:
+			_orionAssertVersion(310);
+			break;
+		case GL_ATOMIC_COUNTER_BUFFER:
+			_orionAssertVersion(420);
+		case GL_DISPATCH_INDIRECT_BUFFER:
+		case GL_SHADER_STORAGE_BUFFER:
+			_orionAssertVersion(430);
+		case GL_QUERY_BUFFER:
+			_orionAssertVersion(440);
+		default:
+			_orionAssertVersion(200);
+	}
 
-	if (oriCurrentBufferAt(buffer->target) == buffer->handle) {
+	if (oriCurrentBufferAt(target) == buffer->handle) {
 		return;
 	}
-	glBindBuffer(buffer->target, buffer->handle);
+	glBindBuffer(target, buffer->handle);
+	buffer->currentTarget = target;
 }
 
 /**
@@ -405,12 +403,14 @@ void oriSetBufferData(oriBuffer *buffer, const void *data, const unsigned int si
 
 	bool dsaEnabled = _orion.glVersion >= 450;
 
+	// for the sake of supporting non-DSA, the buffer will be temporarily bound to GL_ARRAY_BUFFER during this function's lifespan.
+
 	// if DSA is not possible then the buffer needs to be bound before anything else.
 	unsigned int boundCache = 0;
 	if (!dsaEnabled) {
 		// boundCache will be bound when the function is done
-		boundCache = oriCurrentBufferAt(buffer->target);
-		oriBindBuffer(buffer);
+		boundCache = oriCurrentBufferAt(GL_ARRAY_BUFFER);
+		oriBindBuffer(buffer, GL_ARRAY_BUFFER);
 	}
 
 	// reallocate space for the data if the data hasn't been set or if the size has changed
@@ -420,14 +420,14 @@ void oriSetBufferData(oriBuffer *buffer, const void *data, const unsigned int si
 		if (dsaEnabled) {
 			glNamedBufferData(buffer->handle, size, data, usage);
 		} else {
-			glBufferData(buffer->target, size, data, usage);
+			glBufferData(GL_ARRAY_BUFFER, size, data, usage);
 		}
 
 		buffer->dataSet = true;
 
 		// unbind to last buffer if necessary
 		if (!dsaEnabled) {
-			glBindBuffer(buffer->target, boundCache);
+			glBindBuffer(GL_ARRAY_BUFFER, boundCache);
 		}
 
 		// return early
@@ -438,11 +438,11 @@ void oriSetBufferData(oriBuffer *buffer, const void *data, const unsigned int si
 	if (dsaEnabled) {
 		glNamedBufferSubData(buffer->handle, 0, size, data);
 	} else {
-		glBufferSubData(buffer->target , 0, size, data);
+		glBufferSubData(GL_ARRAY_BUFFER , 0, size, data);
 	}
 
 	// unbind to last buffer if necessary
 	if (!dsaEnabled) {
-		glBindBuffer(buffer->target, boundCache);
+		glBindBuffer(GL_ARRAY_BUFFER, boundCache);
 	}
 }

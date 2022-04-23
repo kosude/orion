@@ -15,7 +15,13 @@
 float vertices[] = {
 	-0.5f, -0.5f, 0.0f,		1, 0, 0, 1,
 	 0.5f, -0.5f, 0.0f,		0, 1, 0, 1,
-	 0.0f,  0.5f, 0.0f,		0, 0, 1, 1
+	-0.5f,  0.5f, 0.0f,		0, 0, 1, 1,
+	 0.5f,  0.5f, 0.0f,		1, 1, 0, 1
+};
+
+unsigned int indices[] = {
+	0, 1, 2,
+	3, 1, 2
 };
 
 int main() {
@@ -35,9 +41,11 @@ int main() {
 	oriInitialise(460);
 	oriEnableDebugContext(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DONT_CARE, GL_DONT_CARE, false, NULL, 0);
 
-	oriBuffer *vbo = oriCreateBuffer(GL_ARRAY_BUFFER);
-	oriSetBufferData(vbo, vertices, sizeof(vertices), GL_STATIC_DRAW);
+	oriBuffer *ibo = oriCreateBuffer();
+	oriSetBufferData(ibo, indices, sizeof(indices), GL_STATIC_DRAW);
 
+	oriBuffer *vbo = oriCreateBuffer();
+	oriSetBufferData(vbo, vertices, sizeof(vertices), GL_STATIC_DRAW);
 	oriVertexArray *vao = oriCreateVertexArray();
 	oriSpecifyVertexData(vao, vbo, 0, 3, GL_FLOAT, false, 7 * sizeof(float), 0 * sizeof(float)); // vertex positions
 	oriSpecifyVertexData(vao, vbo, 2, 4, GL_FLOAT, false, 7 * sizeof(float), 3 * sizeof(float)); // vertex colours
@@ -59,9 +67,10 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		oriBindVertexArray(vao);
+		oriBindBuffer(ibo, GL_ELEMENT_ARRAY_BUFFER);
 		oriBindShader(shader);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

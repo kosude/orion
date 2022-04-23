@@ -119,11 +119,9 @@ void oriEnableDebugContext(const unsigned int source, const unsigned int type, c
 /**
  * @brief Allocate and initialise a new oriBuffer structure.
  * 
- * @param target the buffer target (e.g. GL_ARRAY_BUFFER).
- * 
  * @ingroup buffers
  */
-oriBuffer *oriCreateBuffer(unsigned int target);
+oriBuffer *oriCreateBuffer();
 
 /**
  * @brief Destroy and free memory for the given buffer.
@@ -138,10 +136,11 @@ void oriFreeBuffer(oriBuffer *buffer);
  * @brief Bind the given buffer.
  * 
  * @param buffer the buffer to bind.
+ * @param target the OpenGL buffer target to bind the buffer to.
  * 
  * @ingroup buffers
  */
-void oriBindBuffer(oriBuffer *buffer);
+void oriBindBuffer(oriBuffer *buffer, unsigned int target);
 
 /**
  * @brief Return the OpenGL handle to the given buffer struct.
