@@ -1,5 +1,5 @@
 /* *************************************************************************************** */
-/* 						ORION GRAPHICS LIBRARY AND RENDERING ENGINE						   */
+/* 								  ORION ABSTRACTIONS OF GLFW							   */
 /* *************************************************************************************** */
 /* Copyright (c) 2022 Jack Bennett														   */
 /* --------------------------------------------------------------------------------------- */
@@ -10,6 +10,15 @@
 /* CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR */
 /* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
 /* *************************************************************************************** */
+
+// ============================================================ //
+// GLFW is:                                                     //
+//   Copyright (c) 2002-2006 Marcus Geelnard                    //
+//   Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org> //
+//                                                              //
+// GLFW's full license (zlib license) can be found at:          //
+//   https://www.glfw.org/license.html                          //
+// ============================================================ //
 
 /**
  * @file orionwin.h

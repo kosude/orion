@@ -2,11 +2,12 @@
 # add source files to library output
 
 set(SRC
+	"buffers.c"
 	"callback.c"
 	"init.c"
-	"window.c"
+	"internal.h"
 	"shaders.c"
-	"buffers.c"
+	"window.c"
 )
 
 if (BUILD_SHARED_LIBS)
