@@ -1,0 +1,6 @@
+deps/glad/glad.c linguist-vendored
+deps/glad/glad.h linguist-vendored
+deps/glad/khrplatform.h linguist-vendored
+
+tests/* linguist-vendored
+examples/* linguist-vendored

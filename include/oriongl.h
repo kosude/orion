@@ -99,7 +99,7 @@ void oriLoadGL(void *(* loadproc)(const char *));
 
 /**
  * @brief Enables OpenGL debug context (only available in OpenGL versions 4.3 and above!) - OpenGL errors will be printed to \e stdout.
- * \warning Attempting to run this function on OpenGL functions below version 4.3 will result in an \b exception.
+ * @warning Attempting to run this function on OpenGL functions below version 4.3 will result in an \b exception.
  * 
  * @param source the source to filter the errors to.
  * @param type the type to filter the errors to.
@@ -111,6 +111,16 @@ void oriLoadGL(void *(* loadproc)(const char *));
  * @ingroup meta
  */
 void oriEnableDebugContext(const unsigned int source, const unsigned int type, const unsigned int severity, const bool enabled, const unsigned int *suppressed, const unsigned int count);
+
+/**
+ * @brief Set an Orion library flag, program-wide.
+ * 
+ * @param flag the flag to set, such as ORION_
+ * @param value 
+ * 
+ * @ingroup meta
+ */
+void oriSetFlag(unsigned int flag, int value);
 
 // ======================================================================================
 // ***** 				   		  ORION BUFFER FUNCTIONS 							*****
