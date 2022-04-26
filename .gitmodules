@@ -10,3 +10,6 @@
 [submodule "deps/zetaml"]
 	path = deps/zetaml
 	url = https://github.com/jabenuk/zetaml
+[submodule "deps/qoi"]
+	path = deps/qoi
+	url = https://github.com/phoboslab/qoi
