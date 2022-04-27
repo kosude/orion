@@ -58,3 +58,12 @@
  * @sa <a href="https://www.khronos.org/opengl/wiki/Vertex_Specification">OpenGL/Vertex Specification</a>
  * 
  */
+
+/**
+ * @defgroup textures Textures
+ * @brief Functionality related to the management, creation, and destruction of OpenGL textures.
+ * @details This module documents the use of images with OpenGL via textures.
+ * 
+ * @sa <a href="https://www.khronos.org/opengl/wiki/Texture">OpenGL/Texture</a>
+ *
+ */

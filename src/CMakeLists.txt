@@ -7,6 +7,7 @@ set(SRC
 	"init.c"
 	"internal.h"
 	"shaders.c"
+	"textures.c"
 	"window.c"
 )
 
@@ -45,6 +46,8 @@ target_link_libraries(${PROJECT_NAME} zetaml)
 target_sources(${PROJECT_NAME} PRIVATE
 	"${DEPENDENCIES_DIR}/glad/4.6/glad.c"
 	"${DEPENDENCIES_DIR}/glad/4.6/orionglad/orionglad.c"
+
+	"${DEPENDENCIES_DIR}/stb_image/stb_image.c"
 )
 
 set(BUILD_SHARED_LIBS ${build_shared_libs_cache} CACHE BOOL "" FORCE)

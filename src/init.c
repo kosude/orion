@@ -169,6 +169,10 @@ void oriTerminate() {
 	while (_orion.vertexArrayListHead) {
 		oriFreeVertexArray(_orion.vertexArrayListHead);
 	}
+	// destroy all vertex array objects
+	while (_orion.textureListHead) {
+		oriFreeTexture(_orion.textureListHead);
+	}
 
 	// destroy all window objects
 	while (_orion.windowListHead) {

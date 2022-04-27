@@ -34,37 +34,6 @@ extern "C" {
 #include "shaderpresets.h" // preset shaders
 
 // ======================================================================================
-// ***** 				   		 ORION PUBLIC STRUCTURES 							*****
-// ======================================================================================
-
-/**
- * @brief An opaque OpenGL shader program object.
- * 
- * @note All instances of oriShader will be freed with oriTerminate().
- * 
- * @ingroup shaders
- */
-typedef struct oriShader oriShader;
-
-/**
- * @brief An opaque OpenGL buffer object.
- * 
- * @note All instances of oriBuffer will be freed with oriTerminate().
- * 
- * @ingroup buffers
- */
-typedef struct oriBuffer oriBuffer;
-
-/**
- * @brief An opaque OpenGL vertex array object.
- * 
- * @note All instances of oriVertexArray will be freed with oriTerminate().
- * 
- * @ingroup vertexspec
- */
-typedef struct oriVertexArray oriVertexArray;
-
-// ======================================================================================
 // ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
 // ======================================================================================
 
@@ -121,6 +90,193 @@ void oriEnableDebugContext(const unsigned int source, const unsigned int type, c
  * @ingroup meta
  */
 void oriSetFlag(unsigned int flag, int value);
+
+// ======================================================================================
+// ***** 				   		 ORION PUBLIC STRUCTURES 							*****
+// ======================================================================================
+
+/**
+ * @brief An opaque OpenGL shader program object.
+ * 
+ * @note All instances of oriShader will be freed with oriTerminate().
+ * 
+ * @ingroup shaders
+ */
+typedef struct oriShader oriShader;
+
+/**
+ * @brief An opaque OpenGL buffer object.
+ * 
+ * @note All instances of oriBuffer will be freed with oriTerminate().
+ * 
+ * @ingroup buffers
+ */
+typedef struct oriBuffer oriBuffer;
+
+/**
+ * @brief An opaque OpenGL vertex array object.
+ * 
+ * @note All instances of oriVertexArray will be freed with oriTerminate().
+ * 
+ * @ingroup vertexspec
+ */
+typedef struct oriVertexArray oriVertexArray;
+
+/**
+ * @brief An opaque OpenGL texture object.
+ * 
+ * @note All instances of oriTexture will be freed with oriTerminate().
+ * 
+ * @ingroup textures 
+ */
+typedef struct oriTexture oriTexture;
+
+// ======================================================================================
+// ***** 				   		  ORION TEXTURE FUNCTIONS 							*****
+// ======================================================================================
+
+
+/**
+ * @brief Allocate and initialise a new oriTexture structure with mutable storage.
+ * 
+ * @details As told in the OpenGL specification, textures cannot be rebound to different targets:
+ *  > It is not legal to bind a [texture object] to a different target than the one it was previously bound with.
+ *  > So if you generate a texture and bind it as GL_TEXTURE_1D, then you must continue to bind it as such. 
+ * Therefore, the binding target is specified in this function (instead of the bind function) so that it is not
+ * possible for it to be accidentally bound differently in the future.
+ * 
+ * @param target the target to bind to.
+ * @param format the internal format of the texture.
+ * 
+ * @ingroup textures
+ */
+oriTexture *oriCreateTexture(unsigned int target, unsigned int format);
+
+/**
+ * @brief Allocate and initialise a new oriTexture structure with immutable storage.
+ * 
+ * @sa oriCreateTexture()
+ * @sa <a href="https://www.khronos.org/opengl/wiki/Texture_Storage#Immutable_storage">OpenGL/Immutable texture storage</a>
+ * 
+ * @param target the target to bind to.
+ * @param width the width of the texture.
+ * @param height the height of the texture. Set to NULL if not applicable.
+ * @param depth the depth of the texture. Set to NULL if not applicable.
+ * @param levels the amount of texture levels. Set to NULL if not applicable.
+ * @param format the internal format with which texture image data will be stored, e.g. @c GL_RGBA8.
+ * @param samples the number of samples in the texture. Set to NULL if not applicable.
+ * @param fixedSampleLocations set to true if the image will use identical sample locations and the same number of samples for all texels in the image, and the sample
+ * locations will not depend on the internal format or size of the image.
+ * 
+ * @sa <a href="https://docs.gl/gl4/glTexStorage1D">glTexStorage1D</a>
+ * @sa <a href="https://docs.gl/gl4/glTexStorage2D">glTexStorage2D</a>
+ * @sa <a href="https://docs.gl/gl4/glTexStorage3D">glTexStorage3D</a>
+ * @sa <a href="https://docs.gl/gl4/glTexStorage2DMultisample">glTexStorage2DMultisample</a>
+ * @sa <a href="https://docs.gl/gl4/glTexStorage3DMultisample">glTexStorage3DMultisample</a>
+ * 
+ * @ingroup textures
+ */
+oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, unsigned int height, unsigned int depth, unsigned int format, unsigned int levels, unsigned int samples, bool fixedSampleLocations);
+
+/**
+ * @brief Destroy and free memory for the given texture.
+ * 
+ * @param texture the texture to free.
+ * 
+ * @ingroup textures
+ */
+void oriFreeTexture(oriTexture *texture);
+
+/**
+ * @brief Bind a given texture to the specified target.
+ * 
+ * @param texture the texture to bind.
+ * @param unit the texture image unit to bind the texture to.
+ * 
+ * @ingroup textures
+ */
+void oriBindTexture(oriTexture *texture, unsigned int unit);
+
+/**
+ * @brief Return the OpenGL handle to the given texture structure.
+ * 
+ * @param texture the texture to inspect.
+ * 
+ * @ingroup textures
+ */
+unsigned int oriGetTextureHandle(oriTexture *texture);
+
+/**
+ * @brief Return texture properties into the specified variables.
+ * 
+ * @details If you don't want to recieve a property, pass NULL as the argument.
+ * 
+ * @param texture the texture to inspect.
+ * @param type the type of the texture, e.g. @c GL_TEXTURE_2D, or @c GL_TEXTURE_CUBE_MAP.
+ * @param width the width of the texture's base mipmap level image.
+ * @param height the height of the texture's base mipmap level image; only applicable when the texture's image is not 1-dimensional.
+ * @param depth the depth of the texture's base mipmap level image; only applicable if the texture is @c GL_TEXTURE_3D.
+ * @param colourDepth the colour depth of the image, in bits/pixel.
+ * 
+ * @ingroup textures
+ */
+void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int *width, unsigned int *height, unsigned int *depth, unsigned int *colourDepth);
+
+/**
+ * @brief Fill the given texture's storage with an image at the specified path.
+ * 
+ * @details The path is relative to the location of the executable.
+ * 
+ * @param texture the texture object to update.
+ * @param path the path to the image in use.
+ * @param desiredChannels the desired amount of channels in the image (e.g. RGBA -> 4 channels).
+ * @param format the format of the image. Not to be confused with the internal texture format. Good luck.
+ * 
+ * @ingroup textures
+ */
+void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int desiredChannels, unsigned int format);
+
+/**
+ * @brief Set a parameter for the given texture.
+ * 
+ * @param texture the texture to update.
+ * @param param the texture parameter to set.
+ * @param val the value to set the parameter to.
+ * 
+ * @ingroup textures
+ */
+void oriSetTextureParameteri(oriTexture *texture, unsigned int param, int val);
+
+/**
+ * @brief Set a parameter for the given texture.
+ * 
+ * @param texture the texture to update.
+ * @param param the texture parameter to set.
+ * @param val the value to set the parameter to.
+ * 
+ * @ingroup textures
+ */
+void oriSetTextureParameterf(oriTexture *texture, unsigned int param, float val);
+
+/**
+ * @brief Return the value of the specified texture parameter for the given texture object.
+ * 
+ * @param texture the texture to inspect.
+ * @param param the texture parameter to check.
+ * 
+ * @ingroup textures
+ */
+int oriGetTextureParameteri(oriTexture *texture, unsigned int param);
+
+/**
+ * @brief Return the value of the specified texture parameter for the given texture object.
+ * 
+ * @param texture the texture to inspect.
+ * @param param the texture parameter to check.
+ * 
+ * @ingroup textures
+ */
+float oriGetTextureParameterf(oriTexture *texture, unsigned int param);
 
 // ======================================================================================
 // ***** 				   		  ORION BUFFER FUNCTIONS 							*****
