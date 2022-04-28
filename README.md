@@ -22,3 +22,7 @@ The Orion Graphics Library is the main part of the Orion library, and can be use
 
 ### Orion windowing interface
 The Orion windowing interface is an optional part of Orion, and can be used by including `<orionwin.h>`. This module includes abstractions of GLFW functions with the added ability to use the included `oriWindow` struct, which is managed internally by Orion and is automatically freed in calls to `oriTerminate()`. Keep in mind that Orion has also been tested with basic GLFW (without orionwin) and it works fine too. Use it if you want; you don't have to.
+
+## Successfully eliminating memory issues
+
+Whenever something is contributed to Orion, regardless of its significance, it should always be tested with **[Valgrind](https://valgrind.org/)** first. There are a few memory leaks that are caused by graphics drivers, windowing systems (e.g. X11), and bugs within Valgrind itself. In this case, you can safely ignore *(suppress, even)* any leaks that don't originate within Orion.
