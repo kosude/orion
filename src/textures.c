@@ -33,7 +33,7 @@ typedef struct oriTexture {
 	unsigned int height;
 	unsigned int depth;
 	unsigned int colourDepth;
-	unsigned int format; // GETTER
+	unsigned int internalFormat; // GETTER
 	unsigned int levels; // GETTER
 	unsigned int samples; // GETTER
 
@@ -54,16 +54,21 @@ typedef struct oriTexture {
  * possible for it to be accidentally bound differently in the future.
  * 
  * @param target the target to bind to.
- * @param format the internal format of the texture.
+ * @param internalFormat the internal format of the texture.
  * 
  * @ingroup textures
  */
-oriTexture *oriCreateTexture(unsigned int target, unsigned int format) {
+oriTexture *oriCreateTexture(unsigned int target, unsigned int internalFormat) {
 	// assert correct version
 	_orionAssertVersion(200);
 
 	if (!_orion.initialised) {
 		_orionThrowError(ORERR_NOT_INIT);
+	}
+
+	// assert version 3.2 or higher if necessary
+	if (target == GL_TEXTURE_2D_MULTISAMPLE || target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY) {
+		_orionAssertVersion(320);
 	}
 
 	oriTexture *r = malloc(sizeof(oriTexture));
@@ -72,7 +77,7 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int format) {
 	r->height = 0;
 	r->depth = 0;
 	r->colourDepth = 0;
-	r->format = format;
+	r->internalFormat = internalFormat;
 	r->levels = 0;
 	r->samples = 0;
 	r->immutableStorage = false;
@@ -102,7 +107,7 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int format) {
  * @param height the height of the texture. Set to NULL if not applicable.
  * @param depth the depth of the texture. Set to NULL if not applicable.
  * @param levels the amount of texture levels. Set to NULL if not applicable.
- * @param format the internal format with which texture image data will be stored, e.g. @c GL_RGBA8.
+ * @param internalFormat the internal format with which texture image data will be stored, e.g. @c GL_RGBA8.
  * @param samples the number of samples in the texture. Set to NULL if not applicable.
  * @param fixedSampleLocation set to true if the image will use identical sample locations and the same number of samples for all texels in the image, and the sample
  * locations will not depend on the internal format or size of the image.
@@ -115,14 +120,10 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int format) {
  * 
  * @ingroup textures
  */
-oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, unsigned int height, unsigned int depth, unsigned int format, unsigned int levels, unsigned int samples, bool fixedSampleLocations) {
+oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, unsigned int height, unsigned int depth, unsigned int internalFormat, unsigned int levels, unsigned int samples, bool fixedSampleLocations) {
 	_orionAssertVersion(420);
-	
-	// for the record, I am aware that I should be checking for versions based on if the target is
-	// supported or not. too bad! I've spent long enough on this mess. I hate the GL specification too much to
-	// look at it any more. just please don't do anything stupid when using this function. :)
 
-	oriTexture *r = oriCreateTexture(target, format);
+	oriTexture *r = oriCreateTexture(target, internalFormat);
 	r->immutableStorage = true;
 	
 	// get the appropriate glTexStorage* function to call.
@@ -130,9 +131,9 @@ oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, u
 
 	// 0: glTexStorage1D
 	// 1: glTexStorage2D
-	// 2: glTexStorage3D				// NOT SUPPORTED
-	// 3: glTexStorage2DMultisample		// NOT SUPPORTED
-	// 4: glTexStorage3DMultisample		// NOT SUPPORTED
+	// 2: glTexStorage3D
+	// 3: glTexStorage2DMultisample
+	// 4: glTexStorage3DMultisample
 	unsigned int glTexStorageFuncType;
 
 	switch (r->type) {
@@ -148,13 +149,13 @@ oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, u
 		case GL_TEXTURE_3D:
 		case GL_TEXTURE_2D_ARRAY:
 		case GL_TEXTURE_CUBE_MAP_ARRAY:
-			printf("[Orion : WARNING] >> 3D textures are unfinished and as such currently unsupported. Do it yourself.\n");
-			return r;
+			glTexStorageFuncType = 2;
+			break;
 		case GL_TEXTURE_2D_MULTISAMPLE:
-			printf("[Orion : WARNING] >> 2D multisampled textures are unfinished and as such currently unsupported. Do it yourself.\n");
+			glTexStorageFuncType = 3;
 			return r;
 		case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-			printf("[Orion : WARNING] >> 2D multisampled texture arrays are unfinished and as such currently unsupported. Do it yourself.\n");
+			glTexStorageFuncType = 4;
 			return r;
 		default:
 			printf("[Orion : WHOOPS] >> Unsupported texture type specified. Immutable texture storage not allocated.\n");
@@ -184,16 +185,37 @@ oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, u
 	switch (glTexStorageFuncType) {
 		case 0:
 			if (_orion.glVersion >= 450) {
-				glTextureStorage1D(r->handle, levels, format, width);
+				glTextureStorage1D(r->handle, levels, internalFormat, width);
 			} else {
-				glTexStorage1D(r->type, levels, format, width);
+				glTexStorage1D(r->type, levels, internalFormat, width);
 			}
 			break;
 		case 1:
 			if (_orion.glVersion >= 450) {
-				glTextureStorage2D(r->handle, levels, format, width, height);
+				glTextureStorage2D(r->handle, levels, internalFormat, width, height);
 			} else {
-				glTexStorage2D(r->type, levels, format, width, height);
+				glTexStorage2D(r->type, levels, internalFormat, width, height);
+			}
+			break;
+		case 2:
+			if (_orion.glVersion >= 450) {
+				glTextureStorage3D(r->handle, levels, internalFormat, width, height, depth);
+			} else {
+				glTexStorage3D(r->type, levels, internalFormat, width, height, depth);
+			}
+			break;
+		case 3:
+			if (_orion.glVersion >= 450) {
+				glTextureStorage2DMultisample(r->handle, samples, internalFormat, width, height, fixedSampleLocations);
+			} else {
+				glTexStorage2DMultisample(r->type, samples, internalFormat, width, height, fixedSampleLocations);
+			}
+			break;
+		case 4:
+			if (_orion.glVersion >= 450) {
+				glTextureStorage3DMultisample(r->handle, samples, internalFormat, width, height, depth, fixedSampleLocations);
+			} else {
+				glTexStorage3DMultisample(r->type, samples, internalFormat, width, height, depth, fixedSampleLocations);
 			}
 			break;
 	}
@@ -289,11 +311,13 @@ void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int
  * @param texture the texture object to update.
  * @param path the path to the image in use.
  * @param desiredChannels the desired amount of channels in the image (e.g. RGBA -> 4 channels).
- * @param format the format of the image. Not to be confused with the internal texture format. Good luck.
+ * @param imageFormat the format of the image to be loaded. Not to be confused with the internal texture format. Good luck.
  * 
  * @ingroup textures
  */
-void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int desiredChannels, unsigned int format) {
+void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int desiredChannels, unsigned int imageFormat) {
+	_orionAssertVersion(200);
+
 	// NOTE! I'm ashamed of this code, but I am also simultaneously so unbelievably pissed off
 	// 		 that anyone could ever approve this part of the OpenGL specification. To those who
 	//		 wrote the spec on GL texture objects: what the shit?
@@ -310,8 +334,6 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
 	// 0: glTex*Image1D
 	// 1: glTex*Image2D
 	// 2: glTex*Image3D									// NOT SUPPORTED
-	// 3: glTex*Image2DMultisample (mutable only)		// NOT SUPPORTED
-	// 4: glTex*Image3DMultisample (mutable only)		// NOT SUPPORTED
 	unsigned int glTexImageFuncType;
 
 	switch (texture->type) {
@@ -327,13 +349,11 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
 		case GL_TEXTURE_3D:
 		case GL_TEXTURE_2D_ARRAY:
 		case GL_TEXTURE_CUBE_MAP_ARRAY:
-			printf("[Orion : WARNING] >> 3D textures, 2D texture arrays and cube map arrays are unfinished and as such currently unsupported. Do it yourself.\n");
+			printf("[Orion : WARNING] >> Setting data of 3D textures, 2D texture arrays and cube map arrays are unfinished and as such currently unsupported. Do it yourself.\n");
 			return;
 		case GL_TEXTURE_2D_MULTISAMPLE:
-			printf("[Orion : WARNING] >> 2D multisampled textures are unfinished and as such currently unsupported. Do it yourself.\n");
-			return;
 		case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-			printf("[Orion : WARNING] >> 2D multisampled texture arrays are unfinished and as such currently unsupported. Do it yourself.\n");
+			printf("[Orion : WARNING] >> OpenGL does not support directly writing to multisampled textures.\n");
 			return;
 		default:
 			printf("[Orion : WHOOPS] >> Unsupported texture type specified. Texture data not updated.\n");
@@ -353,20 +373,22 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
 		switch (glTexImageFuncType) {
 			case 0:
 				if (_orion.glVersion >= 450) {
-					glTextureSubImage1D(texture->handle, 0, 0, wid, format, GL_UNSIGNED_BYTE, texBuffer);
+					glTextureSubImage1D(texture->handle, 0, 0, wid, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
 				} else {
-					glTexSubImage1D(texture->type, 0, 0, wid, format, GL_UNSIGNED_BYTE, texBuffer);
+					glTexSubImage1D(texture->type, 0, 0, wid, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
 				}
 				break;
 			case 1:
 				if (_orion.glVersion >= 450) {
-					glTextureSubImage2D(texture->handle, 0, 0, 0, wid, hei, format, GL_UNSIGNED_BYTE, texBuffer);
+					glTextureSubImage2D(texture->handle, 0, 0, 0, wid, hei, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
 				} else {
-					glTexSubImage2D(texture->type, 0, 0, 0, wid, hei, format, GL_UNSIGNED_BYTE, texBuffer);
+					glTexSubImage2D(texture->type, 0, 0, 0, wid, hei, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
 				}
 				break;
 		}
 	} else {
+		// *** In this case, space for the texture must be reallocated. *** //
+
 		// there is no DSA version of these functions.
 		if (_orion.glVersion >= 450) {
 			// bind if not already bound
@@ -375,11 +397,11 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
 
 		switch (glTexImageFuncType) {
 			case 0:
-				glTexImage1D(texture->type, 0, texture->format, wid, 0, format, GL_UNSIGNED_BYTE, texBuffer);
+				glTexImage1D(texture->type, 0, texture->internalFormat, wid, 0, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
 				texture->width = wid;
 				break;
 			case 1:
-				glTexImage2D(texture->type, 0, texture->format, wid, hei, 0, format, GL_UNSIGNED_BYTE, texBuffer);
+				glTexImage2D(texture->type, 0, texture->internalFormat, wid, hei, 0, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
 				texture->width = wid;
 				texture->height = hei;
 				break;

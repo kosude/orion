@@ -146,11 +146,11 @@ typedef struct oriTexture oriTexture;
  * possible for it to be accidentally bound differently in the future.
  * 
  * @param target the target to bind to.
- * @param format the internal format of the texture.
+ * @param internalFormat the internal format of the texture.
  * 
  * @ingroup textures
  */
-oriTexture *oriCreateTexture(unsigned int target, unsigned int format);
+oriTexture *oriCreateTexture(unsigned int target, unsigned int internalFormat);
 
 /**
  * @brief Allocate and initialise a new oriTexture structure with immutable storage.
@@ -163,7 +163,7 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int format);
  * @param height the height of the texture. Set to NULL if not applicable.
  * @param depth the depth of the texture. Set to NULL if not applicable.
  * @param levels the amount of texture levels. Set to NULL if not applicable.
- * @param format the internal format with which texture image data will be stored, e.g. @c GL_RGBA8.
+ * @param internalFormat the internal format with which texture image data will be stored, e.g. @c GL_RGBA8.
  * @param samples the number of samples in the texture. Set to NULL if not applicable.
  * @param fixedSampleLocations set to true if the image will use identical sample locations and the same number of samples for all texels in the image, and the sample
  * locations will not depend on the internal format or size of the image.
@@ -176,7 +176,7 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int format);
  * 
  * @ingroup textures
  */
-oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, unsigned int height, unsigned int depth, unsigned int format, unsigned int levels, unsigned int samples, bool fixedSampleLocations);
+oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, unsigned int height, unsigned int depth, unsigned int internalFormat, unsigned int levels, unsigned int samples, bool fixedSampleLocations);
 
 /**
  * @brief Destroy and free memory for the given texture.
@@ -230,11 +230,11 @@ void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int
  * @param texture the texture object to update.
  * @param path the path to the image in use.
  * @param desiredChannels the desired amount of channels in the image (e.g. RGBA -> 4 channels).
- * @param format the format of the image. Not to be confused with the internal texture format. Good luck.
+ * @param imageFormat the format of the image to be loaded. Not to be confused with the internal texture format. Good luck.
  * 
  * @ingroup textures
  */
-void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int desiredChannels, unsigned int format);
+void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int desiredChannels, unsigned int imageFormat);
 
 /**
  * @brief Set a parameter for the given texture.
