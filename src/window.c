@@ -122,13 +122,6 @@ const GLFWwindow *oriWindowHandle(const oriWindow *window) {
 // *****                            ORION GLFW ABSTRACTIONS                         *****
 // ======================================================================================
 
-#define _ori_initGLFWIfReq()\
-{\
-    if (!_orion.glfwInitialised) {\
-        _orionInitGLFW();\
-    }\
-}
-
 #define _ori_GLFWContextChangeHelper(win, func)\
 {\
     GLFWwindow *prev = glfwGetCurrentContext();\
@@ -182,171 +175,129 @@ int oriGetGLFWError(const char **description) {
 // (https://www.glfw.org/docs/latest/group__window.html)
 
 void oriDefaultWindowHints() {
-    _ori_initGLFWIfReq();
     glfwDefaultWindowHints();
 }
 void oriWindowHint(int hint, int value) {
-    _ori_initGLFWIfReq();
     glfwWindowHint(hint, value);
 }
 void oriWindowHintString(int hint, const char *value) {
-    _ori_initGLFWIfReq();
     glfwWindowHintString(hint, value);
 }
 int oriWindowShouldClose(oriWindow *window) {
-    _ori_initGLFWIfReq();
     return glfwWindowShouldClose(window->handle);
 }
 void oriSetWindowShouldClose(oriWindow *window, int value) {
-    _ori_initGLFWIfReq();
     glfwSetWindowShouldClose(window->handle, value);
 }
 void oriSetWindowTitle(oriWindow *window, const char *title) {
-    _ori_initGLFWIfReq();
     glfwSetWindowTitle(window->handle, title);
 }
 void oriGetWindowPos(oriWindow *window, int *xpos, int *ypos) {
-    _ori_initGLFWIfReq();
     glfwGetWindowPos(window->handle, xpos, ypos);
 }
 void oriSetWindowPos(oriWindow *window, int xpos, int ypos) {
-    _ori_initGLFWIfReq();
     glfwSetWindowPos(window->handle, xpos, ypos);
 }
 void oriGetWindowSize(oriWindow *window, int *width, int *height) {
-    _ori_initGLFWIfReq();
     glfwGetWindowSize(window->handle, width, height);
 }
 void oriSetWindowSizeLimits(oriWindow *window, int minwidth, int minheight, int maxwidth, int maxheight) {
-    _ori_initGLFWIfReq();
     glfwSetWindowSizeLimits(window->handle, minwidth, minheight, maxwidth, maxheight);
 }
 void oriSetWindowAspectRatio(oriWindow *window, int numer, int denom) {
-    _ori_initGLFWIfReq();
     glfwSetWindowAspectRatio(window->handle, numer, denom);
 }
 void oriSetWindowSize(oriWindow *window, int width, int height) {
-    _ori_initGLFWIfReq();
     glfwSetWindowSize(window->handle, width, height);
 }
 void oriGetFramebufferSize(oriWindow *window, int *width, int *height) {
-    _ori_initGLFWIfReq();
     glfwGetFramebufferSize(window->handle, width, height);
 }
 void oriGetWindowFrameSize(oriWindow *window, int *left, int *top, int *right, int *bottom) {
-    _ori_initGLFWIfReq();
     glfwGetWindowFrameSize(window->handle, left, top, right, bottom);
 }
 void oriGetWindowContentScale(oriWindow *window, float *xscale, float *yscale) {
-    _ori_initGLFWIfReq();
     glfwGetWindowContentScale(window->handle, xscale, yscale);
 }
 float oriGetWindowOpacity(oriWindow *window) {
-    _ori_initGLFWIfReq();
     return glfwGetWindowOpacity(window->handle);
 }
 void oriSetWindowOpacity(oriWindow *window, float opacity) {
-    _ori_initGLFWIfReq();
     glfwSetWindowOpacity(window->handle, opacity);
 }
 void oriIconifyWindow(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwIconifyWindow(window->handle);
 }
 void oriRestoreWindow(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwRestoreWindow(window->handle);
 }
 void oriMaximiseWindow(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwMaximizeWindow(window->handle);
 }
 void oriShowWindow(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwShowWindow(window->handle);
 }
 void oriHideWindow(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwHideWindow(window->handle);
 }
 void oriFocusWindow(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwFocusWindow(window->handle);
 }
 void oriRequestWindowAttention(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwRequestWindowAttention(window->handle);
 }
 int oriGetWindowAttrib(oriWindow *window, int attrib) {
-    _ori_initGLFWIfReq();
     return glfwGetWindowAttrib(window->handle, attrib);
 }
 void oriSetWindowAttrib(oriWindow *window, int attrib, int value) {
-    _ori_initGLFWIfReq();
     glfwSetWindowAttrib(window->handle, attrib, value);
 }
 void oriSetWindowUserPointer(oriWindow *window, void *pointer) {
-    _ori_initGLFWIfReq();
     glfwSetWindowUserPointer(window->handle, pointer);
 }
 void *oriGetWindowUserPointer(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwGetWindowUserPointer(window->handle);
 }
 GLFWwindowposfun oriSetWindowPosCallback(oriWindow *window, GLFWwindowposfun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetWindowPosCallback(window->handle, callback);
 }
 GLFWwindowsizefun oriSetWindowSizeCallback(oriWindow *window, GLFWwindowsizefun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetWindowSizeCallback(window->handle, callback);
 }
 GLFWwindowclosefun oriSetWindowCloseCallback(oriWindow *window, GLFWwindowclosefun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetWindowCloseCallback(window->handle, callback);
 }
 GLFWwindowrefreshfun oriSetWindowRefreshCallback(oriWindow *window, GLFWwindowrefreshfun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetWindowRefreshCallback(window->handle, callback);
 }
 GLFWwindowfocusfun oriSetWindowFocusCallback(oriWindow *window, GLFWwindowfocusfun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetWindowFocusCallback(window->handle, callback);
 }
 GLFWwindowiconifyfun oriSetWindowIconifyCallback(oriWindow *window, GLFWwindowiconifyfun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetWindowIconifyCallback(window->handle, callback);
 }
 GLFWwindowmaximizefun oriSetWindowMaximiseCallback(oriWindow *window, GLFWwindowmaximizefun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetWindowMaximizeCallback(window->handle, callback);
 }
 GLFWframebuffersizefun oriSetFramebufferSizeCallback(oriWindow *window, GLFWframebuffersizefun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetFramebufferSizeCallback(window->handle, callback);
 }
 GLFWwindowcontentscalefun oriSetWindowContentScaleCallback(oriWindow *window, GLFWwindowcontentscalefun callback) {
-    _ori_initGLFWIfReq();
     return glfwSetWindowContentScaleCallback(window->handle, callback);
 }
 void oriPollEvents() {
-    _ori_initGLFWIfReq();
     glfwPollEvents();
 }
 void oriWaitEvents() {
-    _ori_initGLFWIfReq();
     glfwWaitEvents();
 }
 void oriWaitEventsTimeout(double timeout) {
-    _ori_initGLFWIfReq();
     glfwWaitEventsTimeout(timeout);
 }
 void oriPostEmptyEvent() {
-    _ori_initGLFWIfReq();
     glfwPostEmptyEvent();
 }
 void oriSwapBuffers(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwSwapBuffers(window->handle);
 }
 
@@ -356,12 +307,9 @@ void oriSwapBuffers(oriWindow *window) {
 // (https://www.glfw.org/docs/latest/group__context.html)
 
 void oriMakeContextCurrent(oriWindow *window) {
-    _ori_initGLFWIfReq();
     glfwMakeContextCurrent(window->handle);
 }
 oriWindow *oriGetCurrentContext() {
-    _ori_initGLFWIfReq();
-
     oriWindow *current = _orion.windowListHead;
     while (current && current->handle != glfwGetCurrentContext()) {
         current = current->next;
@@ -373,15 +321,12 @@ oriWindow *oriGetCurrentContext() {
 
 }
 void oriSwapInterval(oriWindow *window, int interval) {
-    _ori_initGLFWIfReq();
     _ori_GLFWContextChangeHelper(window, glfwSwapInterval(interval));
 
 }
 int oriExtensionSupported(oriWindow *window, const char *extension) {
-    _ori_initGLFWIfReq();
     _ori_GLFWContextChangeHelper_r(window, glfwExtensionSupported(extension), int);
 }
 oriGLProcAddress oriGetGLProcAddress(oriWindow *window, const char *procname) {
-    _ori_initGLFWIfReq();
     _ori_GLFWContextChangeHelper_r(window, glfwGetProcAddress(procname), oriGLProcAddress);
 }
