@@ -32,23 +32,23 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/generate/platform.h.in" "${PROJECT_B
 # subdirectories
 
 if (ORION_BUILD_LIB)
-	message(STATUS "ORION :: Compiling core Orion library")
-	add_subdirectory("src")
+    message(STATUS "ORION :: Compiling core Orion library")
+    add_subdirectory("src")
 endif()
 
 if (ORION_BUILD_TESTS)
-	message(STATUS "ORION :: Compiling Orion tests")
-	add_subdirectory("tests")
+    message(STATUS "ORION :: Compiling Orion tests")
+    add_subdirectory("tests")
 endif()
 
 if (ORION_BUILD_EXAMPLES)
-	message(STATUS "ORION :: Compiling Orion examples")
-	add_subdirectory("examples")
+    message(STATUS "ORION :: Compiling Orion examples")
+    add_subdirectory("examples")
 endif()
 
 if (ORION_BUILD_DOCS)
-	message(STATUS "ORION :: Compiling Orion HTML documentation")
-	add_subdirectory("docs") 
+    message(STATUS "ORION :: Compiling Orion HTML documentation")
+    add_subdirectory("docs") 
 endif()
 
 # ---
