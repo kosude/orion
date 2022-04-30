@@ -1,14 +1,14 @@
 /* *************************************************************************************** */
-/* 						ORION GRAPHICS LIBRARY AND RENDERING ENGINE						   */
+/*                        ORION GRAPHICS LIBRARY AND RENDERING ENGINE                      */
 /* *************************************************************************************** */
-/* Copyright (c) 2022 Jack Bennett														   */
+/* Copyright (c) 2022 Jack Bennett                                                         */
 /* --------------------------------------------------------------------------------------- */
 /* THE  SOFTWARE IS  PROVIDED "AS IS",  WITHOUT WARRANTY OF ANY KIND, EXPRESS  OR IMPLIED, */
 /* INCLUDING  BUT  NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY,  FITNESS FOR  A */
 /* PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN  NO EVENT SHALL  THE  AUTHORS  OR COPYRIGHT */
 /* HOLDERS  BE  LIABLE  FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF */
 /* CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR */
-/* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
+/* THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                              */
 /* *************************************************************************************** */
 
 /**
@@ -29,11 +29,11 @@ extern "C" {
 #endif
 
 // ======================================================================================
-// ***** 				     	 NEW / ADDED FUNCTIONALITY 							*****
+// *****                          NEW / ADDED FUNCTIONALITY                         *****
 // ======================================================================================
 
 // ======================================================================================
-// ***** 				   	  ADDED FUNCTIONALITY :: BUFFERS 						*****
+// *****                        ADDED FUNCTIONALITY :: BUFFERS                      *****
 // ======================================================================================
 
 /**
@@ -59,7 +59,7 @@ const GLuint orion_glCurrentBufferAt(GLenum target);
 const GLenum orion_glGetBufferTarget(GLuint buffer);
 
 // ======================================================================================
-// ***** 				      ADDED FUNCTIONALITY :: TEXTURES 						*****
+// *****                      ADDED FUNCTIONALITY :: TEXTURES                       *****
 // ======================================================================================
 
 /**
@@ -85,7 +85,7 @@ const GLuint orion_glCurrentTextureAt(GLenum target);
 const GLenum orion_glGetTextureTarget(GLuint tex);
 
 // ======================================================================================
-// ***** 				   ADDED FUNCTIONALITY :: VERTEX ARRAYS 					*****
+// *****                    ADDED FUNCTIONALITY :: VERTEX ARRAYS                    *****
 // ======================================================================================
 
 /**
@@ -97,7 +97,7 @@ const GLenum orion_glGetTextureTarget(GLuint tex);
 const GLuint orion_glCurrentVertexArray();
 
 // ======================================================================================
-// ***** 				      ADDED FUNCTIONALITY :: SHADERS 						*****
+// *****                       ADDED FUNCTIONALITY :: SHADERS                       *****
 // ======================================================================================
 
 /**
@@ -109,13 +109,13 @@ const GLuint orion_glCurrentVertexArray();
 const GLuint orion_glCurrentShaderProgram();
 
 // ======================================================================================
-// ***** 				     OVERRIDES OF EXISTING GL FUNCTIONS 					*****
+// *****                     OVERRIDES OF EXISTING GL FUNCTIONS                     *****
 // ======================================================================================
 
 /** @cond */ // don't document this part
 
 // ======================================================================================
-// ***** 				      		OVERRIDES :: BUFFERS 							*****
+// *****                            OVERRIDES :: BUFFERS                            *****
 // ======================================================================================
 
 /**
@@ -139,7 +139,7 @@ void orion_gladoverride_glBindBuffer(GLenum target, GLuint buffer);
 void orion_gladoverride_glDeleteBuffers(GLsizei n, const GLuint *buffers);
 
 // ======================================================================================
-// ***** 				      		OVERRIDES :: TEXTURES 							*****
+// *****                            OVERRIDES :: TEXTURES                           *****
 // ======================================================================================
 
 /**
@@ -163,7 +163,7 @@ void orion_gladoverride_glBindTexture(GLenum target, GLuint texture);
 void orion_gladoverride_glDeleteTextures(GLsizei n, const GLuint *textures);
 
 // ======================================================================================
-// ***** 					     OVERRIDES :: VERTEX ARRAYS 						*****
+// *****                          OVERRIDES :: VERTEX ARRAYS                        *****
 // ======================================================================================
 
 /**
@@ -186,7 +186,7 @@ void orion_gladoverride_glBindVertexArray(GLuint array);
 void orion_gladoverride_glDeleteVertexArrays(GLsizei n, const GLuint *arrays);
 
 // ======================================================================================
-// ***** 					     	OVERRIDES :: SHADERS 							*****
+// *****                             OVERRIDES :: SHADERS                           *****
 // ======================================================================================
 
 /**
@@ -210,48 +210,48 @@ void orion_gladoverride_glDeleteProgram(GLuint program);
 /** @endcond */
 
 // ======================================================================================
-// ***** 		 		DEFINE MACROS FOR ADDED ORIONGLAD FUNCTIONS 				*****
+// *****                 DEFINE MACROS FOR ADDED ORIONGLAD FUNCTIONS                *****
 // ======================================================================================
 
 #ifndef ORIONGLAD_IMPLEMENTATION
-#	define oriGetBufferTarget orion_glGetBufferTarget
-#	define oriGetTextureTarget orion_glGetTextureTarget
-#	define oriCurrentVertexArray orion_glCurrentVertexArray
-#	define oriCurrentShaderProgram orion_glCurrentShaderProgram
-#	define oriCurrentBufferAt orion_glCurrentBufferAt
-#	define oriCurrentTextureAt orion_glCurrentTextureAt
+#   define oriGetBufferTarget orion_glGetBufferTarget
+#   define oriGetTextureTarget orion_glGetTextureTarget
+#   define oriCurrentVertexArray orion_glCurrentVertexArray
+#   define oriCurrentShaderProgram orion_glCurrentShaderProgram
+#   define oriCurrentBufferAt orion_glCurrentBufferAt
+#   define oriCurrentTextureAt orion_glCurrentTextureAt
 #endif
 
 // ======================================================================================
-// ***** 		  REPLACE GLAD FUNCTIONS WITH ABSTRACTED (ORIONGLAD) ONES 			*****
+// *****           REPLACE GLAD FUNCTIONS WITH ABSTRACTED (ORIONGLAD) ONES          *****
 // ======================================================================================
 
 /** @cond */
 
 #ifndef ORIONGLAD_IMPLEMENTATION
-#	undef glBindBuffer
-#	define glBindBuffer orion_gladoverride_glBindBuffer
+#   undef glBindBuffer
+#   define glBindBuffer orion_gladoverride_glBindBuffer
 
-#	undef glDeleteBuffers
-#	define glDeleteBuffers orion_gladoverride_glDeleteBuffers
+#   undef glDeleteBuffers
+#   define glDeleteBuffers orion_gladoverride_glDeleteBuffers
 
-#	undef glBindVertexArray
-#	define glBindVertexArray orion_gladoverride_glBindVertexArray
+#   undef glBindVertexArray
+#   define glBindVertexArray orion_gladoverride_glBindVertexArray
 
-#	undef glDeleteVertexArrays
-#	define glDeleteVertexArrays orion_gladoverride_glDeleteVertexArrays
+#   undef glDeleteVertexArrays
+#   define glDeleteVertexArrays orion_gladoverride_glDeleteVertexArrays
 
-#	undef glUseProgram
-#	define glUseProgram orion_gladoverride_glUseProgram
+#   undef glUseProgram
+#   define glUseProgram orion_gladoverride_glUseProgram
 
-#	undef glDeleteProgram
-#	define glDeleteProgram orion_gladoverride_glDeleteProgram
+#   undef glDeleteProgram
+#   define glDeleteProgram orion_gladoverride_glDeleteProgram
 
-#	undef glBindTexture
-#	define glBindTexture orion_gladoverride_glBindTexture
+#   undef glBindTexture
+#   define glBindTexture orion_gladoverride_glBindTexture
 
-#	undef glDeleteTextures
-#	define glDeleteTextures orion_gladoverride_glDeleteTextures
+#   undef glDeleteTextures
+#   define glDeleteTextures orion_gladoverride_glDeleteTextures
 #endif
 
 /** @endcond */

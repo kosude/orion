@@ -1,14 +1,14 @@
 /* *************************************************************************************** */
-/* 						ORION GRAPHICS LIBRARY AND RENDERING ENGINE						   */
+/*                        ORION GRAPHICS LIBRARY AND RENDERING ENGINE                      */
 /* *************************************************************************************** */
-/* Copyright (c) 2022 Jack Bennett														   */
+/* Copyright (c) 2022 Jack Bennett                                                         */
 /* --------------------------------------------------------------------------------------- */
 /* THE  SOFTWARE IS  PROVIDED "AS IS",  WITHOUT WARRANTY OF ANY KIND, EXPRESS  OR IMPLIED, */
 /* INCLUDING  BUT  NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY,  FITNESS FOR  A */
 /* PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN  NO EVENT SHALL  THE  AUTHORS  OR COPYRIGHT */
 /* HOLDERS  BE  LIABLE  FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF */
 /* CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR */
-/* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
+/* THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                              */
 /* *************************************************************************************** */
 
 #include "internal.h"
@@ -21,27 +21,27 @@
 #include <stb_image/stb_image.h>
 
 // ======================================================================================
-// ***** 				   		 ORION PUBLIC STRUCTURES 							*****
+// *****                            ORION PUBLIC STRUCTURES                         *****
 // ======================================================================================
 
 typedef struct oriTexture {
-	oriTexture *next;
-	unsigned int handle;
+    oriTexture *next;
+    unsigned int handle;
 
-	unsigned int type;
-	unsigned int width;
-	unsigned int height;
-	unsigned int depth;
-	unsigned int colourDepth;
-	unsigned int internalFormat; // GETTER
-	unsigned int levels; // GETTER
-	unsigned int samples; // GETTER
+    unsigned int type;
+    unsigned int width;
+    unsigned int height;
+    unsigned int depth;
+    unsigned int colourDepth;
+    unsigned int internalFormat; // GETTER
+    unsigned int levels; // GETTER
+    unsigned int samples; // GETTER
 
-	bool immutableStorage;
+    bool immutableStorage;
 } oriTexture;
 
 // ======================================================================================
-// ***** 				   		  ORION TEXTURE FUNCTIONS 							*****
+// *****                           ORION TEXTURE FUNCTIONS                          *****
 // ======================================================================================
 
 /**
@@ -59,41 +59,41 @@ typedef struct oriTexture {
  * @ingroup textures
  */
 oriTexture *oriCreateTexture(unsigned int target, unsigned int internalFormat) {
-	// assert correct version
-	_orionAssertVersion(200);
+    // assert correct version
+    _orionAssertVersion(200);
 
-	if (!_orion.initialised) {
-		_orionThrowError(ORERR_NOT_INIT);
-	}
+    if (!_orion.initialised) {
+        _orionThrowError(ORERR_NOT_INIT);
+    }
 
-	// assert version 3.2 or higher if necessary
-	if (target == GL_TEXTURE_2D_MULTISAMPLE || target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY) {
-		_orionAssertVersion(320);
-	}
+    // assert version 3.2 or higher if necessary
+    if (target == GL_TEXTURE_2D_MULTISAMPLE || target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY) {
+        _orionAssertVersion(320);
+    }
 
-	oriTexture *r = malloc(sizeof(oriTexture));
-	r->type = target;
-	r->width = 0;
-	r->height = 0;
-	r->depth = 0;
-	r->colourDepth = 0;
-	r->internalFormat = internalFormat;
-	r->levels = 0;
-	r->samples = 0;
-	r->immutableStorage = false;
+    oriTexture *r = malloc(sizeof(oriTexture));
+    r->type = target;
+    r->width = 0;
+    r->height = 0;
+    r->depth = 0;
+    r->colourDepth = 0;
+    r->internalFormat = internalFormat;
+    r->levels = 0;
+    r->samples = 0;
+    r->immutableStorage = false;
 
-	// use DSA if possible
-	if (_orion.glVersion >= 450) {
-		glCreateTextures(target, 1, &r->handle);
-	} else {
-		glGenTextures(1, &r->handle);
-	}
+    // use DSA if possible
+    if (_orion.glVersion >= 450) {
+        glCreateTextures(target, 1, &r->handle);
+    } else {
+        glGenTextures(1, &r->handle);
+    }
 
-	// push to global linked list
-	r->next = _orion.textureListHead;
-	_orion.textureListHead = r;
+    // push to global linked list
+    r->next = _orion.textureListHead;
+    _orion.textureListHead = r;
 
-	return r;
+    return r;
 }
 
 /**
@@ -121,111 +121,111 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int internalFormat) {
  * @ingroup textures
  */
 oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, unsigned int height, unsigned int depth, unsigned int internalFormat, unsigned int levels, unsigned int samples, bool fixedSampleLocations) {
-	_orionAssertVersion(420);
+    _orionAssertVersion(420);
 
-	oriTexture *r = oriCreateTexture(target, internalFormat);
-	r->immutableStorage = true;
-	
-	// get the appropriate glTexStorage* function to call.
-	// (or glTextureStorage* if DSA is possible i.e. version is >= 450)
+    oriTexture *r = oriCreateTexture(target, internalFormat);
+    r->immutableStorage = true;
+    
+    // get the appropriate glTexStorage* function to call.
+    // (or glTextureStorage* if DSA is possible i.e. version is >= 450)
 
-	// 0: glTexStorage1D
-	// 1: glTexStorage2D
-	// 2: glTexStorage3D
-	// 3: glTexStorage2DMultisample
-	// 4: glTexStorage3DMultisample
-	unsigned int glTexStorageFuncType;
+    // 0: glTexStorage1D
+    // 1: glTexStorage2D
+    // 2: glTexStorage3D
+    // 3: glTexStorage2DMultisample
+    // 4: glTexStorage3DMultisample
+    unsigned int glTexStorageFuncType;
 
-	switch (r->type) {
-		case GL_TEXTURE_1D:
-			glTexStorageFuncType = 0;
-			break;
-		case GL_TEXTURE_2D:
-		case GL_TEXTURE_RECTANGLE:
-		case GL_TEXTURE_CUBE_MAP:
-		case GL_TEXTURE_1D_ARRAY:
-			glTexStorageFuncType = 1;
-			break;
-		case GL_TEXTURE_3D:
-		case GL_TEXTURE_2D_ARRAY:
-		case GL_TEXTURE_CUBE_MAP_ARRAY:
-			glTexStorageFuncType = 2;
-			break;
-		case GL_TEXTURE_2D_MULTISAMPLE:
-			glTexStorageFuncType = 3;
-			return r;
-		case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-			glTexStorageFuncType = 4;
-			return r;
-		default:
-			printf("[Orion : WHOOPS] >> Unsupported texture type specified. Immutable texture storage not allocated.\n");
-			return r;
-	}
+    switch (r->type) {
+        case GL_TEXTURE_1D:
+            glTexStorageFuncType = 0;
+            break;
+        case GL_TEXTURE_2D:
+        case GL_TEXTURE_RECTANGLE:
+        case GL_TEXTURE_CUBE_MAP:
+        case GL_TEXTURE_1D_ARRAY:
+            glTexStorageFuncType = 1;
+            break;
+        case GL_TEXTURE_3D:
+        case GL_TEXTURE_2D_ARRAY:
+        case GL_TEXTURE_CUBE_MAP_ARRAY:
+            glTexStorageFuncType = 2;
+            break;
+        case GL_TEXTURE_2D_MULTISAMPLE:
+            glTexStorageFuncType = 3;
+            return r;
+        case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+            glTexStorageFuncType = 4;
+            return r;
+        default:
+            printf("[Orion : WHOOPS] >> Unsupported texture type specified. Immutable texture storage not allocated.\n");
+            return r;
+    }
 
-	// bind to this again at the end of the function if DSA is not used.
-	unsigned int boundCache;
+    // bind to this again at the end of the function if DSA is not used.
+    unsigned int boundCache;
 
-	if (_orion.glVersion < 450) {
-		boundCache = oriCurrentTextureAt(r->type);
-		glBindTexture(r->type, r->handle);
-	}
+    if (_orion.glVersion < 450) {
+        boundCache = oriCurrentTextureAt(r->type);
+        glBindTexture(r->type, r->handle);
+    }
 
-	// NULL = 0 so this should work fine even if NULL is passed as any parameters.
-	// I don't think fixedSampleLocations needs to be stored?
-	r->width = width;
-	r->height = height;
-	r->depth = depth;
-	r->levels = levels;
-	r->samples = samples;
+    // NULL = 0 so this should work fine even if NULL is passed as any parameters.
+    // I don't think fixedSampleLocations needs to be stored?
+    r->width = width;
+    r->height = height;
+    r->depth = depth;
+    r->levels = levels;
+    r->samples = samples;
 
-	// if required parameters are set to NULL then OpenGL won't be very happy.
-	// frankly, this function is convoluted enough as is. It's the user's responsibility to have common sense and give the required arguments, so..
-	// ..we're not checking for those parameters. Too bad!
+    // if required parameters are set to NULL then OpenGL won't be very happy.
+    // frankly, this function is convoluted enough as is. It's the user's responsibility to have common sense and give the required arguments, so..
+    // ..we're not checking for those parameters. Too bad!
 
-	switch (glTexStorageFuncType) {
-		case 0:
-			if (_orion.glVersion >= 450) {
-				glTextureStorage1D(r->handle, levels, internalFormat, width);
-			} else {
-				glTexStorage1D(r->type, levels, internalFormat, width);
-			}
-			break;
-		case 1:
-			if (_orion.glVersion >= 450) {
-				glTextureStorage2D(r->handle, levels, internalFormat, width, height);
-			} else {
-				glTexStorage2D(r->type, levels, internalFormat, width, height);
-			}
-			break;
-		case 2:
-			if (_orion.glVersion >= 450) {
-				glTextureStorage3D(r->handle, levels, internalFormat, width, height, depth);
-			} else {
-				glTexStorage3D(r->type, levels, internalFormat, width, height, depth);
-			}
-			break;
-		case 3:
-			if (_orion.glVersion >= 450) {
-				glTextureStorage2DMultisample(r->handle, samples, internalFormat, width, height, fixedSampleLocations);
-			} else {
-				glTexStorage2DMultisample(r->type, samples, internalFormat, width, height, fixedSampleLocations);
-			}
-			break;
-		case 4:
-			if (_orion.glVersion >= 450) {
-				glTextureStorage3DMultisample(r->handle, samples, internalFormat, width, height, depth, fixedSampleLocations);
-			} else {
-				glTexStorage3DMultisample(r->type, samples, internalFormat, width, height, depth, fixedSampleLocations);
-			}
-			break;
-	}
+    switch (glTexStorageFuncType) {
+        case 0:
+            if (_orion.glVersion >= 450) {
+                glTextureStorage1D(r->handle, levels, internalFormat, width);
+            } else {
+                glTexStorage1D(r->type, levels, internalFormat, width);
+            }
+            break;
+        case 1:
+            if (_orion.glVersion >= 450) {
+                glTextureStorage2D(r->handle, levels, internalFormat, width, height);
+            } else {
+                glTexStorage2D(r->type, levels, internalFormat, width, height);
+            }
+            break;
+        case 2:
+            if (_orion.glVersion >= 450) {
+                glTextureStorage3D(r->handle, levels, internalFormat, width, height, depth);
+            } else {
+                glTexStorage3D(r->type, levels, internalFormat, width, height, depth);
+            }
+            break;
+        case 3:
+            if (_orion.glVersion >= 450) {
+                glTextureStorage2DMultisample(r->handle, samples, internalFormat, width, height, fixedSampleLocations);
+            } else {
+                glTexStorage2DMultisample(r->type, samples, internalFormat, width, height, fixedSampleLocations);
+            }
+            break;
+        case 4:
+            if (_orion.glVersion >= 450) {
+                glTextureStorage3DMultisample(r->handle, samples, internalFormat, width, height, depth, fixedSampleLocations);
+            } else {
+                glTexStorage3DMultisample(r->type, samples, internalFormat, width, height, depth, fixedSampleLocations);
+            }
+            break;
+    }
 
-	// don't affect global state outside of this function
-	if (_orion.glVersion < 450) {
-		glBindTexture(r->type, boundCache);
-	}
+    // don't affect global state outside of this function
+    if (_orion.glVersion < 450) {
+        glBindTexture(r->type, boundCache);
+    }
 
-	return r;
+    return r;
 }
 
 /**
@@ -236,19 +236,19 @@ oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, u
  * @ingroup textures
  */
 void oriFreeTexture(oriTexture *texture) {
-	_orionAssertVersion(200);
+    _orionAssertVersion(200);
 
-	// unlink from global linked list.
-	oriTexture *current = _orion.textureListHead;
-	while (current != texture) {
-		current = current->next;
-	}
-	_orion.textureListHead = texture->next;
+    // unlink from global linked list.
+    oriTexture *current = _orion.textureListHead;
+    while (current != texture) {
+        current = current->next;
+    }
+    _orion.textureListHead = texture->next;
 
-	glDeleteTextures(1, &texture->handle);
+    glDeleteTextures(1, &texture->handle);
 
-	free(texture);
-	texture = NULL;
+    free(texture);
+    texture = NULL;
 }
 
 /**
@@ -260,14 +260,14 @@ void oriFreeTexture(oriTexture *texture) {
  * @ingroup textures
  */
 void oriBindTexture(oriTexture *texture, unsigned int unit) {
-	_orionAssertVersion(200);
+    _orionAssertVersion(200);
 
-	if (oriCurrentTextureAt(texture->type) == texture->handle) {
-		return;
-	}
+    if (oriCurrentTextureAt(texture->type) == texture->handle) {
+        return;
+    }
 
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(texture->type, texture->handle);
+    glActiveTexture(GL_TEXTURE0 + unit);
+    glBindTexture(texture->type, texture->handle);
 }
 
 /**
@@ -278,7 +278,7 @@ void oriBindTexture(oriTexture *texture, unsigned int unit) {
  * @ingroup textures
  */
 unsigned int oriGetTextureHandle(oriTexture *texture) {
-	return texture->handle;
+    return texture->handle;
 }
 
 /**
@@ -296,11 +296,11 @@ unsigned int oriGetTextureHandle(oriTexture *texture) {
  * @ingroup textures
  */
 void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int *width, unsigned int *height, unsigned int *depth, unsigned int *colourDepth) {
-	if (type) *type = texture->type;
-	if (width) *width = texture->width;
-	if (height) *height = texture->height;
-	if (depth) *depth = texture->depth;
-	if (colourDepth) *colourDepth = texture->colourDepth;
+    if (type) *type = texture->type;
+    if (width) *width = texture->width;
+    if (height) *height = texture->height;
+    if (depth) *depth = texture->depth;
+    if (colourDepth) *colourDepth = texture->colourDepth;
 }
 
 /**
@@ -316,112 +316,112 @@ void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int
  * @ingroup textures
  */
 void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int desiredChannels, unsigned int imageFormat) {
-	_orionAssertVersion(200);
+    _orionAssertVersion(200);
 
-	// NOTE! I'm ashamed of this code, but I am also simultaneously so unbelievably pissed off
-	// 		 that anyone could ever approve this part of the OpenGL specification. To those who
-	//		 wrote the spec on GL texture objects: what the shit?
+    // NOTE! I'm ashamed of this code, but I am also simultaneously so unbelievably pissed off
+    //       that anyone could ever approve this part of the OpenGL specification. To those who
+    //       wrote the spec on GL texture objects: what the shit?
 
-	// OpenGl expects images the wrong way round so they are flipped on load
-	stbi_set_flip_vertically_on_load(true);
+    // OpenGl expects images the wrong way round so they are flipped on load
+    stbi_set_flip_vertically_on_load(true);
 
-	int wid, hei, cdep;
-	unsigned char *texBuffer = stbi_load(path, &wid, &hei, &cdep, desiredChannels);
+    int wid, hei, cdep;
+    unsigned char *texBuffer = stbi_load(path, &wid, &hei, &cdep, desiredChannels);
 
-	// get the appropriate glTexImage* / glTexSubImage* function to call.
-	// (or glTextureSubImage* if DSA is possible i.e. version is >= 450)
+    // get the appropriate glTexImage* / glTexSubImage* function to call.
+    // (or glTextureSubImage* if DSA is possible i.e. version is >= 450)
 
-	// 0: glTex*Image1D
-	// 1: glTex*Image2D
-	// 2: glTex*Image3D									// NOT SUPPORTED
-	unsigned int glTexImageFuncType;
+    // 0: glTex*Image1D
+    // 1: glTex*Image2D
+    // 2: glTex*Image3D                                    // NOT SUPPORTED
+    unsigned int glTexImageFuncType;
 
-	switch (texture->type) {
-		case GL_TEXTURE_1D:
-			glTexImageFuncType = 0;
-			break;
-		case GL_TEXTURE_2D:
-		case GL_TEXTURE_RECTANGLE:
-		case GL_TEXTURE_CUBE_MAP:
-		case GL_TEXTURE_1D_ARRAY:
-			glTexImageFuncType = 1;
-			break;
-		case GL_TEXTURE_3D:
-		case GL_TEXTURE_2D_ARRAY:
-		case GL_TEXTURE_CUBE_MAP_ARRAY:
-			printf("[Orion : WARNING] >> Setting data of 3D textures, 2D texture arrays and cube map arrays are unfinished and as such currently unsupported. Do it yourself.\n");
-			return;
-		case GL_TEXTURE_2D_MULTISAMPLE:
-		case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-			printf("[Orion : WARNING] >> OpenGL does not support directly writing to multisampled textures.\n");
-			return;
-		default:
-			printf("[Orion : WHOOPS] >> Unsupported texture type specified. Texture data not updated.\n");
-			stbi_image_free(texBuffer);
-			return;
-	}
+    switch (texture->type) {
+        case GL_TEXTURE_1D:
+            glTexImageFuncType = 0;
+            break;
+        case GL_TEXTURE_2D:
+        case GL_TEXTURE_RECTANGLE:
+        case GL_TEXTURE_CUBE_MAP:
+        case GL_TEXTURE_1D_ARRAY:
+            glTexImageFuncType = 1;
+            break;
+        case GL_TEXTURE_3D:
+        case GL_TEXTURE_2D_ARRAY:
+        case GL_TEXTURE_CUBE_MAP_ARRAY:
+            printf("[Orion : WARNING] >> Setting data of 3D textures, 2D texture arrays and cube map arrays are unfinished and as such currently unsupported. Do it yourself.\n");
+            return;
+        case GL_TEXTURE_2D_MULTISAMPLE:
+        case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
+            printf("[Orion : WARNING] >> OpenGL does not support directly writing to multisampled textures.\n");
+            return;
+        default:
+            printf("[Orion : WHOOPS] >> Unsupported texture type specified. Texture data not updated.\n");
+            stbi_image_free(texBuffer);
+            return;
+    }
 
-	// bind to this again at the end of the function if DSA is not used.
-	unsigned int boundCache;
+    // bind to this again at the end of the function if DSA is not used.
+    unsigned int boundCache;
 
-	if (_orion.glVersion < 450) {
-		boundCache = oriCurrentTextureAt(texture->type);
-		glBindTexture(texture->type, texture->handle);
-	}
+    if (_orion.glVersion < 450) {
+        boundCache = oriCurrentTextureAt(texture->type);
+        glBindTexture(texture->type, texture->handle);
+    }
 
-	if (texture->immutableStorage) {
-		switch (glTexImageFuncType) {
-			case 0:
-				if (_orion.glVersion >= 450) {
-					glTextureSubImage1D(texture->handle, 0, 0, wid, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
-				} else {
-					glTexSubImage1D(texture->type, 0, 0, wid, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
-				}
-				break;
-			case 1:
-				if (_orion.glVersion >= 450) {
-					glTextureSubImage2D(texture->handle, 0, 0, 0, wid, hei, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
-				} else {
-					glTexSubImage2D(texture->type, 0, 0, 0, wid, hei, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
-				}
-				break;
-		}
-	} else {
-		// *** In this case, space for the texture must be reallocated. *** //
+    if (texture->immutableStorage) {
+        switch (glTexImageFuncType) {
+            case 0:
+                if (_orion.glVersion >= 450) {
+                    glTextureSubImage1D(texture->handle, 0, 0, wid, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                } else {
+                    glTexSubImage1D(texture->type, 0, 0, wid, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                }
+                break;
+            case 1:
+                if (_orion.glVersion >= 450) {
+                    glTextureSubImage2D(texture->handle, 0, 0, 0, wid, hei, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                } else {
+                    glTexSubImage2D(texture->type, 0, 0, 0, wid, hei, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                }
+                break;
+        }
+    } else {
+        // *** In this case, space for the texture must be reallocated. *** //
 
-		// there is no DSA version of these functions.
-		if (_orion.glVersion >= 450) {
-			// bind if not already bound
-			glBindTexture(texture->type, texture->handle);
-		}
+        // there is no DSA version of these functions.
+        if (_orion.glVersion >= 450) {
+            // bind if not already bound
+            glBindTexture(texture->type, texture->handle);
+        }
 
-		switch (glTexImageFuncType) {
-			case 0:
-				glTexImage1D(texture->type, 0, texture->internalFormat, wid, 0, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
-				texture->width = wid;
-				break;
-			case 1:
-				glTexImage2D(texture->type, 0, texture->internalFormat, wid, hei, 0, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
-				texture->width = wid;
-				texture->height = hei;
-				break;
-		}
-	}
+        switch (glTexImageFuncType) {
+            case 0:
+                glTexImage1D(texture->type, 0, texture->internalFormat, wid, 0, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                texture->width = wid;
+                break;
+            case 1:
+                glTexImage2D(texture->type, 0, texture->internalFormat, wid, hei, 0, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                texture->width = wid;
+                texture->height = hei;
+                break;
+        }
+    }
 
-	texture->colourDepth = cdep;
+    texture->colourDepth = cdep;
 
-	// don't affect global state outside of this function
-	if (_orion.glVersion < 450) {
-		// (generate mipmaps too)
-		glGenerateMipmap(texture->type);
+    // don't affect global state outside of this function
+    if (_orion.glVersion < 450) {
+        // (generate mipmaps too)
+        glGenerateMipmap(texture->type);
 
-		glBindTexture(texture->type, boundCache);
-	} else {
-		// generate mipmap with DSA
-		glGenerateTextureMipmap(texture->handle);
-	}
+        glBindTexture(texture->type, boundCache);
+    } else {
+        // generate mipmap with DSA
+        glGenerateTextureMipmap(texture->handle);
+    }
 
-	stbi_image_free(texBuffer);
+    stbi_image_free(texBuffer);
 }
 
 /**
@@ -434,18 +434,18 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
  * @ingroup textures
  */
 void oriSetTextureParameteri(oriTexture *texture, unsigned int param, int val) {
-	_orionAssertVersion(200);
+    _orionAssertVersion(200);
 
-	if (_orion.glVersion >= 450) {
-		glTextureParameteri(texture->handle, param, val);
-	} else {
-		unsigned int boundCache = oriCurrentTextureAt(texture->type);
-		glBindTexture(texture->type, texture->handle);
+    if (_orion.glVersion >= 450) {
+        glTextureParameteri(texture->handle, param, val);
+    } else {
+        unsigned int boundCache = oriCurrentTextureAt(texture->type);
+        glBindTexture(texture->type, texture->handle);
 
-		glTexParameteri(texture->type, param, val);
+        glTexParameteri(texture->type, param, val);
 
-		glBindTexture(texture->type, boundCache);
-	}
+        glBindTexture(texture->type, boundCache);
+    }
 }
 
 /**
@@ -458,18 +458,18 @@ void oriSetTextureParameteri(oriTexture *texture, unsigned int param, int val) {
  * @ingroup textures
  */
 void oriSetTextureParameterf(oriTexture *texture, unsigned int param, float val) {
-	_orionAssertVersion(200);
+    _orionAssertVersion(200);
 
-	if (_orion.glVersion >= 450) {
-		glTextureParameterf(texture->handle, param, val);
-	} else {
-		unsigned int boundCache = oriCurrentTextureAt(texture->type);
-		glBindTexture(texture->type, texture->handle);
+    if (_orion.glVersion >= 450) {
+        glTextureParameterf(texture->handle, param, val);
+    } else {
+        unsigned int boundCache = oriCurrentTextureAt(texture->type);
+        glBindTexture(texture->type, texture->handle);
 
-		glTexParameterf(texture->type, param, val);
+        glTexParameterf(texture->type, param, val);
 
-		glBindTexture(texture->type, boundCache);
-	}
+        glBindTexture(texture->type, boundCache);
+    }
 }
 
 /**
@@ -482,21 +482,21 @@ void oriSetTextureParameterf(oriTexture *texture, unsigned int param, float val)
  * @ingroup textures
  */
 int oriGetTextureParameteri(oriTexture *texture, unsigned int param) {
-	_orionAssertVersion(200);
+    _orionAssertVersion(200);
 
-	int r;
-	if (_orion.glVersion >= 450) {
-		glGetTextureParameteriv(texture->handle, param, &r);
-	} else {
-		unsigned int boundCache = oriCurrentTextureAt(texture->type);
-		glBindTexture(texture->type, texture->handle);
+    int r;
+    if (_orion.glVersion >= 450) {
+        glGetTextureParameteriv(texture->handle, param, &r);
+    } else {
+        unsigned int boundCache = oriCurrentTextureAt(texture->type);
+        glBindTexture(texture->type, texture->handle);
 
-		glGetTexParameteriv(texture->type, param, &r);
+        glGetTexParameteriv(texture->type, param, &r);
 
-		glBindTexture(texture->type, boundCache);
-	}
+        glBindTexture(texture->type, boundCache);
+    }
 
-	return r;
+    return r;
 }
 
 /**
@@ -509,19 +509,19 @@ int oriGetTextureParameteri(oriTexture *texture, unsigned int param) {
  * @ingroup textures
  */
 float oriGetTextureParameterf(oriTexture *texture, unsigned int param) {
-	_orionAssertVersion(200);
+    _orionAssertVersion(200);
 
-	float r;
-	if (_orion.glVersion >= 450) {
-		glGetTextureParameterfv(texture->handle, param, &r);
-	} else {
-		unsigned int boundCache = oriCurrentTextureAt(texture->type);
-		glBindTexture(texture->type, texture->handle);
+    float r;
+    if (_orion.glVersion >= 450) {
+        glGetTextureParameterfv(texture->handle, param, &r);
+    } else {
+        unsigned int boundCache = oriCurrentTextureAt(texture->type);
+        glBindTexture(texture->type, texture->handle);
 
-		glGetTexParameterfv(texture->type, param, &r);
+        glGetTexParameterfv(texture->type, param, &r);
 
-		glBindTexture(texture->type, boundCache);
-	}
+        glBindTexture(texture->type, boundCache);
+    }
 
-	return r;
+    return r;
 }

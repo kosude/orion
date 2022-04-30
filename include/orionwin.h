@@ -1,14 +1,14 @@
 /* *************************************************************************************** */
-/* 								  ORION ABSTRACTIONS OF GLFW							   */
+/*                                ORION ABSTRACTIONS OF GLFW                               */
 /* *************************************************************************************** */
-/* Copyright (c) 2022 Jack Bennett														   */
+/* Copyright (c) 2022 Jack Bennett                                                         */
 /* --------------------------------------------------------------------------------------- */
 /* THE  SOFTWARE IS  PROVIDED "AS IS",  WITHOUT WARRANTY OF ANY KIND, EXPRESS  OR IMPLIED, */
 /* INCLUDING  BUT  NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY,  FITNESS FOR  A */
 /* PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN  NO EVENT SHALL  THE  AUTHORS  OR COPYRIGHT */
 /* HOLDERS  BE  LIABLE  FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF */
 /* CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR */
-/* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
+/* THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                              */
 /* *************************************************************************************** */
 
 // ============================================================ //
@@ -38,7 +38,7 @@ extern "C" {
 #include <glfw/include/GLFW/glfw3.h>
 
 // ======================================================================================
-// ***** 				   		 ORIONWIN PUBLIC STRUCTURES							*****
+// *****                           ORIONWIN PUBLIC STRUCTURES                       *****
 // ======================================================================================
 
 /**
@@ -62,7 +62,7 @@ typedef GLFWglproc oriGLProcAddress;
 typedef struct oriWindow oriWindow;
 
 // ======================================================================================
-// ***** 				   	  ORION WINDOW MANAGEMENT (ORIONWIN)					*****
+// *****                       ORION WINDOW MANAGEMENT (ORIONWIN)                   *****
 // ======================================================================================
 
 /**
@@ -102,11 +102,11 @@ void oriFreeWindow(oriWindow *window);
 const GLFWwindow *oriWindowHandle(const oriWindow *window);
 
 // ======================================================================================
-// ***** 				   	  		ORION GLFW ABSTRACTIONS							*****
+// *****                           ORION GLFW ABSTRACTIONS                          *****
 // ======================================================================================
 
 // ======================================================================================
-// ***** 				   	 from the GLFW INITIALISATION REFERENCE					*****
+// *****                    from the GLFW INITIALISATION REFERENCE                  *****
 // ======================================================================================
 // (https://www.glfw.org/docs/latest/group__init.html)
 
@@ -160,17 +160,17 @@ void oriGLFWInitHint(int hint, int value);
 /** @ingroup window */ int oriGetGLFWError(const char **description);
 
 // ======================================================================================
-// ***** 				   	  	from the GLFW WINDOW REFERENCE						*****
+// *****                       from the GLFW WINDOW REFERENCE                       *****
 // ======================================================================================
 // (https://www.glfw.org/docs/latest/group__window.html)
 
 /** @ingroup window */ void oriDefaultWindowHints();
 /** @ingroup window */ void oriWindowHint(int hint, int value);
 /** @ingroup window */ void oriWindowHintString(int hint, const char *value);
-/** @ingroup window */ int 	oriWindowShouldClose(oriWindow *window);
+/** @ingroup window */ int  oriWindowShouldClose(oriWindow *window);
 /** @ingroup window */ void oriSetWindowShouldClose(oriWindow *window, int value);
 /** @ingroup window */ void oriSetWindowTitle(oriWindow *window, const char *title);
-						// 	oriSetWindowIcon()
+                        //  oriSetWindowIcon()
 /** @ingroup window */ void oriGetWindowPos(oriWindow *window, int *xpos, int *ypos);
 /** @ingroup window */ void oriSetWindowPos(oriWindow *window, int xpos, int ypos);
 /** @ingroup window */ void oriGetWindowSize(oriWindow *window, int *width, int *height);
@@ -189,8 +189,8 @@ void oriGLFWInitHint(int hint, int value);
 /** @ingroup window */ void oriHideWindow(oriWindow *window);
 /** @ingroup window */ void oriFocusWindow(oriWindow *window);
 /** @ingroup window */ void oriRequestWindowAttention(oriWindow *window);
-						// 	oriGetWindowMonitor()
-						// 	oriSetWindowMonitor()
+                        //  oriGetWindowMonitor()
+                        //  oriSetWindowMonitor()
 /** @ingroup window */ int oriGetWindowAttrib(oriWindow *window, int attrib);
 /** @ingroup window */ void oriSetWindowAttrib(oriWindow *window, int attrib, int value);
 /** @ingroup window */ void oriSetWindowUserPointer(oriWindow *window, void *pointer);
@@ -211,7 +211,7 @@ void oriGLFWInitHint(int hint, int value);
 /** @ingroup window */ void oriSwapBuffers(oriWindow *window);
 
 // ======================================================================================
-// ***** 				   	  	from the GLFW CONTEXT REFERENCE						*****
+// *****                        from the GLFW CONTEXT REFERENCE                     *****
 // ======================================================================================
 // (https://www.glfw.org/docs/latest/group__context.html)
 

@@ -1,5 +1,5 @@
 #ifndef __CMAKE_SHADER_PRESETS_H
-#	define __CMAKE_SHADER_PRESETS_H
+#   define __CMAKE_SHADER_PRESETS_H
 
 // The following definitions have been automatically defined as part of building Orion.
 // They will be regenerated on the next build.
