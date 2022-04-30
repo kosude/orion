@@ -1,14 +1,14 @@
 /* *************************************************************************************** */
-/* 						ORION GRAPHICS LIBRARY AND RENDERING ENGINE						   */
+/*                        ORION GRAPHICS LIBRARY AND RENDERING ENGINE                      */
 /* *************************************************************************************** */
-/* Copyright (c) 2022 Jack Bennett														   */
+/* Copyright (c) 2022 Jack Bennett                                                         */
 /* --------------------------------------------------------------------------------------- */
 /* THE  SOFTWARE IS  PROVIDED "AS IS",  WITHOUT WARRANTY OF ANY KIND, EXPRESS  OR IMPLIED, */
 /* INCLUDING  BUT  NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY,  FITNESS FOR  A */
 /* PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN  NO EVENT SHALL  THE  AUTHORS  OR COPYRIGHT */
 /* HOLDERS  BE  LIABLE  FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF */
 /* CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR */
-/* THE USE OR OTHER DEALINGS IN THE SOFTWARE.											   */
+/* THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                              */
 /* *************************************************************************************** */
 
 /**
@@ -34,7 +34,7 @@ extern "C" {
 #include "shaderpresets.h" // preset shaders
 
 // ======================================================================================
-// ***** 				   ORION PUBLIC INITIALISATION FUNCTIONS 					*****
+// *****                    ORION PUBLIC INITIALISATION FUNCTIONS                   *****
 // ======================================================================================
 
 /**
@@ -92,7 +92,7 @@ void oriEnableDebugContext(const unsigned int source, const unsigned int type, c
 void oriSetFlag(unsigned int flag, int value);
 
 // ======================================================================================
-// ***** 				   		 ORION PUBLIC STRUCTURES 							*****
+// *****                           ORION PUBLIC STRUCTURES                          *****
 // ======================================================================================
 
 /**
@@ -132,7 +132,7 @@ typedef struct oriVertexArray oriVertexArray;
 typedef struct oriTexture oriTexture;
 
 // ======================================================================================
-// ***** 				   		  ORION TEXTURE FUNCTIONS 							*****
+// *****                          ORION TEXTURE FUNCTIONS                           *****
 // ======================================================================================
 
 
@@ -279,7 +279,7 @@ int oriGetTextureParameteri(oriTexture *texture, unsigned int param);
 float oriGetTextureParameterf(oriTexture *texture, unsigned int param);
 
 // ======================================================================================
-// ***** 				   		  ORION BUFFER FUNCTIONS 							*****
+// *****                           ORION BUFFER FUNCTIONS                           *****
 // ======================================================================================
 
 /**
@@ -330,7 +330,7 @@ unsigned int oriGetBufferHandle(oriBuffer *buffer);
 void oriSetBufferData(oriBuffer *buffer, const void *data, const unsigned int size, const unsigned int usage);
 
 // ======================================================================================
-// ***** 				    ORION VERTEX SPECIFICATION FUNCTIONS 					*****
+// *****                     ORION VERTEX SPECIFICATION FUNCTIONS                   *****
 // ======================================================================================
 
 /**
@@ -390,16 +390,16 @@ unsigned int oriGetVertexArrayHandle(oriVertexArray *va);
  * @ingroup vertexspec
  */
 void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer, 
-	const unsigned int index,
-	const unsigned int size,
-	const unsigned int type,
-	const bool normalised,
-	const unsigned int stride,
-	const unsigned int offset
+    const unsigned int index,
+    const unsigned int size,
+    const unsigned int type,
+    const bool normalised,
+    const unsigned int stride,
+    const unsigned int offset
 );
 
 // ======================================================================================
-// ***** 				   		  ORION SHADER FUNCTIONS 							*****
+// *****                           ORION SHADER FUNCTIONS                           *****
 // ======================================================================================
 
 /**
