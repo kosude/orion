@@ -2,6 +2,7 @@
 #include "orionwin.h"
 
 #include <zetaml/include/zetaml.h>
+#include <stb_image/stb_image.h>
 
 float vertices[] = {
     -0.5f, -0.5f, 0.5f,     1, 0, 0, 1,     0.0f, 0.0f,
@@ -41,7 +42,12 @@ int main() {
     oriSetTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     oriSetTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     oriSetTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    oriUploadTexImagePath(texture, "resources/testimage.jpg", 3, GL_RGB);
+
+    stbi_set_flip_vertically_on_load(1);
+    int x, y, d;
+    char *image = stbi_load("resources/testimage.jpg", &x, &y, &d, 3);
+
+    oriUploadTexImagePath(texture, image, x, y, 0, 3, GL_RGB);
 
     while (!oriWindowShouldClose(mainWin)) {
         unsigned int w, h;

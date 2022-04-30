@@ -18,8 +18,6 @@
 #include "stdlib.h"
 #include "stdio.h"
 
-#include <stb_image/stb_image.h>
-
 // ======================================================================================
 // *****                            ORION PUBLIC STRUCTURES                         *****
 // ======================================================================================
@@ -32,7 +30,6 @@ typedef struct oriTexture {
     unsigned int width;
     unsigned int height;
     unsigned int depth;
-    unsigned int colourDepth;
     unsigned int internalFormat; // GETTER
     unsigned int levels; // GETTER
     unsigned int samples; // GETTER
@@ -76,7 +73,6 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int internalFormat) {
     r->width = 0;
     r->height = 0;
     r->depth = 0;
-    r->colourDepth = 0;
     r->internalFormat = internalFormat;
     r->levels = 0;
     r->samples = 0;
@@ -291,16 +287,14 @@ unsigned int oriGetTextureHandle(oriTexture *texture) {
  * @param width the width of the texture's base mipmap level image.
  * @param height the height of the texture's base mipmap level image; only applicable when the texture's image is not 1-dimensional.
  * @param depth the depth of the texture's base mipmap level image; only applicable if the texture is @c GL_TEXTURE_3D.
- * @param colourDepth the colour depth of the image, in bits/pixel.
  * 
  * @ingroup textures
  */
-void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int *width, unsigned int *height, unsigned int *depth, unsigned int *colourDepth) {
+void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int *width, unsigned int *height, unsigned int *depth) {
     if (type) *type = texture->type;
     if (width) *width = texture->width;
     if (height) *height = texture->height;
     if (depth) *depth = texture->depth;
-    if (colourDepth) *colourDepth = texture->colourDepth;
 }
 
 /**
@@ -309,24 +303,21 @@ void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int
  * @details The path is relative to the location of the executable.
  * 
  * @param texture the texture object to update.
- * @param path the path to the image in use.
+ * @param data the image data to use.
+ * @param width the width of the desired image.
+ * @param height the height of the desired image.
+ * @param depth the depth of the texture. Set to NULL if the texture is not 3D.
  * @param desiredChannels the desired amount of channels in the image (e.g. RGBA -> 4 channels).
- * @param imageFormat the format of the image to be loaded. Not to be confused with the internal texture format. Good luck.
+ * @param imageFormat the format of the image to be loaded.
  * 
  * @ingroup textures
  */
-void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int desiredChannels, unsigned int imageFormat) {
+void oriUploadTexImagePath(oriTexture *texture, const void *data, unsigned int width, unsigned int height, unsigned int depth, unsigned int desiredChannels, unsigned int imageFormat) {
     _orionAssertVersion(200);
 
     // NOTE! I'm ashamed of this code, but I am also simultaneously so unbelievably pissed off
     //       that anyone could ever approve this part of the OpenGL specification. To those who
     //       wrote the spec on GL texture objects: what the shit?
-
-    // OpenGl expects images the wrong way round so they are flipped on load
-    stbi_set_flip_vertically_on_load(true);
-
-    int wid, hei, cdep;
-    unsigned char *texBuffer = stbi_load(path, &wid, &hei, &cdep, desiredChannels);
 
     // get the appropriate glTexImage* / glTexSubImage* function to call.
     // (or glTextureSubImage* if DSA is possible i.e. version is >= 450)
@@ -357,7 +348,6 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
             return;
         default:
             printf("[Orion : WHOOPS] >> Unsupported texture type specified. Texture data not updated.\n");
-            stbi_image_free(texBuffer);
             return;
     }
 
@@ -373,16 +363,16 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
         switch (glTexImageFuncType) {
             case 0:
                 if (_orion.glVersion >= 450) {
-                    glTextureSubImage1D(texture->handle, 0, 0, wid, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                    glTextureSubImage1D(texture->handle, 0, 0, width, imageFormat, GL_UNSIGNED_BYTE, data);
                 } else {
-                    glTexSubImage1D(texture->type, 0, 0, wid, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                    glTexSubImage1D(texture->type, 0, 0, width, imageFormat, GL_UNSIGNED_BYTE, data);
                 }
                 break;
             case 1:
                 if (_orion.glVersion >= 450) {
-                    glTextureSubImage2D(texture->handle, 0, 0, 0, wid, hei, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                    glTextureSubImage2D(texture->handle, 0, 0, 0, width, height, imageFormat, GL_UNSIGNED_BYTE, data);
                 } else {
-                    glTexSubImage2D(texture->type, 0, 0, 0, wid, hei, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
+                    glTexSubImage2D(texture->type, 0, 0, 0, width, height, imageFormat, GL_UNSIGNED_BYTE, data);
                 }
                 break;
         }
@@ -397,18 +387,25 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
 
         switch (glTexImageFuncType) {
             case 0:
-                glTexImage1D(texture->type, 0, texture->internalFormat, wid, 0, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
-                texture->width = wid;
+                glTexImage1D(texture->type, 0, texture->internalFormat, width, 0, imageFormat, GL_UNSIGNED_BYTE, data);
+
+                // update texture properties as the texture storage has been reallocated.
+                texture->width = width;
+                texture->height = 0;
+                texture->depth = 0;
+                
                 break;
             case 1:
-                glTexImage2D(texture->type, 0, texture->internalFormat, wid, hei, 0, imageFormat, GL_UNSIGNED_BYTE, texBuffer);
-                texture->width = wid;
-                texture->height = hei;
+                glTexImage2D(texture->type, 0, texture->internalFormat, width, height, 0, imageFormat, GL_UNSIGNED_BYTE, data);
+
+                // update texture properties as the texture storage has been reallocated.
+                texture->width = width;
+                texture->height = height;
+                texture->depth = 0;
+
                 break;
         }
     }
-
-    texture->colourDepth = cdep;
 
     // don't affect global state outside of this function
     if (_orion.glVersion < 450) {
@@ -420,8 +417,6 @@ void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int d
         // generate mipmap with DSA
         glGenerateTextureMipmap(texture->handle);
     }
-
-    stbi_image_free(texBuffer);
 }
 
 /**

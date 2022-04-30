@@ -231,11 +231,10 @@ unsigned int oriGetTextureHandle(oriTexture *texture);
  * @param width the width of the texture's base mipmap level image.
  * @param height the height of the texture's base mipmap level image; only applicable when the texture's image is not 1-dimensional.
  * @param depth the depth of the texture's base mipmap level image; only applicable if the texture is @c GL_TEXTURE_3D.
- * @param colourDepth the colour depth of the image, in bits/pixel.
  * 
  * @ingroup textures
  */
-void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int *width, unsigned int *height, unsigned int *depth, unsigned int *colourDepth);
+void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int *width, unsigned int *height, unsigned int *depth);
 
 /**
  * @brief Fill the given texture's storage with an image at the specified path.
@@ -243,13 +242,16 @@ void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int
  * @details The path is relative to the location of the executable.
  * 
  * @param texture the texture object to update.
- * @param path the path to the image in use.
+ * @param data the image data to use.
+ * @param width the width of the desired image.
+ * @param height the height of the desired image. Set to NULL if the texture is 1D.
+ * @param depth the depth of the texture. Set to NULL if the texture is not 3D.
  * @param desiredChannels the desired amount of channels in the image (e.g. RGBA -> 4 channels).
- * @param imageFormat the format of the image to be loaded. Not to be confused with the internal texture format. Good luck.
+ * @param imageFormat the format of the image to be loaded.
  * 
  * @ingroup textures
  */
-void oriUploadTexImagePath(oriTexture *texture, const char *path, unsigned int desiredChannels, unsigned int imageFormat);
+void oriUploadTexImagePath(oriTexture *texture, const void *data, unsigned int width, unsigned int height, unsigned int depth, unsigned int desiredChannels, unsigned int imageFormat);
 
 /**
  * @brief Set a parameter for the given texture.

@@ -29,6 +29,14 @@ option(ORION_BUILD_DOCS "Build Orion documentation." ON)
 configure_file("${PROJECT_SOURCE_DIR}/CMake/generate/platform.h.in" "${PROJECT_BINARY_DIR}/generated/platform.h" @ONLY)
 
 # ---
+# executables' dependencies are included if necessary
+if (ORION_BUILD_TESTS OR ORION_BUILD_EXAMPLES)
+    # zetaml
+    set(ZML_USE_FLOATS ON CACHE BOOL "" FORCE)
+    add_subdirectory("${DEPENDENCIES_DIR}/execdeps/zetaml" "${DEPENDENCIES_DIR}/zetaml/build")
+endif()
+
+# ---
 # subdirectories
 
 if (ORION_BUILD_LIB)

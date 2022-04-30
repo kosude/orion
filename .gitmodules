@@ -7,9 +7,9 @@
 [submodule "tests/deps/zetaml"]
     path = tests/deps/zetaml
     url = https://github.com/jabenuk/zetaml
-[submodule "deps/zetaml"]
-    path = deps/zetaml
-    url = https://github.com/jabenuk/zetaml
 [submodule "deps/qoi"]
     path = deps/qoi
     url = https://github.com/phoboslab/qoi
+[submodule "deps/execdeps/zetaml"]
+	path = deps/execdeps/zetaml
+	url = https://github.com/jabenuk/zetaml
