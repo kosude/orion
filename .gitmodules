@@ -1,15 +1,15 @@
 [submodule "glfw"]
-	path = glfw
-	url = https://github.com/glfw/glfw
+    path = glfw
+    url = https://github.com/glfw/glfw
 [submodule "deps/glfw"]
-	path = deps/glfw
-	url = https://github.com/glfw/glfw
+    path = deps/glfw
+    url = https://github.com/glfw/glfw
 [submodule "tests/deps/zetaml"]
-	path = tests/deps/zetaml
-	url = https://github.com/jabenuk/zetaml
+    path = tests/deps/zetaml
+    url = https://github.com/jabenuk/zetaml
 [submodule "deps/zetaml"]
-	path = deps/zetaml
-	url = https://github.com/jabenuk/zetaml
+    path = deps/zetaml
+    url = https://github.com/jabenuk/zetaml
 [submodule "deps/qoi"]
-	path = deps/qoi
-	url = https://github.com/phoboslab/qoi
+    path = deps/qoi
+    url = https://github.com/phoboslab/qoi
