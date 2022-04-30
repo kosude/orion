@@ -175,11 +175,11 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int internalFormat);
  * 
  * @param target the target to bind to.
  * @param width the width of the texture.
- * @param height the height of the texture. Set to NULL if not applicable.
- * @param depth the depth of the texture. Set to NULL if not applicable.
- * @param levels the amount of texture levels. Set to NULL if not applicable.
+ * @param height the height of the texture. Set to 0 if not applicable.
+ * @param depth the depth of the texture. Set to 0 if not applicable.
+ * @param levels the amount of texture levels. Set to 0 if not applicable.
  * @param internalFormat the internal format with which texture image data will be stored, e.g. @c GL_RGBA8.
- * @param samples the number of samples in the texture. Set to NULL if not applicable.
+ * @param samples the number of samples in the texture. Set to 0 if not applicable.
  * @param fixedSampleLocations set to true if the image will use identical sample locations and the same number of samples for all texels in the image, and the sample
  * locations will not depend on the internal format or size of the image.
  * 
@@ -231,10 +231,13 @@ unsigned int oriGetTextureHandle(oriTexture *texture);
  * @param width the width of the texture's base mipmap level image.
  * @param height the height of the texture's base mipmap level image; only applicable when the texture's image is not 1-dimensional.
  * @param depth the depth of the texture's base mipmap level image; only applicable if the texture is @c GL_TEXTURE_3D.
+ * @param format the internal format of the texture.
+ * @param levels the amount of levels in the texture.
+ * @param samples the amount of samples in the texture; only applicable if the texture is multisampled.
  * 
  * @ingroup textures
  */
-void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int *width, unsigned int *height, unsigned int *depth);
+void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int *width, unsigned int *height, unsigned int *depth, unsigned int *format, unsigned int *levels, unsigned int *samples);
 
 /**
  * @brief Fill the given texture's storage with an image at the specified path.
@@ -242,16 +245,16 @@ void oriGetTextureProperty(oriTexture *texture, unsigned int *type, unsigned int
  * @details The path is relative to the location of the executable.
  * 
  * @param texture the texture object to update.
+ * @param dataType the GL type of the given data (e.g. GL_UNSIGNED_BYTE if @c data is an unsigned char array)
  * @param data the image data to use.
  * @param width the width of the desired image.
- * @param height the height of the desired image. Set to NULL if the texture is 1D.
- * @param depth the depth of the texture. Set to NULL if the texture is not 3D.
- * @param desiredChannels the desired amount of channels in the image (e.g. RGBA -> 4 channels).
+ * @param height the height of the desired image. Set to 0 if the texture is 1D.
+ * @param depth the depth of the texture. Set to 0 if the texture is not 3D.
  * @param imageFormat the format of the image to be loaded.
  * 
  * @ingroup textures
  */
-void oriUploadTexImagePath(oriTexture *texture, const void *data, unsigned int width, unsigned int height, unsigned int depth, unsigned int desiredChannels, unsigned int imageFormat);
+void oriUploadTexImage(oriTexture *texture, unsigned int dataType, const void *data, unsigned int width, unsigned int height, unsigned int depth, unsigned int imageFormat);
 
 /**
  * @brief Set a parameter for the given texture.

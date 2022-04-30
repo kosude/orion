@@ -45,9 +45,9 @@ int main() {
 
     stbi_set_flip_vertically_on_load(1);
     int x, y, d;
-    char *image = stbi_load("resources/testimage.jpg", &x, &y, &d, 3);
+    unsigned char *image = stbi_load("resources/thesecondorangebox.png", &x, &y, &d, 3);
 
-    oriUploadTexImagePath(texture, image, x, y, 0, 3, GL_RGB);
+    oriUploadTexImage(texture, GL_UNSIGNED_BYTE, image, x, y, 0, GL_RGB);
 
     while (!oriWindowShouldClose(mainWin)) {
         unsigned int w, h;
