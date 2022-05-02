@@ -8,6 +8,7 @@
 
             "program": "${workspaceFolder}/build/tests/public",
             //"program": "${workspaceFolder}/build/examples/glfwcompat",
+            //"program": "${workspaceFolder}/build/tests/oldzetaml",
             "cwd": "${workspaceFolder}",
 
             "externalConsole": false,

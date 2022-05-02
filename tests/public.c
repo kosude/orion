@@ -5,10 +5,10 @@
 #include <stb_image/stb_image.h>
 
 float vertices[] = {
-    -0.5f, -0.5f, 0.5f,     1, 0, 0, 1,     0.0f, 0.0f,
-     0.5f, -0.5f, 0.5f,     0, 1, 0, 1,     1.0f, 0.0f,
-    -0.5f,  0.5f, 0.5f,     0, 0, 1, 1,     0.0f, 1.0f,
-     0.5f,  0.5f, 0.5f,     1, 1, 0, 1,     1.0f, 1.0f
+    -0.5f, -0.5f, 0.0f,     1, 0, 0, 1,     0.0f, 0.0f,
+     0.5f, -0.5f, 0.0f,     0, 1, 0, 1,     1.0f, 0.0f,
+    -0.5f,  0.5f, 0.0f,     0, 0, 1, 1,     0.0f, 1.0f,
+     0.5f,  0.5f, 0.0f,     1, 1, 0, 1,     1.0f, 1.0f
 };
 
 unsigned int indices[] = {
@@ -17,7 +17,7 @@ unsigned int indices[] = {
 };
 
 int main() {
-    oriWindow *mainWin = oriCreateWindow(480, 480, "Orion public interface test", 330, GLFW_OPENGL_CORE_PROFILE);
+    oriWindow *mainWin = oriCreateWindow(640, 480, "Orion public interface test", 330, GLFW_OPENGL_CORE_PROFILE);
     oriSwapInterval(mainWin, 1);
 
     oriInitialise(450);
@@ -35,9 +35,9 @@ int main() {
     oriShader *shader = oriCreateShader();
     oriAddShaderSource(shader, GL_VERTEX_SHADER, ORION_VERTEX_SHADER_BASIC);
     oriAddShaderSource(shader, GL_FRAGMENT_SHADER, ORION_FRAGMENT_SHADER_BASIC);
-    oriSetUniform1i(shader, "blend.mode", 2);
+    oriSetUniform1i(shader, "blend.mode", 6);
 
-    oriTexture *texture = oriCreateTexture(GL_TEXTURE_2D, GL_RGB);
+    oriTexture *texture = oriCreateTexture(GL_TEXTURE_2D, GL_RGBA);
     oriSetTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     oriSetTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     oriSetTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -45,21 +45,27 @@ int main() {
 
     stbi_set_flip_vertically_on_load(1);
     int x, y, d;
-    unsigned char *image = stbi_load("resources/thesecondorangebox.png", &x, &y, &d, 3);
+    unsigned char *image = stbi_load("resources/onions.jpg", &x, &y, &d, 4);
 
-    oriUploadTexImage(texture, GL_UNSIGNED_BYTE, image, x, y, 0, GL_RGB);
+    oriUploadTexImage(texture, GL_UNSIGNED_BYTE, image, x, y, 0, GL_RGBA);
 
     while (!oriWindowShouldClose(mainWin)) {
         unsigned int w, h;
         oriGetWindowSize(mainWin, &w, &h);
         glViewport(0, 0, w, h);
 
-        zmlVector scale = zmlConstructVectorDefault(3, 1.5f);
+        zmlVector scale = zmlConstructVectorDefault(3, 1.41f);
+        zmlVector trans = zmlConstructVectorDefault(3, 0);
+        trans.elements[2] = -0.5f;
         zmlMatrix model = zmlIdentityMatrix(4, 4);
         zmlScale(&model, scale);
+        zmlTranslate(&model, trans); 
 
+        zmlMatrix proj = zmlConstructPerspectiveMatrixRH(0.0f, 1000.0f, zmlToRadians(45.0f), (double) w / (double) h);
+
+        zmlMatrix mat = zmlMultiplyMats_r(proj, model);
         float matelem[4][4];
-        zmlCopyMatrixElements(model, matelem);
+        zmlCopyMatrixElements(mat, matelem);
         oriSetUniformMat4x4f(shader, "transform.mvp", false, &matelem[0][0]);
 
         glClear(GL_COLOR_BUFFER_BIT);
@@ -76,6 +82,8 @@ int main() {
 
         zmlFreeVector(&scale);
         zmlFreeMatrix(&model);
+        zmlFreeMatrix(&proj);
+        zmlFreeMatrix(&mat);
     }
 
     oriTerminate();
