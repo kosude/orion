@@ -166,7 +166,7 @@ unsigned int oriCompileShader(const unsigned int type, const char *src) {
         // Log error to stdout
         // As string formatted is required here, printf is used instead of _orionThrowWarning.
         // This is annoying and be sure to change the style of this message if the style in _orionThrowWarning changes.
-        printf("[Orion : WARN] >> %s\n", e);
+        printf("[Orion : WARN] >> (shader type %d) %s\n", type, e);
 
         free(e);
 
@@ -288,7 +288,7 @@ int oriShaderGetUniformLocation(oriShader *shader, const char *name) {
             // OpenGL didn't get the location
             // As string formatted is required here, printf is used instead of _orionThrowWarning.
             // This is annoying and be sure to change the style of this message if the style in _orionThrowWarning changes.
-            printf("[Orion : WARN] >> glGetUniformLocation() with uniform name %s failed!", name);
+            printf("[Orion : WARN] >> glGetUniformLocation() with uniform name %s failed!\n", name);
             return 0;
         }
 

@@ -3,6 +3,5 @@
 
 // The following definitions have been automatically defined as part of building Orion.
 // They will be regenerated on the next build.
-
 @ORION_LOADED_RESOURCES@
 #endif // include guard

@@ -14,7 +14,7 @@ function(load_resources)
     # loop through the given files
     foreach(path ${_ARG_PATHS})
         # add comment first
-        string(APPEND _define_str "// ${path}")
+        string(APPEND _define_str "\n// ${path}")
 
         # get the contents of the file
         file(READ ${path} _file_contents)
@@ -69,6 +69,9 @@ load_resources(
     PATHS
         "${CMAKE_CURRENT_LIST_DIR}/basic.frag.glsl"
         "${CMAKE_CURRENT_LIST_DIR}/basic.vert.glsl"
+
+        "${CMAKE_CURRENT_LIST_DIR}/lighting.frag.glsl"
+        "${CMAKE_CURRENT_LIST_DIR}/lighting.vert.glsl"
 )
 
 configure_file("${PROJECT_SOURCE_DIR}/CMake/generate/shaderpresets.h.in" "${PROJECT_BINARY_DIR}/generated/shaderpresets.h" @ONLY)
