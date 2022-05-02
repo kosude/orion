@@ -43,7 +43,9 @@ included `oriWindow` struct, which is managed internally by Orion and is automat
 to `oriTerminate()`. Keep in mind that Orion has also been tested with basic GLFW (without orionwin)
 and it works just as well.
 
-## Successfully eliminating memory issues
+## Contributing
+
+### Using Valgrind to eliminate memory issues
 
 Whenever something is contributed to Orion, regardless of its significance, it should always be tested
 with **[Valgrind](https://valgrind.org/)** first. There are a few memory leaks that are caused by
