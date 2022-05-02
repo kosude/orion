@@ -47,6 +47,8 @@ int main() {
     unsigned char *image = stbi_load("resources/onions.jpg", &x, &y, &d, 4);
     oriUploadTexImage(texture, GL_UNSIGNED_BYTE, image, x, y, 0, GL_RGBA);
 
+    stbi_image_free(image);
+
     while (!oriWindowShouldClose(mainWin)) {
         unsigned int w, h;
         oriGetWindowSize(mainWin, &w, &h);
@@ -79,6 +81,7 @@ int main() {
         oriPollEvents();
 
         zmlFreeVector(&scale);
+        zmlFreeVector(&trans);
         zmlFreeMatrix(&model);
         zmlFreeMatrix(&proj);
         zmlFreeMatrix(&mat);

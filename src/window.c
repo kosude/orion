@@ -64,10 +64,6 @@ oriWindow *oriCreateWindow(const unsigned int width, const unsigned int height, 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
     glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
 
-    if (_orion.debug) {
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
-    }
-
     // TODO: add monitor + share functionality
     GLFWwindow *rhandle = glfwCreateWindow(width, height, title, NULL, NULL);
 
