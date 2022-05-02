@@ -154,7 +154,7 @@ oriTexture *oriCreateTextureImmutable(unsigned int target, unsigned int width, u
             glTexStorageFuncType = 4;
             return r;
         default:
-            printf("[Orion : WHOOPS] >> Unsupported texture type specified. Immutable texture storage not allocated.\n");
+            _orionThrowWarning("(in oriCreateTextureImmutable()): Unsupported texture type specified. Immutable texture storage not allocated.");
             return r;
     }
 
@@ -346,10 +346,10 @@ void oriUploadTexImage(oriTexture *texture, unsigned int dataType, const void *d
             return;
         case GL_TEXTURE_2D_MULTISAMPLE:
         case GL_TEXTURE_2D_MULTISAMPLE_ARRAY:
-            printf("[Orion : WARNING] >> OpenGL does not support directly writing to multisampled textures.\n");
+            _orionThrowWarning("(in oriUploadTexImage()): OpenGL does not support directly writing to multisample textures. Texture data not updated.");
             return;
         default:
-            printf("[Orion : WHOOPS] >> Unsupported texture type specified. Texture data not updated.\n");
+            _orionThrowWarning("(in oriUploadTexImage()): Unsupported texture type specified. Texture data not updated.");
             return;
     }
 

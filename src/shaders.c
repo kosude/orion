@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 // ======================================================================================
 // *****                          ORION INTERNAL DATA TYPES                         *****
@@ -166,8 +167,10 @@ unsigned int oriCompileShader(const unsigned int type, const char *src) {
         char *e = malloc(len * sizeof(char));
         glGetShaderInfoLog(id, len, &len, e);
 
-        // log error to stdout
-        printf("[Orion : SHADER] >> %s\n", e);
+        // Log error to stdout
+        // As string formatted is required here, printf is used instead of _orionThrowWarning.
+        // This is annoying and be sure to change the style of this message if the style in _orionThrowWarning changes.
+        printf("[Orion : WARN] >> %s\n", e);
 
         free(e);
 
@@ -196,14 +199,20 @@ const char *oriParseShader(const char *path) {
     FILE *f = fopen(path, "rb");
     unsigned readlength;
 
+    // initialise empty string to be returned in case of file read error.
+    char *backup = malloc(sizeof(char));
+    memset(backup, 0, sizeof(backup));
+
     if (f) {
         fseek(f, 0, SEEK_END);
         length = ftell(f);
         fseek(f, 0, SEEK_SET);
 
-        // 1 GiB is a reasonable limit
+        // 1 GB is a reasonable limit
         if (length > 1073741824) {
-            _orionThrowError(ORERR_FILE_TOO_LARGE);
+            _orionThrowWarning("(in oriParseShader()): The size of the specified source file exceeds the limit of 1 GB.");
+            // free(buffer) is not called as buffer is not initialised so this would result in undefined behaviour
+            return backup;
         }
 
         buffer = malloc((length + 1) * sizeof(char)); // +1 for null terminator.
@@ -212,8 +221,9 @@ const char *oriParseShader(const char *path) {
             readlength = fread(buffer, 1, length, f);
 
             if (length != readlength) {
+                _orionThrowWarning("(in oriParseShader()): An error was encountered when reading the specified source file.");
                 free(buffer);
-                _orionThrowError(ORERR_FILE_READ_ERROR);
+                return backup;
             }
         }
 
@@ -221,9 +231,12 @@ const char *oriParseShader(const char *path) {
 
         buffer[length] = '\0';
     } else {
-        _orionThrowError(ORERR_ACCESS_PHANTOM);
+        _orionThrowWarning("(in oriParseShader()): The specified source file could not be accessed.");
+        // free(buffer) is not called as buffer is not initialised so this would result in undefined behaviour
+        return backup;
     }
 
+    free(backup);
     return buffer;
 }
 
@@ -277,6 +290,8 @@ int oriShaderGetUniformLocation(oriShader *shader, const char *name) {
 
         if (r < 0) {
             // OpenGL didn't get the location
+            // As string formatted is required here, printf is used instead of _orionThrowWarning.
+            // This is annoying and be sure to change the style of this message if the style in _orionThrowWarning changes.
             printf("[Orion : WARN] >> glGetUniformLocation() with uniform name %s failed!", name);
             return 0;
         }

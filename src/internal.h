@@ -88,11 +88,8 @@ void _orionAssertVersion(unsigned int minimum);
 #define ORERR_GL_FAIL           0x008,  "Failed to load OpenGL.",                                                                                       "ORERR_GL_FAIL"
 #define ORERR_ACCESS_DENIED     0x009,  "Couldn't execute a necessary function; access denied.",                                                        "ORERR_ACCESS_DENIED"
 #define ORERR_ACCESS_PHANTOM    0x00A,  "Attempted to access resource that doesn't exist.",                                                             "ORERR_ACCESS_PHANTOM"
-#define ORERR_FILE_TOO_LARGE    0x00B,  "A given text FILE was greater than 1 GiB in size.",                                                            "ORERR_FILE_TOO_LARGE"
-#define ORERR_FILE_READ_ERROR   0x00C,  "An error was encountered while reading a given FILE.",                                                         "ORERR_FILE_READ_ERROR"
-#define ORERR_GL_OLD_VERS       0x00D,  "OpenGL version too low.",                                                                                      "ORERR_GL_OLD_VERS"
-#define ORERR_GL_NOT_LOADED     0x00E,  "OpenGL has not yet been loaded. Do this with oriLoadGL().",                                                    "ORERR_GL_NOT_LOADED"
-#define ORERR_NO_DEBUG_CONTEXT  0x00F,  "ORION_DEBUG_CONTEXT has not yet been set to true.",                                                            "ORERR_NO_DEBUG_CONTEXT"
+#define ORERR_GL_OLD_VERS       0x00B,  "OpenGL version too low.",                                                                                      "ORERR_GL_OLD_VERS"
+#define ORERR_GL_NOT_LOADED     0x00C,  "OpenGL has not yet been loaded. Do this with oriLoadGL().",                                                    "ORERR_GL_NOT_LOADED"
 
 /**
  * @brief Throw an exception to stdout and break the program
@@ -102,6 +99,13 @@ void _orionAssertVersion(unsigned int minimum);
  * @param label the label of the error
  */
 void _orionThrowError(const int code, const char *msg, const char *label);
+
+/**
+ * @brief Send a warning message to stdout (but don't break the program)
+ * 
+ * @param msg a helpful message for debugging
+ */
+void _orionThrowWarning(const char *msg);
 
 // ======================================================================================
 // *****                               ORION CALLBACKS                              *****

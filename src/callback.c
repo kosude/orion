@@ -21,7 +21,9 @@
 // ======================================================================================
 
 void _orionDefaultGLFWErrorCallback(int id, const char *msg) {
-    printf("[Orion : WHOOPS] >> Error recieved from GLFW (error code %d): \"%s\"\n", id, msg);
+    // As string formatted is required here, printf is used instead of _orionThrowWarning.
+    // This is annoying and be sure to change the style of this message if the style in _orionThrowWarning changes.
+    printf("[Orion : WARN] >> Error recieved from GLFW (error code %d): \"%s\"\n", id, msg);
     _orionThrowError(ORERR_GLFW_FAIL);
 }
 

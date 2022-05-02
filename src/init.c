@@ -23,8 +23,16 @@
 #include <libgen.h>
 #include <stdio.h>
 
+// ======================================================================================
+// *****                           ORION INTERNAL STATE                             *****
+// ======================================================================================
+
 // global state structure
 _orionState _orion = { NULL };
+
+// ======================================================================================
+// *****                                ORION ERRORS                                *****
+// ======================================================================================
 
 /**
  * @brief Initialise GLFW. This function is called implicitly when the user calls the first Orion-abstracted GLFW function.
@@ -53,6 +61,15 @@ void _orionThrowError(const int code, const char *msg, const char *label) {
         oriTerminate();
     }
     exit(-1);
+}
+
+/**
+ * @brief Send a warning message to stdout (but don't break the program)
+ * 
+ * @param msg a helpful message for debugging
+ */
+void _orionThrowWarning(const char *msg) {
+    printf("[Orion : WARN] >> %s\n", msg);
 }
 
 /**
@@ -221,7 +238,8 @@ void oriLoadGL(void *(* loadproc)(const char *)) {
  */
 void oriDebugFlags(const unsigned int source, const unsigned int type, const unsigned int severity, const bool enabled, const unsigned int *suppressed, const unsigned int count) {
     if (!_orion.debug) {
-        _orionThrowError(ORERR_NO_DEBUG_CONTEXT);
+        _orionThrowWarning("(in oriDebugFlags()): A debug context does not exist or has not been created with Orion, so suppression flags cannot be set with Orion.");
+        return;
     }
     glDebugMessageControl(source, type, severity, count, suppressed, enabled);
 }
@@ -237,11 +255,11 @@ void oriDebugFlags(const unsigned int source, const unsigned int type, const uns
 void oriSetFlag(unsigned int flag, int value) {
     switch (flag) {
         default:
-            printf("[Orion : WARNING] >> Invalid flag given to oriSetFlag().\n");
+            _orionThrowWarning("Invalid flag given to oriSetFlag().");
             return;
         case ORION_DEBUG_CONTEXT:
             if (!_orion.initialised || _orion.glVersion < 430) {
-                printf("[Orion : WARNING] >> (in oriSetFlag()): Attempted to set debug context flag without initialisation or required GL version.\n");
+                _orionThrowWarning("(in oriSetFlag()): Attempted to set debug context flag without initialisation or required GL version.");
                 return;
             }
 

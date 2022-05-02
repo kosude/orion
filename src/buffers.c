@@ -156,17 +156,17 @@ void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer,
     const unsigned int offset
 ) {
     if (type == GL_DOUBLE) {
-        printf("[Orion : WARN] >> (in oriSpecifyVertexData()) the OpenGL Specification heavily warns against using GL_DOUBLE.\n");
+        _orionThrowWarning("(in oriSpecifyVertexData()): The OpenGL Specification heavily warns against using GL_DOUBLE.");
     }
     if (type == GL_UNSIGNED_INT_10F_11F_11F_REV) {
         _orionAssertVersion(440);
         if (size != 3) {
-            printf("[Orion : WARN] >> (in oriSpecifyVertexData()) size MUST be 3 when using GL_UNSIGNED_INT_10F_11F_11F_REV.\n");
+            _orionThrowWarning("(in oriSpecifyVertexData()): Size MUST be 3 when using GL_UNSIGNED_INT_10F_11F_11F_REV.");
             return;
         }
     }
     if ((type == GL_INT_2_10_10_10_REV || type == GL_UNSIGNED_INT_2_10_10_10_REV) && size != 4) {
-        printf("[Orion : WARN] >> (in oriSpecifyVertexData()) size MUST be 4 when using either GL_INT_2_10_10_10_REV or GL_UNSIGNED_INT_2_10_10_10_REV.\n");
+        _orionThrowWarning("(in oriSpecifyVertexData()): Size MUST be 4 when using either GL_INT_2_10_10_10_REV or GL_UNSIGNED_INT_2_10_10_10_REV.");
         return;
     }
 
@@ -244,7 +244,7 @@ void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer,
     // if DSA is not possible
 
     if (buffer->currentTarget != GL_ARRAY_BUFFER) {
-        printf("[Orion : WARN] >> (in oriSpecifyVertexData()) when version is below 4.5, the buffer must be bound to GL_ARRAY_BUFFER.\n");
+        _orionThrowWarning("(in oriSpecifyVertexData()): When version is below 4.5, the buffer must be bound to GL_ARRAY_BUFFER.");
         return;
     }
 
