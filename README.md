@@ -45,6 +45,8 @@ and it works just as well.
 
 ## Contributing
 
+See the [dependencies](deps/) directory read-me for information about Orion's dependencies.
+
 ### Using Valgrind to eliminate memory issues
 
 Whenever something is contributed to Orion, regardless of its significance, it should always be tested
