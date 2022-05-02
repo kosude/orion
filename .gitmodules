@@ -10,3 +10,6 @@
 [submodule "deps/execdeps/zetaml"]
 	path = deps/execdeps/zetaml
 	url = https://github.com/jabenuk/zetaml
+[submodule "tests/deps/zetaml_old"]
+	path = tests/deps/zetaml_old
+	url = https://github.com/jabenuk/zetaml_old
