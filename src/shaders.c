@@ -59,10 +59,6 @@ typedef struct oriShader {
 oriShader *oriCreateShader() {
     _orionAssertVersion(200);
 
-    if (!_orion.initialised) {
-        _orionThrowError(ORERR_NOT_INIT);
-    }
-
     oriShader *r = malloc(sizeof(oriShader));
 
     r->uniformListHead = NULL;

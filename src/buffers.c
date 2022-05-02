@@ -54,10 +54,6 @@ typedef struct oriVertexArray {
 oriVertexArray *oriCreateVertexArray() {
     _orionAssertVersion(300);
 
-    if (!_orion.initialised) {
-        _orionThrowError(ORERR_NOT_INIT);
-    }
-
     oriVertexArray *r = malloc(sizeof(oriVertexArray));
     r->handle = 0;
 
@@ -295,9 +291,7 @@ void oriSpecifyVertexData(oriVertexArray *va, oriBuffer *buffer,
  * @ingroup buffers
  */
 oriBuffer *oriCreateBuffer() {
-    if (!_orion.initialised) {
-        _orionThrowError(ORERR_NOT_INIT);
-    }
+    _orionAssertVersion(200);
 
     oriBuffer *r = malloc(sizeof(oriBuffer));
     r->handle = 0;

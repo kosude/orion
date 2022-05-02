@@ -152,7 +152,7 @@ void oriTerminateGLFW() {
     _orion.glfwInitialised = false;
 }
 void oriGLFWInitHint(int hint, int value) {
-    glfwSetErrorCallback(_oriCallbacks.glfwErrorCallback);
+    glfwSetErrorCallback(_orion.callbacks.glfwErrorCallback);
     glfwInitHint(hint, value);
 }
 void oriGetGLFWVersion(int *major, int *minor, int *rev) {

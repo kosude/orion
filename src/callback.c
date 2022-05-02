@@ -19,6 +19,8 @@
 // ======================================================================================
 // *****                           ORION DEFAULT CALLBACKS                          *****
 // ======================================================================================
+// The following functions (internally linked) are the default callback functions and are
+// specified in oriDefaultCallbacks().
 
 void _orionDefaultGLFWErrorCallback(int id, const char *msg) {
     // As string formatted is required here, printf is used instead of _orionThrowWarning.
@@ -63,8 +65,43 @@ void _orionDefaultDebugMessageCallback(unsigned int src, unsigned int type, unsi
     printf("[Orion : DEBUG] >> GL error code %d : source %s : type %s : severity %s. See debugging message below:\n\t\t\"%s\"\n", id, srcstr, typestr, severitystr, msg);
 }
 
-// global callbacks
-_orionCallbacks _oriCallbacks = {
-    _orionDefaultGLFWErrorCallback,
-    _orionDefaultDebugMessageCallback
-};
+// ======================================================================================
+// *****                          ORION CALLBACK FUNCTIONS                          *****
+// ======================================================================================
+
+/**
+ * @brief Set all callbacks to their default functions.
+ * 
+ * @ingroup meta
+ */
+void oriDefaultCallbacks() {
+    _orion.callbacks.glfwErrorCallback = _orionDefaultGLFWErrorCallback;
+    _orion.callbacks.debugMessageCallback = _orionDefaultDebugMessageCallback;
+}
+
+/**
+ * @brief Set the GLFW error callback.
+ * @details Keep in mind that @b this @b is @b only @b used @b when @b using @ref window.
+ * 
+ * @param callback the callback to use.
+ * 
+ * @sa oriGLFWErrorCallback
+ * 
+ * @ingroup meta
+ */
+void oriSetGLFWErrorCallback(oriGLFWErrorCallback callback) {
+    _orion.callbacks.glfwErrorCallback = callback;
+}
+
+/**
+ * @brief Set the OpenGL debug context message callback.
+ * 
+ * @param callback the callback to use.
+ * 
+ * @sa oriGLDebugMessageCallback
+ * 
+ * @ingroup meta
+ */
+void oriSetGLDebugMessageCallback(oriGLDebugMessageCallback callback) {
+    _orion.callbacks.debugMessageCallback = callback;
+}

@@ -120,6 +120,59 @@ void oriSetFlag(unsigned int flag, int value);
 #define ORION_DEBUG_CONTEXT 0x01
 
 // ======================================================================================
+// *****                          ORION CALLBACK FUNCTIONS                          *****
+// ======================================================================================
+
+/**
+ * @brief Set all callbacks to their default functions.
+ * 
+ * @ingroup meta
+ */
+void oriDefaultCallbacks();
+
+/** 
+ * @brief A callback function that will be called in the event of a GLFW error.
+ * @details Keep in mind that @b this @b is @b only @b used @b when @b using @ref window.
+ * 
+ * @sa oriSetGLFWErrorCallback()
+ * 
+ * @ingroup meta
+ */
+typedef void (* oriGLFWErrorCallback)(int, const char *);
+/**
+ * @brief Set the GLFW error callback.
+ * @details Keep in mind that @b this @b is @b only @b used @b when @b using @ref window.
+ * In cases where GLFW is used outside the scope of orionwin (including @c <glfw3.h> instead of @c <orionwin.h>, for instance) you'll need to manage
+ * callbacks yourself. The same applies for any other windowing API you use.
+ * 
+ * @param callback the callback to use.
+ * 
+ * @sa oriGLFWErrorCallback
+ * 
+ * @ingroup meta
+ */
+void oriSetGLFWErrorCallback(oriGLFWErrorCallback callback);
+
+/**
+ * @brief A callback function that will be used to output OpenGL debug context messages.
+ * 
+ * @sa oriSetGLDebugMessageCallback()
+ * 
+ * @ingroup meta
+ */
+typedef void (* oriGLDebugMessageCallback)(unsigned int, unsigned int, unsigned int, unsigned int, int, const char *, const void *);
+/**
+ * @brief Set the OpenGL debug context message callback.
+ * 
+ * @param callback the callback to use.
+ * 
+ * @sa oriGLDebugMessageCallback
+ * 
+ * @ingroup meta
+ */
+void oriSetGLDebugMessageCallback(oriGLDebugMessageCallback callback);
+
+// ======================================================================================
 // *****                           ORION PUBLIC STRUCTURES                          *****
 // ======================================================================================
 

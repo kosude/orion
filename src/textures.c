@@ -59,10 +59,6 @@ oriTexture *oriCreateTexture(unsigned int target, unsigned int internalFormat) {
     // assert correct version
     _orionAssertVersion(200);
 
-    if (!_orion.initialised) {
-        _orionThrowError(ORERR_NOT_INIT);
-    }
-
     // assert version 3.2 or higher if necessary
     if (target == GL_TEXTURE_2D_MULTISAMPLE || target == GL_TEXTURE_2D_MULTISAMPLE_ARRAY) {
         _orionAssertVersion(320);

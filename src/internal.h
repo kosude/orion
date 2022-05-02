@@ -55,6 +55,11 @@ typedef struct _orionState {
     oriBuffer *bufferListHead;
     oriVertexArray *vertexArrayListHead;
     oriTexture *textureListHead;
+
+    struct {
+        oriGLFWErrorCallback glfwErrorCallback;
+        oriGLDebugMessageCallback debugMessageCallback;
+    } callbacks;
 } _orionState;
 extern _orionState _orion;
 
@@ -78,7 +83,6 @@ void _orionAssertVersion(unsigned int minimum);
 // *****                                ORION ERRORS                                *****
 // ======================================================================================
 
-#define ORERR_MULTIPLE_CALLS    0x001,  "Illegal call of function that has already been called; this function can not be called more than once.",       "ORERR_MULTIPLE_CALLS"
 #define ORERR_GL_INVALID_VERS   0x002,  "Attempted to load invalid OpenGL version.",                                                                    "ORERR_GL_INVALID_VERS"
 #define ORERR_GL_ABOVE_MAX      0x003,  "Attempted to load invalid OpenGL version; maximum OpenGL version supported by Orion is 4.6.",                  "ORERR_GL_ABOVE_MAX"
 #define ORERR_GL_BELOW_MIN      0x004,  "Attempted to load invalid OpenGL version; versions earlier than 1.1 are not supported by Orion.",              "ORERR_GL_BELOW_MIN"
@@ -106,20 +110,6 @@ void _orionThrowError(const int code, const char *msg, const char *label);
  * @param msg a helpful message for debugging
  */
 void _orionThrowWarning(const char *msg);
-
-// ======================================================================================
-// *****                               ORION CALLBACKS                              *****
-// ======================================================================================
-
-/**
- * @brief Struct of error callbacks used in Orion functions.
- * 
- */
-typedef struct _orionCallbacks {
-    void (* glfwErrorCallback)(int, const char *); // GLFW error callback
-    void (* debugMessageCallback)(unsigned int, unsigned int, unsigned int, unsigned int, int, const char *, const void *); // GL debug context message callback
-} _orionCallbacks;
-extern _orionCallbacks _oriCallbacks;
 
 #ifdef __cplusplus
 }

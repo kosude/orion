@@ -40,7 +40,7 @@ _orionState _orion = { NULL };
  */
 void _orionInitGLFW() {
     // initialise GLFW
-    glfwSetErrorCallback(_oriCallbacks.glfwErrorCallback);
+    glfwSetErrorCallback(_orion.callbacks.glfwErrorCallback);
     glfwInit();
 
     _orion.glfwInitialised = true;
@@ -57,9 +57,7 @@ void _orionThrowError(const int code, const char *msg, const char *label) {
     printf("[Orion : FATAL!] >> Error code 0x%03hhX (%s) : %s\n", code, label, msg);
     __debugbreak;
 
-    if (_orion.initialised) {
-        oriTerminate();
-    }
+    oriTerminate();
     exit(-1);
 }
 
@@ -77,11 +75,8 @@ void _orionThrowWarning(const char *msg) {
  * 
  */
 void _orionAssertVersion(unsigned int minimum) {
-    if (!_orion.glLoaded) {
-        _orionThrowError(ORERR_GL_NOT_LOADED);
-    }
     if (_orion.glVersion < minimum) {
-        printf("[Orion : VERSERR] >> Loaded version %d is not high enough to meet minimum of %d.\n", _orion.glVersion, minimum);
+        printf("[Orion : VERSERR] >> Loaded version %d is not high enough to meet minimum of %d (or Orion and OpenGL haven't been initialised).\n", _orion.glVersion, minimum);
         _orionThrowError(ORERR_GL_OLD_VERS);
     }
 }
@@ -99,7 +94,7 @@ void _orionAssertVersion(unsigned int minimum) {
  */
 void oriInitialise(const unsigned int version) {
     if (_orion.initialised) {
-        _orionThrowError(ORERR_MULTIPLE_CALLS);
+        return;
     }
 
     // validate arguments
@@ -161,6 +156,9 @@ void oriInitialise(const unsigned int version) {
         _orionThrowError(ORERR_ACCESS_PHANTOM);
     }
 
+    // initialise callback functions to default
+    oriDefaultCallbacks();
+
     _orion.initialised = true;
 }
 
@@ -174,6 +172,10 @@ void oriInitialise(const unsigned int version) {
  * @ingroup meta
  */
 void oriTerminate() {
+    if (!_orion.initialised) {
+        return;
+    }
+
     // destroy all shader objects
     while (_orion.shaderListHead) {
         oriFreeShader(_orion.shaderListHead);
@@ -247,6 +249,9 @@ void oriDebugFlags(const unsigned int source, const unsigned int type, const uns
 /**
  * @brief Set an Orion library flag, program-wide.
  * 
+ * @details The following flags are available:
+ * @li @c ORION_DEBUG_CONTEXT: set to true to initialise a new OpenGL debug context with the set message callback. Set to false to disable the debug context.
+ * 
  * @param flag the flag to set, such as @c ORION_DEBUG_CONTEXT.
  * @param value the value to set the flag to.
  * 
@@ -267,7 +272,7 @@ void oriSetFlag(unsigned int flag, int value) {
                 glEnable(GL_DEBUG_OUTPUT);
                 glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-                glDebugMessageCallback(_oriCallbacks.debugMessageCallback, NULL);
+                glDebugMessageCallback(_orion.callbacks.debugMessageCallback, NULL);
             } else {
                 glDisable(GL_DEBUG_OUTPUT);
                 glDisable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
