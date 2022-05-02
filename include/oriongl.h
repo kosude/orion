@@ -82,8 +82,8 @@ void oriTerminate();
 void oriLoadGL(void *(* loadproc)(const char *));
 
 /**
- * @brief Enables OpenGL debug context (only available in OpenGL versions 4.3 and above!) - OpenGL errors will be printed to \e stdout.
- * @warning Attempting to run this function on OpenGL functions below version 4.3 will result in an \b exception.
+ * @brief Set suppression flags for the OpenGL debug context.
+ * @warning This function must be called, if at all, @b after ORION_DEBUG_CONTEXT has been set to true with oriSetFlag().
  * 
  * @param source the source to filter the errors to.
  * @param type the type to filter the errors to.
@@ -94,17 +94,30 @@ void oriLoadGL(void *(* loadproc)(const char *));
  * 
  * @ingroup meta
  */
-void oriEnableDebugContext(const unsigned int source, const unsigned int type, const unsigned int severity, const bool enabled, const unsigned int *suppressed, const unsigned int count);
+void oriDebugFlags(const unsigned int source, const unsigned int type, const unsigned int severity, const bool enabled, const unsigned int *suppressed, const unsigned int count);
 
 /**
  * @brief Set an Orion library flag, program-wide.
  * 
- * @param flag the flag to set, such as ORION_
- * @param value 
+ * @param flag the flag to set, such as @c ORION_DEBUG_CONTEXT.
+ * @param value the value to set the flag to.
  * 
  * @ingroup meta
  */
 void oriSetFlag(unsigned int flag, int value);
+
+// ======================================================================================
+// *****                        ORION FLAGS (for oriSetFlag())                      *****
+// ======================================================================================
+
+/**
+ * @brief Use an OpenGL debug context. Only available in GL versions 4.3+!
+ * 
+ * @sa oriSetFlag()
+ * 
+ * @ingroup meta
+ */
+#define ORION_DEBUG_CONTEXT 0x01
 
 // ======================================================================================
 // *****                           ORION PUBLIC STRUCTURES                          *****

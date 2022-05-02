@@ -92,6 +92,7 @@ void _orionAssertVersion(unsigned int minimum);
 #define ORERR_FILE_READ_ERROR   0x00C,  "An error was encountered while reading a given FILE.",                                                         "ORERR_FILE_READ_ERROR"
 #define ORERR_GL_OLD_VERS       0x00D,  "OpenGL version too low.",                                                                                      "ORERR_GL_OLD_VERS"
 #define ORERR_GL_NOT_LOADED     0x00E,  "OpenGL has not yet been loaded. Do this with oriLoadGL().",                                                    "ORERR_GL_NOT_LOADED"
+#define ORERR_NO_DEBUG_CONTEXT  0x00F,  "ORION_DEBUG_CONTEXT has not yet been set to true.",                                                            "ORERR_NO_DEBUG_CONTEXT"
 
 /**
  * @brief Throw an exception to stdout and break the program

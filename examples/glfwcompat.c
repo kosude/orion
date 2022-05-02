@@ -31,6 +31,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, false);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
     GLFWwindow *window = glfwCreateWindow(300, 300, "Orion with GLFW", NULL, NULL);
     glfwMakeContextCurrent(window);
@@ -39,7 +40,9 @@ int main() {
     glfwSwapInterval(1);
 
     oriInitialise(460);
-    oriEnableDebugContext(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DONT_CARE, GL_DONT_CARE, false, NULL, 0);
+    
+    oriSetFlag(ORION_DEBUG_CONTEXT, true);
+    oriDebugFlags(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DONT_CARE, GL_DONT_CARE, false, NULL, 0);
 
     oriBuffer *ibo = oriCreateBuffer();
     oriSetBufferData(ibo, indices, sizeof(indices), GL_STATIC_DRAW);

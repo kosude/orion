@@ -17,10 +17,14 @@ unsigned int indices[] = {
 };
 
 int main() {
-    oriWindow *mainWin = oriCreateWindow(640, 480, "Orion public interface test", 330, GLFW_OPENGL_CORE_PROFILE);
+    oriWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    oriWindow *mainWin = oriCreateWindow(480, 480, "Orion public interface test", 430, GLFW_OPENGL_CORE_PROFILE);
     oriSwapInterval(mainWin, 1);
 
-    oriInitialise(450);
+    oriInitialise(430);
+
+    oriSetFlag(ORION_DEBUG_CONTEXT, true);
+    oriDebugFlags(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DONT_CARE, GL_DONT_CARE, false, NULL, 0);
 
     oriBuffer *ibo = oriCreateBuffer();
     oriSetBufferData(ibo, indices, sizeof(indices), GL_STATIC_DRAW);
@@ -38,15 +42,9 @@ int main() {
     oriSetUniform1i(shader, "blend.mode", 6);
 
     oriTexture *texture = oriCreateTexture(GL_TEXTURE_2D, GL_RGBA);
-    oriSetTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    oriSetTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    oriSetTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    oriSetTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
     stbi_set_flip_vertically_on_load(1);
     int x, y, d;
     unsigned char *image = stbi_load("resources/onions.jpg", &x, &y, &d, 4);
-
     oriUploadTexImage(texture, GL_UNSIGNED_BYTE, image, x, y, 0, GL_RGBA);
 
     while (!oriWindowShouldClose(mainWin)) {
