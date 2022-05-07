@@ -1,8 +1,0 @@
-/**
- * @mainpage Home
- *
- * @section sect_summary Summary
- * Orion is primarily intended for any graphical projects where you want to run OpenGL without the annoyances of raw OpenGL code.
- * You can see its Git repository <a href="https://github.com/jabenuk/orion">here</a>.
- *
- */
