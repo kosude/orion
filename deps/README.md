@@ -11,12 +11,14 @@ Here is list of dependencies of the core Orion library:
  `<orionwin.h>` *(but using GLFW is still encouraged, regardless of if you use Orion function
  abstractions or not)*.
 
-### Test/example dependencies
+### Optional (test/example) dependencies
 
 If you build test or example executables, the following dependencies are also built with Orion:
  - [nothings](https://github.com/nothings)[/**stb**](https://github.com/nothings/stb/blob/master/stb_image.h)
  **(stb_image)**: for loading images.
  - [jabenuk](https://github.com/jabenuk)[/**zetaml**](https://github.com/jabenuk/zetaml): for
  mathematical operations.
+ - [g-truc](https://github.com/g-truc)[/**glm**](https://github.com/g-truc/glm): an alternative (C++)
+ maths library, sometimes used for convenience.
 
 (They are located in the [execdeps](execdeps/) directory)

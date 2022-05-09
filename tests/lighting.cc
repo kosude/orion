@@ -1,7 +1,11 @@
 #define ORION_TK_DEBUG_CONTEXT false
 #include "testkit/oriontk.h"
 
-#include <zetaml/include/zetaml.h>
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 #include <stb_image/stb_image.h>
 
 oriBuffer *vbo, *ibo;
@@ -18,7 +22,7 @@ float cubeRot = 0;
 void preload() {
     oritk.windowWidth = 640;
     oritk.windowHeight = 480;
-    oritk.windowTitle = "Orion lighting test";
+    oritk.windowTitle = (char *) "Orion lighting test";
 
     oritk.glVersion = 330;
     oritk.glProfile = GLFW_OPENGL_CORE_PROFILE;
@@ -81,37 +85,26 @@ void render() {
     //      UPDATE
     // =============================
 
-    unsigned int w, h;
+    int w, h;
     oriGetWindowSize(oritk.window, &w, &h);
     glViewport(0, 0, w, h);
 
     cubeRot += 1.0 * oritk.windowDeltaTime;
 
     // Model matrix
-    zmlMatrix model = zmlRotateIdentity(cubeRot, 0, 1, 0);
+    glm::mat4 model = glm::mat4(1);
+    model = glm::rotate(model, cubeRot, glm::vec3(0, 1, 0));
+    model = glm::scale(model, glm::vec3(0.8));
 
-    // View matrix
-    zmlVector pos = zmlConstructVectorDefault(3, 1.2);
-    pos.elements[0] = 0;
-    zmlVector focus = zmlConstructVectorDefault(3, 0);
-    zmlVector up = zmlConstructVectorDefault(3, 0);
-    up.elements[1] = 1;
-    zmlMatrix view = zmlConstructLookAtMatrixRH(pos, focus, up);
+    // View-projection matrix
+    glm::mat4 view = glm::lookAt(glm::vec3(1.2), glm::vec3(0), glm::vec3(0, 1, 0));
+    glm::mat4 proj = glm::perspective(glm::radians(45.0), (double) w / (double) h, 0.1, 1000.0);
+    glm::mat4 viewProj = proj * view;
 
-    // Projection matrix
-    zmlMatrix proj = zmlConstructPerspectiveMatrixRH(0.1f, 1000.0f, zmlToRadians(45.0f), (double) w / (double) h);
-
-    // MVP matrix
-    zmlMatrix mvp = zmlCopyMatrix(&proj);
-    zmlMultiplyMats(&mvp, view);
-
-    float matelem_model[4][4];
-    zmlCopyMatrixElements(model, matelem_model);
-    oriSetUniformMat4x4f(shader, "transform.model", true, &matelem_model[0][0]);
-    float matelem_projview[4][4];
-    zmlCopyMatrixElements(mvp, matelem_projview);
-    oriSetUniformMat4x4f(shader, "transform.projView", true, &matelem_projview[0][0]);
-
+    // Matrix shaders
+    oriSetUniformMat4x4f(shader, "transform.model", false, &model[0][0]);
+    oriSetUniformMat4x4f(shader, "transform.projView", false, &viewProj[0][0]);
+    
     // =============================
     //      RENDER
     // =============================
@@ -128,18 +121,6 @@ void render() {
 
     oriSwapBuffers(oritk.window);
     oriPollEvents();
-
-    // =============================
-    //      FREE
-    // =============================
-
-    zmlFreeVector(&pos);
-    zmlFreeVector(&focus);
-    zmlFreeVector(&up);
-    zmlFreeMatrix(&model);
-    zmlFreeMatrix(&view);
-    zmlFreeMatrix(&proj);
-    zmlFreeMatrix(&mvp);
 }
 
 // ======================================================================================

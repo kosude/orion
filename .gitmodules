@@ -13,3 +13,6 @@
 [submodule "tests/deps/zetaml_old"]
 	path = tests/deps/zetaml_old
 	url = https://github.com/jabenuk/zetaml_old
+[submodule "deps/execdeps/glm"]
+	path = deps/execdeps/glm
+	url = https://github.com/g-truc/glm

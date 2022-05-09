@@ -33,7 +33,10 @@ configure_file("${PROJECT_SOURCE_DIR}/CMake/generate/platform.h.in" "${PROJECT_B
 if (ORION_BUILD_TESTS OR ORION_BUILD_EXAMPLES)
     # zetaml
     set(ZML_USE_FLOATS ON CACHE BOOL "" FORCE)
-    add_subdirectory("${DEPENDENCIES_DIR}/execdeps/zetaml" "${DEPENDENCIES_DIR}/zetaml/build")
+    add_subdirectory("${DEPENDENCIES_DIR}/execdeps/zetaml" "${DEPENDENCIES_DIR}/execdeps/zetaml/build")
+
+    # glm
+    add_subdirectory("${DEPENDENCIES_DIR}/execdeps/glm" "${DEPENDENCIES_DIR}/execdeps/glm/build")
 endif()
 
 # ---
