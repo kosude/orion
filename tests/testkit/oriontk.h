@@ -29,18 +29,10 @@ extern "C" {
 #include "orionwin.h"
 
 // Some macros can be defined to customise the test:
-//      ORION_TK_USE_ORIONWIN :: use orionwin (TRUE/false). If set to false, you need to manage the window yourself.
 //      ORION_TK_DEBUG_CONTEXT :: use an OpenGL debug context (TRUE/false).
-//      ORION_TK_WINDOW_CLOSE_BOOL :: the boolean value to check if the window should close (e.g. glfwWindowShouldClose(window)).
 
-#ifndef ORION_TK_USE_ORIONWIN
-#   define ORION_TK_USE_ORIONWIN true
-#endif
 #ifndef ORION_TK_DEBUG_CONTEXT
 #   define ORION_TK_DEBUG_CONTEXT true
-#endif
-#ifndef ORION_TK_WINDOW_CLOSE_BOOL
-#   define ORION_TK_WINDOW_CLOSE_BOOL oriWindowShouldClose(oritk.window)
 #endif
 
 // ======================================================================================
@@ -139,11 +131,6 @@ oritkState oritk;
 // Set any initialisation hints here. Run before anything else.
 void preload();
 
-#if !ORION_TK_USE_ORIONWIN
-// Create your window here.
-void win_create();
-#endif
-
 // Initialise your test program in this functions. Run after window creation and library initialisation.
 void initialise();
 
@@ -153,11 +140,6 @@ void render();
 // Free any allocated memory here. Run just before library termination.
 void clean();
 
-#if !ORION_TK_USE_ORIONWIN
-// Free the window and terminate the windowing API here.
-void win_clean();
-#endif
-
 // ======================================================================================
 // *****                            INLINE MAIN FUNCTION                            *****
 // ======================================================================================
@@ -166,14 +148,10 @@ void win_clean();
 int main() {
     preload();
 
-    #if ORION_TK_USE_ORIONWIN
-        oritk.window = oriCreateWindow(oritk.windowWidth, oritk.windowHeight, oritk.windowTitle, oritk.glVersion, oritk.glProfile);
-        oriSwapInterval(oritk.window, 1);
-    #else
-        win_create();
-    #endif
-
     oriInitialise(oritk.glVersion);
+
+    oriWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+    oritk.window = oriCreateWindow(oritk.windowWidth, oritk.windowHeight, oritk.windowTitle, oritk.glVersion, oritk.glProfile);
 
     #if ORION_TK_DEBUG_CONTEXT
         oriSetFlag(ORION_DEBUG_CONTEXT, true);
@@ -182,7 +160,7 @@ int main() {
 
     initialise();
 
-    while (!ORION_TK_WINDOW_CLOSE_BOOL) {
+    while (!oriWindowShouldClose(oritk.window)) {
         double currentFrameTime = glfwGetTime();
         oritk.windowDeltaTime = currentFrameTime - oritk.windowLastFrameTime;
         oritk.windowLastFrameTime = currentFrameTime;
@@ -193,10 +171,6 @@ int main() {
     clean();
 
     oriTerminate();
-
-    #if !ORION_TK_USE_ORIONWIN
-        win_clean();
-    #endif
 
     return 0;
 }

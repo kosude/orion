@@ -12,12 +12,12 @@
 #define GLVERSION 430
 
 int main() {
+    // Orion is initialised.
+    oriInitialise(GLVERSION);
+
     // A window is created, with the OPENGL_DEBUG_CONTEXT flag set to true.
     oriWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
     oriWindow *window = oriCreateWindow(300, 200, "Orion debug context", GLVERSION, GLFW_OPENGL_CORE_PROFILE);
-
-    // Orion is initialised.
-    oriInitialise(GLVERSION);
 
     // The ORION_DEBUG_CONTEXT flag is set to true and some GL message suppression flags are set.
     oriSetFlag(ORION_DEBUG_CONTEXT, true);

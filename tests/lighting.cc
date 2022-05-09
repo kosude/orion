@@ -1,4 +1,3 @@
-#define ORION_TK_DEBUG_CONTEXT false
 #include "testkit/oriontk.h"
 
 #include <glm/glm.hpp>
@@ -24,7 +23,7 @@ void preload() {
     oritk.windowHeight = 480;
     oritk.windowTitle = (char *) "Orion lighting test";
 
-    oritk.glVersion = 330;
+    oritk.glVersion = 460;
     oritk.glProfile = GLFW_OPENGL_CORE_PROFILE;
 }
 
@@ -104,7 +103,7 @@ void render() {
     // Matrix shaders
     oriSetUniformMat4x4f(shader, "transform.model", false, &model[0][0]);
     oriSetUniformMat4x4f(shader, "transform.projView", false, &viewProj[0][0]);
-    
+
     // =============================
     //      RENDER
     // =============================

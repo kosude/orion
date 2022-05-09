@@ -19,8 +19,6 @@ void preload() {
 
     oritk.glVersion = 430;
     oritk.glProfile = GLFW_OPENGL_CORE_PROFILE;
-
-    oriWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 }
 
 // ======================================================================================
