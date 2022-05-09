@@ -6,6 +6,7 @@
  * 
  * Here is a list of shader preset types:
  *  - @subpage basicshaders - shaders with very generic transformation and colour blending options.
+ *  - @subpage lightingshaders - shaders with basic Phong lighting functionality.
  * 
  */
 
@@ -16,37 +17,37 @@
  * 
  * The basic vertex shader preset can be accessed with the macro @c ORION_VERTEX_SHADER_BASIC. The source code can be seen below:
  * @code{.c}
-	#version 330 core
+    #version 330 core
 
-	// ORION_VERTEX_SHADER_BASIC
+    // ORION_VERTEX_SHADER_BASIC
 
-	// ---------------------
-	// Orion Basic Resources
-	//     Shader Presets
-	//         Basic Vertex Shader
-	// ---------------------
+    // ---------------------
+    // Orion Basic Resources
+    //     Shader Presets
+    //         Basic Vertex Shader
+    // ---------------------
 
-	struct Transform {
-		mat4 mvp;									// model-view-projection matrix (multiplied in reverse)
-	};
+    struct Transform {
+        mat4 mvp;                                    // model-view-projection matrix (multiplied in reverse)
+    };
 
-	layout (location = 0) in vec3 vertexPosIn;		// normalised position of the vertex
-	layout (location = 1) in vec2 texCoordIn;		// texture coordinate for the vertex
-	layout (location = 2) in vec4 vertexColourIn;	// colour value of the vertex
+    layout (location = 0) in vec3 vertexPosIn;       // normalised position of the vertex
+    layout (location = 1) in vec2 texCoordIn;        // texture coordinate for the vertex
+    layout (location = 2) in vec4 vertexColourIn;    // colour value of the vertex
 
-	out vec2 texCoord;								// texture coordinate
-	out vec4 vertexColour;							// colour value
+    out vec2 texCoord;                               // texture coordinate
+    out vec4 vertexColour;                           // colour value
 
-	uniform Transform transform;
+    uniform Transform transform;
 
-	void main() {
-		// Output data
-		texCoord = texCoordIn;
-		vertexColour = vertexColourIn;
+    void main() {
+        // Output data
+        texCoord = texCoordIn;
+        vertexColour = vertexColourIn;
 
-		// Output position
-		gl_Position = transform.mvp * vec4(vertexPosIn, 1.0);
-	}
+        // Output position
+        gl_Position = transform.mvp * vec4(vertexPosIn, 1.0);
+    }
  * @endcode
  *
  * @subsection bvertattribs Vertex attributes
@@ -63,76 +64,236 @@
  * 
  * The basic fragment shader preset can be accessed with the macro @c ORION_FRAGMENT_SHADER_BASIC. The source code can be seen below:
  * @code{.c}
-	#version 330 core
+    #version 330 core
 
-	// ORION_FRAGMENT_SHADER_BASIC
+    // ORION_FRAGMENT_SHADER_BASIC
 
-	// ---------------------
-	// Orion Basic Resources
-	//     Shader Presets
-	//        Basic Fragment Shader
-	// ---------------------
+    // ---------------------
+    // Orion Basic Resources
+    //     Shader Presets
+    //        Basic Fragment Shader
+    // ---------------------
 
-	struct Blend {
-		sampler2D tex;								// texture
-		vec4 colour;								// colour value of the overall geometry
-		int mode;									// way to blend colours
-	};
+    struct Blend {
+        sampler2D tex;                              // texture
+        vec4 colour;                                // colour value of the overall geometry
+        int mode;                                   // way to blend colours
+    };
 
-	out vec4 fragColour;							// final colour of the fragment
+    out vec4 fragColour;                            // final colour of the fragment
 
-	in vec2 texCoord;								// texture coordinate
-	in vec4 vertexColour;							// colour value of the vertex
+    in vec2 texCoord;                               // texture coordinate
+    in vec4 vertexColour;                           // colour value of the vertex
 
-	uniform Blend blend;
+    uniform Blend blend;
 
-	void main() {
-		// blend based on blend.mode
-		// 1 = solid colour only
-		// 2 = texture only
-		// 3 = gradient (vertex colours) only
-		// 4 = solid colour and texture
-		// 5 = solid colour and gradient
-		// 6 = texture and gradient
-		// 7 = all colour sources
-		switch (blend.mode) {
-			case 1:
-				fragColour = blend.colour;
-				break;
-			case 2:
-				fragColour = texture(blend.tex, texCoord);
-				break;
-			case 3:
-				fragColour = vertexColour;
-				break;
-			case 4:
-				fragColour = blend.colour * texture(blend.tex, texCoord);
-				break;
-			case 5:
-				fragColour = blend.colour * vertexColour;
-				break;
-			case 6:
-				fragColour = texture(blend.tex, texCoord) * vertexColour;
-				break;
-			case 7:
-				fragColour = blend.colour * texture(blend.tex, texCoord) * vertexColour;
-				break;
-			default:
-				fragColour = vec4(1, 0, 1, 1);	// magenta
-		}
-	}
+    void main() {
+        // blend based on blend.mode
+        // 1 = solid colour only
+        // 2 = texture only
+        // 3 = gradient (vertex colours) only
+        // 4 = solid colour and texture
+        // 5 = solid colour and gradient
+        // 6 = texture and gradient
+        // 7 = all colour sources
+        switch (blend.mode) {
+            case 1:
+                fragColour = blend.colour;
+                break;
+            case 2:
+                fragColour = texture(blend.tex, texCoord);
+                break;
+            case 3:
+                fragColour = vertexColour;
+                break;
+            case 4:
+                fragColour = blend.colour * texture(blend.tex, texCoord);
+                break;
+            case 5:
+                fragColour = blend.colour * vertexColour;
+                break;
+            case 6:
+                fragColour = texture(blend.tex, texCoord) * vertexColour;
+                break;
+            case 7:
+                fragColour = blend.colour * texture(blend.tex, texCoord) * vertexColour;
+                break;
+            default:
+                fragColour = vec4(1, 0, 1, 1);    // magenta
+        }
+    }
  * @endcode
  * 
  * @subsection bfraguniforms Uniforms
  * The following uniforms can be set when using the basic fragment shader:
  *  - @c blend.mode - the type of blend mode to use. Available options are:
- * 		- @c 1: solid colour only
- * 		- @c 2: texture only
- * 		- @c 3: vertex colours only
- * 		- @c 4: solid colour and texture
- * 		- @c 5: solid colour and vertex colours
- * 		- @c 6: texture and vertex colours
- * 		- @c 7: all colour sources
+ *         - @c 1: solid colour only
+ *         - @c 2: texture only
+ *         - @c 3: vertex colours only
+ *         - @c 4: solid colour and texture
+ *         - @c 5: solid colour and vertex colours
+ *         - @c 6: texture and vertex colours
+ *         - @c 7: all colour sources
  *  - @c blend.tex - the texture to use (used in blend modes 2, 4, 6, and 7).
  *  - @c blend.colour - a 4D vector of a solid RGBA colour (used in blend modes 1, 4, 5, and 7)
+ */
+
+/** 
+ * @page lightingshaders Lighting shader preset
+ * 
+ * @section lightingvertex Vertex shader
+ * 
+ * The lighting vertex shader preset can be accessed with the macro @c ORION_VERTEX_SHADER_LIGHTING. The source code can be seen below:
+ * @code{.c}
+    #version 330 core
+
+    // ORION_VERTEX_SHADER_LIGHTING
+
+    // ---------------------
+    // Orion Basic Resources
+    //         Shader Presets
+    //            Lighting-enabled Vertex Shader
+    // ---------------------
+
+    struct Transform {
+        mat4 model;                                 // model matrix
+        mat4 projView;                              // view-projection matrix (multiplied in reverse)
+    };
+
+    layout (location = 0) in vec3 vertexPosIn;      // normalised position of the vertex
+    layout (location = 1) in vec2 texCoordIn;       // texture coordinate for the vertex
+    layout (location = 3) in vec3 normalIn;         // normal of the current surface
+
+    out vec2 texCoord;                              // texture coordinate
+    out vec3 normal;                                // normal vector output
+    out vec3 fragPos;                               // world position of the fragment (vertex position multiplied by model matrix)
+
+    uniform Transform transform;
+
+    void main() {
+        // output data
+        texCoord = texCoordIn;
+        
+        // calculate normal and fragment position
+        normal = mat3(transpose(inverse(transform.model))) * normalIn;
+        fragPos = vec3(transform.model * vec4(vertexPosIn, 1.0));
+
+        // output vertex position
+        gl_Position = transform.projView * transform.model * vec4(vertexPosIn, 1.0);
+    }
+ * @endcode
+ *
+ * @subsection lvertattribs Vertex attributes
+ * The following vertex attributes can be set when using the lighting vertex shader:
+ *  - location @c 0 - the normalised vertex position
+ *  - location @c 1 - the texture coordinate of the vertex
+ *  - location @c 3 - the surface normal vector
+ *
+ * @subsection lvertuniforms Uniforms
+ * The following uniforms can be set when using the lighting vertex shader:
+ *  - @c transform.model - a 4x4 model matrix
+ *  - @c transform.projView - a 4x4 view-projection (projection * view) matrix
+ * 
+ * @section lightingfragment Fragment shader
+ * 
+ * The lighting fragment shader preset can be accessed with the macro @c ORION_FRAGMENT_SHADER_LIGHTING. The source code can be seen below:
+ * @code{.c}
+    #version 330 core
+
+    // ORION_FRAGMENT_SHADER_LIGHTING
+
+    // ---------------------
+    // Orion Basic Resources
+    //      Shader Presets
+    //          Lighting-enabled Fragment Shader
+    // ---------------------
+
+    struct Material {
+        sampler2D tex;                              // texture
+        vec3 colour;                                // colour of the material
+        int shininess;                              // specular exponent ('shininess') of the material
+
+        sampler2D specularTex;                      // specular map texture
+    };
+
+    struct LightSource {
+        vec3 colour;                                // colour of the light source
+        vec3 pos;                                   // position of the light source
+
+        float brightness;                           // general intensity ('brightness') of the light source
+        float ambientIntensity;                     // intensity of ambient light
+        float diffuseIntensity;                     // intensity of diffused light
+        float specularIntensity;                    // intensity of specular highlights
+    };
+
+    struct Viewport {
+        vec3 pos;                                   // world position of the hypothetical 'camera', for specular highlights
+    };
+
+    out vec4 fragColour;                            // final colour of the fragment
+
+    in vec2 texCoord;                               // texture coordinate
+    in vec3 normal;                                 // normal vector output
+    in vec3 fragPos;                                // world position of the fragment (vertex position multiplied by model matrix)
+
+    uniform Material material;
+    uniform LightSource lightSource;
+    uniform Viewport view;
+
+    void main() {
+        // ----------------------------
+        // DIFFUSE LIGHT
+        // ----------------------------
+
+        // normalised normal vector
+        vec3 normalisedNormal = normalize(normal);
+        // direction vector between the fragment and the light source
+        vec3 dirToLight = normalize(lightSource.pos - fragPos);
+
+        // Get the diffuse impact of the light on the current fragment (clamped to absolute values), based on the direction from the fragment to the light source.
+        // Use this to get the diffuse light vector.
+        float diffuse = max(dot(normalisedNormal, dirToLight), 0.0) * lightSource.diffuseIntensity;
+
+        // ----------------------------
+        // SPECULAR LIGHT
+        // ----------------------------
+
+        // direction vector between the fragment and the eye ('camera')
+        vec3 dirToEye = normalize(view.pos - fragPos);
+        // get the reflect vector taking the direction to the light source as the vector of incidence
+        vec3 reflectedDirToLight = reflect(-dirToLight, normalisedNormal);
+
+        // calculate the absolute dot product of the direction to the eye and the light source direction reflect vector
+        // raise this to the specular exponent to replicate material shininess.
+        float specular = pow(abs(dot(dirToEye, reflectedDirToLight)), material.shininess) * lightSource.specularIntensity;
+
+        // ----------------------------
+        // FINAL COLOUR AND APPLICATION
+        // ----------------------------
+
+        vec3 result = (
+            lightSource.ambientIntensity    * material.colour    * vec3(texture(material.tex, texCoord)) +
+            diffuse                         * material.colour    * vec3(texture(material.tex, texCoord)) +
+            specular                        * material.colour    * vec3(texture(material.specularTex, texCoord))
+        ) * lightSource.colour              * lightSource.brightness;
+
+        fragColour = texture(material.tex, texCoord) * vec4(result, 1.0);
+    }
+ * @endcode
+ * 
+ * @subsection lfraguniforms Uniforms
+ * The following uniforms can be set when using the lighting fragment shader:
+ *  - @c material.tex - the material's texture (texture unit) that will be used
+ *  - @c material.colour - the material's colour
+ *  - @c material.shininess - the shininess of the material
+ *  - @c material.specularTex - specular texture that will be used
+ * <br><br>
+ *  - @c lightSource.colour - the colour of the light source
+ *  - @c lightSource.pos - the position of the light source
+ *  - @c lightSource.brightness - the brightness of the light source
+ *  - @c lightSource.ambientIntensity - intensity of ambient light
+ *  - @c lightSource.diffuseIntensity - intensity of diffused light
+ *  - @c lightSource.specularIntensity - intensity of specular highlights
+ * <br><br>
+ *  - @c view.pos - the position of the 'camera' for specular highlighting
  */
