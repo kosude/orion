@@ -1,3 +1,12 @@
+## Note from 18/09/2022
+
+This repository has been **archived**. I don't plan on maintaining it any longer, but I have made it public for the sake of documenting the work I have
+done on it in the past.
+
+Unfortunately, Orion can't realistically be used due to it never having left the relatively early stages of development.
+
+---
+
 # Orion Graphics Library
 
 ## Summary
